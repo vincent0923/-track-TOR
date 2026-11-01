@@ -633,6 +633,7 @@ function pad(n){return String(n).padStart(2,"0")}
 window.pad = pad;
 let LANG="zh";try{LANG=localStorage.getItem("pushpull-v1-lang")||"zh"}catch(e){}
 const T=(zh,en)=>LANG==="en"?en:zh;
+window.T = T;
 const N=e=>T(e.name,e.en), NS=e=>T(e.name.replace(/（.*）/,""),e.en.replace(/\s*\(.*\)/,"")), NOTE=e=>T(e.note,e.noteEn);
 const U=u=>T(u,{"个":"reps","秒":"s","分钟":"min"}[u]||u);
 const LAB=p=>T((p.kind==="push"?"推练":"拉练")+" D"+p.day,(p.kind==="push"?"Push":"Pull")+" D"+p.day);
@@ -2343,7 +2344,7 @@ function renderDietChart(){
   
   const box = document.getElementById("dietChart");
   if(!box) return;
-  box.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${T("摄入与估算总消耗","Intake vs estimated total burn")}">${g}</svg>`;
+  box.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${window.T("摄入与估算总消耗","Intake vs estimated total burn")}">${g}</svg>`;
   const svg = box.querySelector("svg"), tip = document.getElementById("dietTip"), xh = svg.querySelector("#dxh");
   const pick = e => {
     const r = svg.getBoundingClientRect();
@@ -2352,7 +2353,7 @@ function renderDietChart(){
     const p = pts[i];
     xh.setAttribute("x1", x(i)); xh.setAttribute("x2", x(i)); xh.setAttribute("visibility", "visible");
     const gap = (p.a!==null && p.b!==null) ? p.b - p.a : null;
-    tip.innerHTML = `${dotDateStr(p.d).slice(5)}　${T("摄入","In")} <b>${f0Dec(p.a)}</b>　${T("消耗","Burn")} <b>${f0Dec(p.b)}</b>　${T("基代","BMR")} <b>${f0Dec(bmrOfDate(p.d))}</b>` + (gap===null ? "" : `　${gap>=0 ? T("缺口","Deficit") : T("盈余","Surplus")} <b>${f0Dec(Math.abs(gap))}</b>`);
+    tip.innerHTML = `${dotDateStr(p.d).slice(5)}　${window.T("摄入","In")} <b>${f0Dec(p.a)}</b>　${window.T("消耗","Burn")} <b>${f0Dec(p.b)}</b>　${window.T("基代","BMR")} <b>${f0Dec(bmrOfDate(p.d))}</b>` + (gap===null ? "" : `　${gap>=0 ? window.T("缺口","Deficit") : window.T("盈余","Surplus")} <b>${f0Dec(Math.abs(gap))}</b>`);
     tip.hidden = false;
     const bbox = box.getBoundingClientRect();
     const px = r.left - bbox.left + x(i)/W * r.width;
@@ -2369,7 +2370,7 @@ function renderDietGap(){
   if(!gchips) return;
   gchips.innerHTML = [3,7,14,30].map(n=>{
     const m = dietMovingSum(t,n) || dietMovingSum(ymdAdd(t, -1), n);
-    return `<button type="button" class="gchip" data-dw="${n}" aria-pressed="${n===dietState.gw}"><span>${T("近","Last")} ${n} ${T("天","d")}</span>${m ? `<b class="${m.s>=0 ? "g" : "r"}">${m.s>=0 ? "" : "−"}${Math.abs(Math.round(m.s))}</b>` : `<b>–</b>`}</button>`;
+    return `<button type="button" class="gchip" data-dw="${n}" aria-pressed="${n===dietState.gw}"><span>${window.T("近","Last")} ${n} ${window.T("天","d")}</span>${m ? `<b class="${m.s>=0 ? "g" : "r"}">${m.s>=0 ? "" : "−"}${Math.abs(Math.round(m.s))}</b>` : `<b>–</b>`}</button>`;
   }).join("");
   document.querySelectorAll("#dietGapBox .seg button").forEach(x=>x.setAttribute("aria-pressed", String(+x.dataset.dw===dietState.gw)));
   
@@ -2408,7 +2409,7 @@ function renderDietGap(){
   
   const gbox = document.getElementById("dietGchart");
   if(!gbox) return;
-  gbox.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${T("每日缺口与","Daily deficit & ")} ${N} ${T("天滚动累计","-day rolling total")}">${g}</svg>`;
+  gbox.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${window.T("每日缺口与","Daily deficit & ")} ${N} ${window.T("天滚动累计","-day rolling total")}">${g}</svg>`;
   const svg = gbox.querySelector("svg"), tip = document.getElementById("dietGtip"), xh = svg.querySelector("#dgxh");
   const pick = e => {
     const r = svg.getBoundingClientRect();
@@ -2416,8 +2417,8 @@ function renderDietGap(){
     const i = Math.max(0, Math.min(dates.length-1, Math.round((sx-L)/step)));
     const p = pts[i];
     xh.setAttribute("x1", x(i)); xh.setAttribute("x2", x(i)); xh.setAttribute("visibility", "visible");
-    const gapTxt = v => (v>=0 ? T("缺口","Deficit")+" " : T("盈余","Surplus")+" ") + Math.abs(Math.round(v));
-    tip.innerHTML = `${dotDateStr(p.d).slice(5)}　${T("当日","Today")} <b>${p.g===null ? "–" : gapTxt(p.g)}</b>　${T("近","Last")}${N}${T("天","d")} <b>${p.m ? gapTxt(p.m.s) : "–"}</b>${p.m ? `　${T("约","≈")} ${ (Math.abs(p.m.s)/7700).toFixed(2) }kg` : ""}`;
+    const gapTxt = v => (v>=0 ? window.T("缺口","Deficit")+" " : window.T("盈余","Surplus")+" ") + Math.abs(Math.round(v));
+    tip.innerHTML = `${dotDateStr(p.d).slice(5)}　${window.T("当日","Today")} <b>${p.g===null ? "–" : gapTxt(p.g)}</b>　${window.T("近","Last")}${N}${window.T("天","d")} <b>${p.m ? gapTxt(p.m.s) : "–"}</b>${p.m ? `　${window.T("约","≈")} ${ (Math.abs(p.m.s)/7700).toFixed(2) }kg` : ""}`;
     tip.hidden = false;
     const bbox = gbox.getBoundingClientRect();
     const px = r.left - bbox.left + x(i)/W * r.width;

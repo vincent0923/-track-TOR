@@ -12,3 +12,4 @@ coros-token.json
 *.token.json
 .coros-mcp-state/
 手机端首次导入口令*.txt
+一键同步到GitHub.command
