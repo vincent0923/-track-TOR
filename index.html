@@ -1549,7 +1549,7 @@ function wxSheet(text){
   m.querySelector("textarea").value=text;m.hidden=false;
 }
 /* sends ONLY the importable progress text. System share sheet where the browser offers one (Chrome, Safari);
-   inside the Claude app there is none, so it copies straight to the clipboard; the text box is the last resort. */
+   on platforms without a share sheet it copies straight to the clipboard; the text box is the last resort. */
 document.getElementById("wxBtn").addEventListener("click",async()=>{
   let text="";try{text=await encodeBackup()}catch(e){toast(T("生成进度文本失败","Couldn't build the progress text"));return}
   if(navigator.share){
@@ -1604,7 +1604,7 @@ function lastSync(){try{return localStorage.getItem(SYNC_K)||""}catch(e){return 
 function syncUI(){
   const b=document.getElementById("syncBtn");
   if(syncing){b.className="syncbtn busy";b.textContent=T("同步中…","Syncing…");return}
-  if(!mcpReady){b.className="syncbtn off";b.textContent=mcp===null&&!window.claude?T("连接高驰","Connect COROS"):T("同步高驰mcp","Sync COROS");return}
+  if(!mcpReady){b.className="syncbtn off";b.textContent=mcp===null?T("连接高驰","Connect COROS"):T("同步高驰mcp","Sync COROS");return}
   const ls=lastSync();
   if(ls.slice(0,10)===today()){b.className="syncbtn done";b.textContent=T("已同步 ","Synced ")+ls.slice(11,16)}
   else{b.className="syncbtn";b.textContent=T("同步高驰mcp","Sync COROS")}
@@ -1681,7 +1681,7 @@ async function syncRhr(){
     const {text,rows}=await rhrRange(ymdOffset(first?-399:-59),ymdOffset(0));
     if(!rows.length){
       if(db){try{await db.doc("debug/rhr").set({at:new Date().toISOString(),sample:text.slice(0,2000)})}catch(e){}}
-      return T("；静息心率读到了数据但格式未识别，已留样，请告诉 Claude","; resting HR came back in an unrecognised format; a sample was saved — tell Claude");
+      return T("；静息心率读到了数据但格式未识别，已留样。","; resting HR came back in an unrecognised format; a sample was saved.");
     }
     let n=0;for(const x of rows){const m=state.metrics[x.date];if(!(m&&m.rhr===x.rhr)){await saveMetric(x.date,{rhr:x.rhr});n++}}
     try{localStorage.setItem(LS+"-rhrbf2","done")}catch(e){}
@@ -1694,7 +1694,7 @@ async function syncHrv(){
     const {text,rows}=await hrvRange(ymdOffset(-59),ymdOffset(0));
     if(!rows.length){
       if(db){try{await db.doc("debug/hrv").set({at:new Date().toISOString(),sample:text.slice(0,2000)})}catch(e){}}
-      return T("；HRV 读到了数据但格式未识别，已留样，请告诉 Claude","; HRV data came back in an unrecognised format; a sample was saved — tell Claude");
+      return T("；HRV 读到了数据但格式未识别，已留样。","; HRV data came back in an unrecognised format; a sample was saved.");
     }
     for(const x of rows){await saveMetric(x.date,{hrv:x.hrv})}
     const l=rows[rows.length-1];
@@ -1714,7 +1714,7 @@ document.getElementById("syncBtn").addEventListener("click",async()=>{
     if(!text&&r.payload)text=JSON.stringify(r.payload);
     const rows=parseSleep(text);
     let msg="";
-    if(!rows.length){msg=T("COROS 返回了数据，但没有读到睡眠评分。请把这条提示告诉 Claude。","COROS replied but no sleep scores were found. Tell Claude about this message.");}
+    if(!rows.length){msg=T("COROS 返回了数据，但没有读到睡眠评分。","COROS replied but no sleep scores were found.");}
     else{
       for(const x of rows){await saveMetric(x.date,{sleep:x.sleep,sleepH:x.sleepH})}
       const sbf=await backfill("-sleepbf",series("sleep")[0],sleepRange,x=>saveMetric(x.date,{sleep:x.sleep,sleepH:x.sleepH}),x=>state.metrics[x.date]&&state.metrics[x.date].sleep!=null,T("睡眠","sleep"));
@@ -1769,21 +1769,15 @@ document.getElementById("syncBtn").addEventListener("click",async()=>{
         }).catch(()=>{ promptCorosToken(); });
       }
     }
-    else if(c==="server_not_connected"||c==="selection_required")syncMsg(T("尚未连接高驰，请点击下方链接完成登录授权。","COROS isn't connected — add it in claude.ai Settings → Connectors."));
+    else if(c==="server_not_connected"||c==="selection_required")syncMsg(T("尚未连接高驰，请点击右上角「连接高驰」完成授权。","COROS isn't connected — tap \"Connect COROS\" in the top-right to authorize."));
     else if(c==="not_in_manifest"||c==="approval_required"||c==="consent_required")syncMsg(T("这个页面还没有获准使用 COROS。再点一次同步，并在弹出的提示里选择允许。","This page isn't allowed to use COROS yet. Tap sync again and choose Allow."));
     else if(c==="server_unavailable"||(e&&e.retryable))syncMsg(T("COROS 暂时没有响应，过一会儿再点同步。","COROS isn't responding — try again shortly."));
     else if(c==="tool_error")syncMsg(T("COROS 返回错误：","COROS error: ")+(e.message||T("未知原因","unknown")));
-    else if(c==="not_granted"||c==="capability_disabled"||c==="capability_removed")syncMsg(T("无法连接高驰 MCP 代理网关，请检查本地服务或授权状态。","COROS isn't available here — open this page in claude.ai."));
+    else if(c==="not_granted"||c==="capability_disabled"||c==="capability_removed")syncMsg(T("无法连接高驰服务，请检查网络或重新授权。","COROS isn't available here — check your network or re-authorize."));
     else syncMsg(T("同步失败（"+(c||"未知原因")+"），稍后再试。","Sync failed ("+(c||"unknown")+"), try again later."));
   }finally{syncing=false;syncUI()}
 });
 async function connectMcp(){
-  const c=window.claude;
-  if(c && typeof c.use==="function"){
-    try{mcp=await c.use("mcp")}catch(e){mcp=null}
-    mcpReady=!!mcp;syncUI();
-    return;
-  }
   try{
     const r=await fetch("/api/coros/status", {signal:AbortSignal.timeout(1500)});
     if(r.ok){
@@ -2177,28 +2171,7 @@ try{
 maybeRemindBackup();
 
 async function connect(){
-  const c=window.claude;
-  if(!c||typeof c.use!=="function"){setMode("local");return}
-  let d=null; try{d=await c.use("db")}catch(e){d=null}
-  if(!d){setMode("local");return}
-  db=d; setMode("db");
-  state.sessions={}; state.metrics={};
-  let first={s:false,m:false};
-  db.collection("sessions").onSnapshot(snap=>{
-    let changed=false;
-    snap.docs.forEach(doc=>{const v=doc.data();if(!acceptRemote(doc.id,v))return;if(JSON.stringify(state.sessions[doc.id])!==JSON.stringify(v)){state.sessions[doc.id]=clone(v);changed=true}});
-    if(changed||!first.s){if(!first.s){open.clear();autoOpened=false}first.s=true;renderStats();if(!finishing&&(!document.activeElement||!document.activeElement.closest("#pane-train")))renderTrain()}
-  },err=>{setMode("local")});
-  db.collection("settings").onSnapshot(snap=>{
-    const d=snap.docs.find(x=>x.id==="goals");if(!d)return;
-    const v=d.data();if(JSON.stringify(v)===JSON.stringify(state.settings))return;
-    state.settings=Object.assign({},GDEF,v);renderGoals();
-  },err=>{});
-  db.collection("metrics").onSnapshot(snap=>{
-    const next={};snap.docs.forEach(doc=>{next[doc.id]=clone(doc.data())});
-    Object.keys(state.metrics).forEach(k=>{if(dirty.has("m:"+k))next[k]=state.metrics[k]});
-    state.metrics=next; first.m=true; renderStats(); renderData();
-  },err=>{});
+  setMode("local");
 }
 connect();
 
@@ -3068,10 +3041,6 @@ async function callCorosDirectBrowser(toolName, args){
 }
 
 async function callCorosToolAdapter(toolName, args){
-  if(window.claude && typeof window.claude.use === "function"){
-    const m = await window.claude.use("mcp");
-    return await m.callTool("COROS", toolName, args, { cache: false });
-  }
   try{
     const resp = await fetch("/api/coros/call", {
       method: "POST",

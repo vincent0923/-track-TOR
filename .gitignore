@@ -1,12 +1,8 @@
 .DS_Store
 .workbuddy/
 .wbapp*
-tracktor-miniprogram/
-tracktor-relay/
 *.backup.html
 *.textClipping
-build_integrated_app.py
-integrate_diet.py
 __pycache__/
 *.pyc
 *.tmp
@@ -16,10 +12,3 @@ coros-token.json
 *.token.json
 .coros-mcp-state/
 手机端首次导入口令*.txt
-
-# 部署产物目录（重复构建包，不入库）
-GitHub上传包/
-Render上传包/
-
-# 本地重复数据文件（diet-data.json 已入库）
-ledger-data.json
