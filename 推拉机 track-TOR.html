@@ -1604,7 +1604,7 @@ function lastSync(){try{return localStorage.getItem(SYNC_K)||""}catch(e){return 
 function syncUI(){
   const b=document.getElementById("syncBtn");
   if(syncing){b.className="syncbtn busy";b.textContent=T("同步中…","Syncing…");return}
-  if(!mcpReady){b.className="syncbtn off";b.textContent=mcp===null&&!window.claude?T("离线版","Offline"):T("同步高驰mcp","Sync COROS");return}
+  if(!mcpReady){b.className="syncbtn off";b.textContent=mcp===null&&!window.claude?T("连接高驰","Connect COROS"):T("同步高驰mcp","Sync COROS");return}
   const ls=lastSync();
   if(ls.slice(0,10)===today()){b.className="syncbtn done";b.textContent=T("已同步 ","Synced ")+ls.slice(11,16)}
   else{b.className="syncbtn";b.textContent=T("同步高驰mcp","Sync COROS")}
@@ -1705,7 +1705,7 @@ async function syncHrv(){
 }
 document.getElementById("syncBtn").addEventListener("click",async()=>{
   if(syncing)return;
-  if(!mcp){syncMsg(T("离线版不能连接高驰。在 Claude 网页版同步后复制进度文本，再在这里导入；或在「数据页」手动记录。","The offline file can't reach COROS. Sync in the Claude web version, copy the progress text and import it here, or log manually on the Data tab."));return}
+  if(!mcp){promptCorosToken();return}
   syncing=true;syncUI();
   try{
     const r=await mcp.callTool("COROS","querySleepOverview",{startDate:ymdOffset(-59),endDate:ymdOffset(0)},{cache:false});
@@ -1754,13 +1754,20 @@ document.getElementById("syncBtn").addEventListener("click",async()=>{
   }catch(e){
     const c=e&&e.code;
     if(c==="needs_reauth"){
-      syncMsg(T("高驰需要授权登录，正在获取登录链接…","COROS authorization needed, getting login link…"));
-      fetch("/api/coros/login-start", {method:"POST"}).then(r=>r.json()).then(data=>{
-        if(data && data.login_url){
-          window.open(data.login_url, "_blank");
-          syncMsg(T("请在新窗口完成高驰登录授权，完成后再次点击同步。","Please authorize in the new window, then tap sync again."));
-        }
-      }).catch(()=>{});
+      // 直连模式下 token 失效：引导重新粘贴令牌（GitHub Pages 无后端，不能走 login-start）
+      const hasLocal = readCorosToken && readCorosToken();
+      if(hasLocal){
+        syncMsg(T("令牌已失效或过期，请重新粘贴高驰令牌。","Token expired or invalid — please paste a fresh COROS token."));
+        promptCorosToken();
+      } else {
+        syncMsg(T("高驰需要授权登录，正在获取登录链接…","COROS authorization needed, getting login link…"));
+        fetch("/api/coros/login-start", {method:"POST"}).then(r=>r.json()).then(data=>{
+          if(data && data.login_url){
+            window.open(data.login_url, "_blank");
+            syncMsg(T("请在新窗口完成高驰登录授权，完成后再次点击同步。","Please authorize in the new window, then tap sync again."));
+          }
+        }).catch(()=>{ promptCorosToken(); });
+      }
     }
     else if(c==="server_not_connected"||c==="selection_required")syncMsg(T("尚未连接高驰，请点击下方链接完成登录授权。","COROS isn't connected — add it in claude.ai Settings → Connectors."));
     else if(c==="not_in_manifest"||c==="approval_required"||c==="consent_required")syncMsg(T("这个页面还没有获准使用 COROS。再点一次同步，并在弹出的提示里选择允许。","This page isn't allowed to use COROS yet. Tap sync again and choose Allow."));
@@ -1788,7 +1795,7 @@ async function connectMcp(){
   }catch(e){}
   // Serverless / GitHub Pages mode: check localStorage or ./coros-token.json
   try{
-    let tk = JSON.parse(localStorage.getItem("tracktor-coros-token") || "null");
+    let tk = readCorosToken();
     if(!tk){
       const tr = await fetch("./coros-token.json", {signal:AbortSignal.timeout(1500)});
       if(tr.ok){
@@ -1797,6 +1804,11 @@ async function connectMcp(){
       }
     }
     if(tk && tk.access_token){
+      // 主动验证 token 有效性（调一次 initialize），而不是盲目标记就绪
+      try{
+        const ok = await corosPing(tk);
+        if(!ok){ mcp=null; mcpReady=false; syncUI(); return; }
+      }catch(e){ mcp=null; mcpReady=false; syncUI(); return; }
       mcpReady=true;
       mcp={ callTool: async (srv, tool, args) => await callCorosToolAdapter(tool, args) };
       syncUI();
@@ -1806,6 +1818,108 @@ async function connectMcp(){
     }
   }catch(e){}
   mcp=null;syncUI();
+}
+
+/* 轻量连通性探测：用 token 调一次 initialize，成功返回 true，失败返回 false（不抛错） */
+async function corosPing(tk){
+  try{
+    const issuer = (tk.issuer || "https://mcpus.coros.com").replace(/\/+$/, "");
+    const headers = {
+      "Authorization": (tk.token_type || "Bearer") + " " + tk.access_token,
+      "Content-Type": "application/json",
+      "Accept": "application/json, text/event-stream"
+    };
+    const r = await fetch(issuer + "/mcp", {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        jsonrpc: "2.0", id: 1, method: "initialize",
+        params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "COROS MCP Gateway CLI", version: "1.0.0" } }
+      }),
+      signal: AbortSignal.timeout(8000)
+    });
+    if(!r.ok) return false;
+    const raw = await r.text();
+    const p = parseMcpResponseText(r.headers.get("content-type") || "", raw);
+    return !!(p && p.result);
+  }catch(e){ return false; }
+}
+
+/* ---------- COROS token 手动粘贴（方案：token 存本机浏览器，不上传公开仓库） ---------- */
+function readCorosToken(){
+  try{ return JSON.parse(localStorage.getItem("tracktor-coros-token") || "null"); }catch(e){ return null; }
+}
+function promptCorosToken(){
+  const cur = readCorosToken();
+  const mask = document.createElement("div");
+  mask.className = "mask";
+  mask.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="${T("连接高驰","Connect COROS")}" style="max-width:460px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <b style="font-size:16px">${T("连接高驰","Connect COROS")}</b>
+      <button type="button" data-close class="iconbtn" aria-label="${T("关闭","Close")}" style="font-size:18px">×</button>
+    </div>
+    <p class="sub" style="margin:0 0 10px">${T(
+      "粘贴你的高驰令牌（access token）即可直连同步。令牌只保存在当前浏览器的本地存储中，不会上传到任何服务器。",
+      "Paste your COROS access token to sync directly. The token stays in this browser's local storage only and is never uploaded."
+    )}</p>
+    <div class="field"><label for="corosTokenInp">${T("高驰令牌","COROS Token")}</label>
+      <textarea id="corosTokenInp" rows="4" style="font-family:monospace;font-size:12px" placeholder='{"access_token":"...","refresh_token":"...","client_id":"...","expires_at_epoch":...}'></textarea>
+    </div>
+    <p class="note" style="margin:8px 0 0">${T(
+      "提示：令牌约 30 天过期，过期后回到这里重新粘贴即可。",
+      "Tip: tokens expire in ~30 days; paste a fresh one here when needed."
+    )}</p>
+    <div class="row" style="margin-top:12px;justify-content:flex-end">
+      <button id="corosTokClear" type="button" class="btn ghost" ${cur?"":"hidden"}>${T("清除已存令牌","Clear saved token")}</button>
+      <button id="corosTokGo" type="button" class="btn" style="background:var(--push)">${T("保存并连接","Save & connect")}</button>
+    </div>
+  </div>`;
+  document.body.appendChild(mask);
+  const inp = mask.querySelector("#corosTokenInp");
+  if(cur){ try{ inp.value = JSON.stringify(cur, null, 2); }catch(e){} }
+  const close = ()=>{ mask.remove(); };
+  mask.querySelector("[data-close]").addEventListener("click", close);
+  mask.addEventListener("click", e=>{ if(e.target===mask) close(); });
+
+  mask.querySelector("#corosTokClear").addEventListener("click", ()=>{
+    try{ localStorage.removeItem("tracktor-coros-token"); }catch(e){}
+    mcp = null; mcpReady = false; syncUI();
+    syncMsg(T("已清除令牌","Token cleared"));
+    close();
+  });
+
+  mask.querySelector("#corosTokGo").addEventListener("click", async ()=>{
+    const raw = inp.value.trim();
+    if(!raw){ syncMsg(T("请先粘贴令牌","Please paste a token first")); return; }
+    let tk = null;
+    try{ tk = JSON.parse(raw); }catch(e){}
+    if(!tk){
+      /* 允许直接粘贴纯 access_token 字符串：包一层最小结构 */
+      if(/^[A-Za-z0-9._~\-]{40,}$/.test(raw)){
+        tk = { access_token: raw, token_type: "Bearer", issuer: "https://mcpus.coros.com" };
+      } else {
+        syncMsg(T("令牌格式无法识别，请粘贴完整的 JSON 或 access_token。","Token format not recognised — paste the full JSON or a raw access_token."));
+        return;
+      }
+    }
+    if(!tk.access_token){ syncMsg(T("令牌缺少 access_token 字段","Token is missing access_token")); return; }
+    if(!tk.issuer){ tk.issuer = "https://mcpus.coros.com"; }
+    try{ localStorage.setItem("tracktor-coros-token", JSON.stringify(tk)); }catch(e){
+      syncMsg(T("无法保存到本地存储","Could not save to local storage")); return;
+    }
+    close();
+    syncMsg(T("令牌已保存，正在连接高驰…","Token saved, connecting to COROS…"));
+    mcp = null; mcpReady = false;
+    await connectMcp();
+    if(mcpReady){
+      syncMsg(T("高驰直连已就绪，点击右上角同步。","COROS direct link ready — tap Sync."));
+    } else {
+      promptCorosToken();
+      syncMsg(T("连接失败，请检查令牌是否有效或是否过期。","Connection failed — check that the token is valid and not expired."));
+    }
+  });
+
+  inp.addEventListener("keydown", e=>{ if(e.key==="Enter" && (e.metaKey||e.ctrlKey)) mask.querySelector("#corosTokGo").click(); });
 }
 syncUI();connectMcp();
 
