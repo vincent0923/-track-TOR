@@ -315,7 +315,7 @@ details.fold[open]>summary::after{transform:rotate(-135deg)}
 details.fold .fbody{padding:0 14px 14px}
 :root[data-lang="en"] .zh{display:none!important}
 :root:not([data-lang="en"]) .en{display:none!important}
-.flagbtn{font-size:20px;line-height:1}
+.flagbtn{font-size:12px;font-weight:700;line-height:1;letter-spacing:.5px;font-family:var(--f-num)}
 .flipx{display:inline-block;transform:scaleX(-1)}
 .sumt{display:flex;gap:8px;align-items:center}
 h1 .ver{font-family:var(--f-num);font-size:12px;font-weight:400;color:var(--muted);opacity:.75;margin-left:4px;letter-spacing:0;vertical-align:middle}
@@ -342,13 +342,13 @@ h1 .ver{font-family:var(--f-num);font-size:12px;font-weight:400;color:var(--mute
   <header class="top">
     <div class="trow">
       <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.00a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
-      <button id="pwaInstallBtn" type="button" style="display:none;background:var(--cta);border:0;color:#fff;font-weight:700;font-size:12px;padding:5px 11px;border-radius:999px;cursor:pointer;margin-right:6px">📲 安装 App</button><button id="syncBtn" class="syncbtn off">连接中</button>
+      <button id="pwaInstallBtn" type="button" style="display:none;background:var(--cta);border:0;color:#fff;font-weight:700;font-size:12px;padding:5px 11px;border-radius:999px;cursor:pointer;margin-right:6px">📲 <span class="zh">安装 App</span><span class="en">Install</span></button><button id="syncBtn" class="syncbtn off"><span class="zh">连接中</span><span class="en">Connecting</span></button>
     </div>
     <div class="hrow"><p class="sub"><span class="zh">下一次</span><span class="en">Next</span> <b id="stNext" class="num" style="font-size:16px;color:var(--ink)">—</b></p><div class="hbtns">
-      <button id="fsBtn" class="iconbtn" aria-label="全屏"></button>
+      <button id="fsBtn" class="iconbtn" aria-label="全屏 / Fullscreen"></button>
       <button id="langBtn" class="iconbtn flagbtn" aria-label="切换语言 / Switch language"></button>
-      <button id="themeBtn" class="iconbtn" aria-label="切换深色主题"></button>
-      <button id="sndBtn" class="iconbtn" aria-label="声音"></button>
+      <button id="themeBtn" class="iconbtn" aria-label="切换深浅主题 / Toggle theme"></button>
+      <button id="sndBtn" class="iconbtn" aria-label="声音 / Sound"></button>
     </div></div>
   </header>
 
@@ -404,11 +404,11 @@ h1 .ver{font-family:var(--f-num);font-size:12px;font-weight:400;color:var(--mute
       <div class="chartbox" id="dietGapBox" style="margin-top:10px">
         <div class="chead" style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
           <h3><span class="zh">热量缺口累计</span><span class="en">Cumulative Gap</span></h3>
-          <div class="seg maseg" role="group" aria-label="累计天数">
-            <button type="button" data-dw="3" aria-pressed="false">3天</button>
-            <button type="button" data-dw="7" aria-pressed="true">7天</button>
-            <button type="button" data-dw="14" aria-pressed="false">14天</button>
-            <button type="button" data-dw="30" aria-pressed="false">30天</button>
+          <div class="seg maseg" role="group" aria-label="累计天数 / Cumulative days">
+            <button type="button" data-dw="3" aria-pressed="false"><span class="zh">3天</span><span class="en">3D</span></button>
+            <button type="button" data-dw="7" aria-pressed="true"><span class="zh">7天</span><span class="en">7D</span></button>
+            <button type="button" data-dw="14" aria-pressed="false"><span class="zh">14天</span><span class="en">14D</span></button>
+            <button type="button" data-dw="30" aria-pressed="false"><span class="zh">30天</span><span class="en">30D</span></button>
           </div>
         </div>
         <div class="gchips" id="dietGchips" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:8px 0 2px"></div>
@@ -466,7 +466,7 @@ h1 .ver{font-family:var(--f-num);font-size:12px;font-weight:400;color:var(--mute
           <button id="bkRead" class="btn ghost ibtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/><rect x="9" y="2.5" width="6" height="3.5" rx="1"/><path d="M12 10v7M9 14l3 3 3-3"/></svg><span class="zh">导入进度</span><span class="en">Import progress</span></button>
         </div>
         <div id="bkConfirm" class="row" hidden style="margin-top:10px"><span class="note" style="margin:0" id="bkMsg"></span><button id="bkYes" class="btn" style="background:var(--push)"><span class="zh">确认覆盖</span><span class="en">Overwrite</span></button><button id="bkNo" class="btn ghost"><span class="zh">取消</span><span class="en">Cancel</span></button></div>
-        <div id="bkPasteWrap" hidden style="margin-top:10px"><div class="field"><label for="bkPaste" id="bkPasteLab">粘贴进度文本</label><textarea id="bkPaste" rows="2"></textarea></div>
+        <div id="bkPasteWrap" hidden style="margin-top:10px"><div class="field"><label for="bkPaste" id="bkPasteLab"><span class="zh">粘贴进度文本</span><span class="en">Paste progress text</span></label><textarea id="bkPaste" rows="2"></textarea></div>
         <div class="row" style="margin-top:8px"><button id="bkPasteGo" class="btn ghost"><span class="zh">导入</span><span class="en">Import</span></button></div></div>
       </div></details>
 
@@ -1414,7 +1414,7 @@ function applyTheme(t){document.documentElement.setAttribute("data-theme",t);con
 let theme="light";try{theme=localStorage.getItem(LS+"-theme")||"light"}catch(e){}
 applyTheme(theme);
 function applyLang(l){LANG=l;document.documentElement.setAttribute("data-lang",l);document.documentElement.lang=l==="en"?"en":"zh-CN";
-  document.getElementById("langBtn").textContent=l==="en"?"🇬🇧":"🇨🇳";try{localStorage.setItem("pushpull-v1-lang",l)}catch(e){}}
+  document.getElementById("langBtn").textContent=l==="en"?"EN":"CH";try{localStorage.setItem("pushpull-v1-lang",l)}catch(e){}}
 applyLang(LANG);
 document.getElementById("langBtn").addEventListener("click",()=>{applyLang(LANG==="en"?"zh":"en");applyTheme(document.documentElement.getAttribute("data-theme")||"light");renderAll();if(typeof syncUI==="function")syncUI()});
 document.getElementById("themeBtn").addEventListener("click",()=>applyTheme(document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark"));
@@ -1747,7 +1747,7 @@ async function connectMcp(){
       mcp={ callTool: async (srv, tool, args) => await callCorosToolAdapter(tool, args) };
       syncUI();
       const stEl = document.getElementById("dietSyncStatus");
-      if(stEl) stEl.textContent = "高驰直连已就绪 · 点击右上角同步";
+      if(stEl) stEl.textContent = T("高驰直连已就绪 · 点击右上角同步","COROS direct link ready · tap Sync at top-right");
       return;
     }
   }catch(e){}
@@ -2343,7 +2343,7 @@ function renderDietChart(){
   
   const box = document.getElementById("dietChart");
   if(!box) return;
-  box.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="摄入与估算总消耗">${g}</svg>`;
+  box.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${T("摄入与估算总消耗","Intake vs estimated total burn")}">${g}</svg>`;
   const svg = box.querySelector("svg"), tip = document.getElementById("dietTip"), xh = svg.querySelector("#dxh");
   const pick = e => {
     const r = svg.getBoundingClientRect();
@@ -2352,7 +2352,7 @@ function renderDietChart(){
     const p = pts[i];
     xh.setAttribute("x1", x(i)); xh.setAttribute("x2", x(i)); xh.setAttribute("visibility", "visible");
     const gap = (p.a!==null && p.b!==null) ? p.b - p.a : null;
-    tip.innerHTML = `${dotDateStr(p.d).slice(5)}　摄入 <b>${f0Dec(p.a)}</b>　消耗 <b>${f0Dec(p.b)}</b>　基代 <b>${f0Dec(bmrOfDate(p.d))}</b>` + (gap===null ? "" : `　${gap>=0 ? "缺口" : "盈余"} <b>${f0Dec(Math.abs(gap))}</b>`);
+    tip.innerHTML = `${dotDateStr(p.d).slice(5)}　${T("摄入","In")} <b>${f0Dec(p.a)}</b>　${T("消耗","Burn")} <b>${f0Dec(p.b)}</b>　${T("基代","BMR")} <b>${f0Dec(bmrOfDate(p.d))}</b>` + (gap===null ? "" : `　${gap>=0 ? T("缺口","Deficit") : T("盈余","Surplus")} <b>${f0Dec(Math.abs(gap))}</b>`);
     tip.hidden = false;
     const bbox = box.getBoundingClientRect();
     const px = r.left - bbox.left + x(i)/W * r.width;
@@ -2369,7 +2369,7 @@ function renderDietGap(){
   if(!gchips) return;
   gchips.innerHTML = [3,7,14,30].map(n=>{
     const m = dietMovingSum(t,n) || dietMovingSum(ymdAdd(t, -1), n);
-    return `<button type="button" class="gchip" data-dw="${n}" aria-pressed="${n===dietState.gw}"><span>近 ${n} 天</span>${m ? `<b class="${m.s>=0 ? "g" : "r"}">${m.s>=0 ? "" : "−"}${Math.abs(Math.round(m.s))}</b>` : `<b>–</b>`}</button>`;
+    return `<button type="button" class="gchip" data-dw="${n}" aria-pressed="${n===dietState.gw}"><span>${T("近","Last")} ${n} ${T("天","d")}</span>${m ? `<b class="${m.s>=0 ? "g" : "r"}">${m.s>=0 ? "" : "−"}${Math.abs(Math.round(m.s))}</b>` : `<b>–</b>`}</button>`;
   }).join("");
   document.querySelectorAll("#dietGapBox .seg button").forEach(x=>x.setAttribute("aria-pressed", String(+x.dataset.dw===dietState.gw)));
   
@@ -2408,7 +2408,7 @@ function renderDietGap(){
   
   const gbox = document.getElementById("dietGchart");
   if(!gbox) return;
-  gbox.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="每日缺口与 ${N} 天滚动累计">${g}</svg>`;
+  gbox.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${T("每日缺口与","Daily deficit & ")} ${N} ${T("天滚动累计","-day rolling total")}">${g}</svg>`;
   const svg = gbox.querySelector("svg"), tip = document.getElementById("dietGtip"), xh = svg.querySelector("#dgxh");
   const pick = e => {
     const r = svg.getBoundingClientRect();
@@ -2416,8 +2416,8 @@ function renderDietGap(){
     const i = Math.max(0, Math.min(dates.length-1, Math.round((sx-L)/step)));
     const p = pts[i];
     xh.setAttribute("x1", x(i)); xh.setAttribute("x2", x(i)); xh.setAttribute("visibility", "visible");
-    const gapTxt = v => (v>=0 ? "缺口 " : "盈余 ") + Math.abs(Math.round(v));
-    tip.innerHTML = `${dotDateStr(p.d).slice(5)}　当日 <b>${p.g===null ? "–" : gapTxt(p.g)}</b>　近${N}天 <b>${p.m ? gapTxt(p.m.s) : "–"}</b>${p.m ? `　约 ${ (Math.abs(p.m.s)/7700).toFixed(2) }kg` : ""}`;
+    const gapTxt = v => (v>=0 ? T("缺口","Deficit")+" " : T("盈余","Surplus")+" ") + Math.abs(Math.round(v));
+    tip.innerHTML = `${dotDateStr(p.d).slice(5)}　${T("当日","Today")} <b>${p.g===null ? "–" : gapTxt(p.g)}</b>　${T("近","Last")}${N}${T("天","d")} <b>${p.m ? gapTxt(p.m.s) : "–"}</b>${p.m ? `　${T("约","≈")} ${ (Math.abs(p.m.s)/7700).toFixed(2) }kg` : ""}`;
     tip.hidden = false;
     const bbox = gbox.getBoundingClientRect();
     const px = r.left - bbox.left + x(i)/W * r.width;
@@ -2444,29 +2444,29 @@ function renderDietDays(){
   if(!box) return;
   const keys = activeDietDayKeys();
   if(!keys.length){
-    box.innerHTML = `<div class="empty">还没有饮食记录。<br>点击上方「+ 记录热量 / 饮食」录入当天吃的内容。</div>`;
+    box.innerHTML = `<div class="empty">${T("还没有饮食记录。","No diet logs yet.")}<br>${T("点击上方「+ 记录热量 / 饮食」录入当天吃的内容。","Tap \"+ Log Food/Kcal\" above to log what you ate today.")}</div>`;
     return;
   }
   box.style.display = "grid"; box.style.gap = "12px";
   const allOpen = keys.every(k=>dietState.open.has(k));
-  box.innerHTML = `<div class="dbar"><h2>每日记录</h2><div class="dbar-actions"><button class="btn ghost" type="button" data-dallopen style="padding:4px 9px;font-size:12px">${allOpen ? "全部收起" : "全部展开"}</button></div></div>` + keys.map(k=>{
+  box.innerHTML = `<div class="dbar"><h2>${T("每日记录","Daily logs")}</h2><div class="dbar-actions"><button class="btn ghost" type="button" data-dallopen style="padding:4px 9px;font-size:12px">${allOpen ? T("全部收起","Collapse all") : T("全部展开","Expand all")}</button></div></div>` + keys.map(k=>{
     const d = dietState.days[k] || { items:[] }, t = dietTotals(d), intake = intakeOf(k), b = burnOfDate(k);
     const gap = (b===null || intake===null) ? null : b - intake;
     const rows = (d.items||[]).map(it=>`<tr><td class="f">${escHtml(it.name)}</td><td>${f1Dec(numVal(it.p))}</td><td>${f1Dec(numVal(it.f))}</td><td>${f1Dec(numVal(it.c))}</td><td>${f0Dec(numVal(it.kcal))}</td><td>${numVal(it.veg) ? f0Dec(numVal(it.veg)) : "–"}</td></tr>`).join("");
     const cAct = dietState.coros[k] && numVal(dietState.coros[k].active)!==null ? dietState.coros[k].active : null;
     const wKg = weightAtDate(k);
     const metaTags = [];
-    if(cAct!==null) metaTags.push(`手表活动 ${f0Dec(cAct)} kcal`);
-    if(numVal(d.expendOverride)!==null) metaTags.push(`手动总消耗 ${f0Dec(d.expendOverride)} kcal`);
-    if(wKg!==null) metaTags.push(`体重 ${f1Dec(wKg)} kg`);
+    if(cAct!==null) metaTags.push(`${T("手表活动","Watch activity")} ${f0Dec(cAct)} kcal`);
+    if(numVal(d.expendOverride)!==null) metaTags.push(`${T("手动总消耗","Manual total burn")} ${f0Dec(d.expendOverride)} kcal`);
+    if(wKg!==null) metaTags.push(`${T("体重","Weight")} ${f1Dec(wKg)} kg`);
     const metaLine = metaTags.length ? `<p class="note"${dietState.open.has(k)?"":" hidden"} style="padding-top:6px;padding-bottom:${d.note?2:10}px">${metaTags.join(" · ")}</p>` : "";
     return `<article class="diet-day">
       <div class="dhead"><h3><button class="dtoggle" type="button" data-dtoggle="${k}" aria-expanded="${dietState.open.has(k)}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>${dotDateStr(k)}</button></h3>
-        <div class="pills"><span class="pill">摄入 <b>${f0Dec(intake)}</b></span><span class="pill">消耗 <b>${f0Dec(b)}</b></span>${gap===null ? "" : `<span class="pill ${gap>=0 ? "g" : "r"}">${gap>=0 ? "缺口" : "盈余"} <b>${f0Dec(Math.abs(gap))}</b></span>`}
-        <button class="btn ghost" type="button" data-dedit="${k}" style="padding:4px 8px;font-size:12px">编辑</button>
-        <button class="btn ghost" type="button" data-dshare="${k}" style="padding:4px 8px;font-size:12px">长图</button></div></div>
-      <div class="tbl"${dietState.open.has(k) ? "" : " hidden"}><table><thead><tr><th>食物</th><th>蛋白质<small>g</small></th><th>脂肪<small>g</small></th><th>碳水<small>g</small></th><th>热量<small>kcal</small></th><th>蔬菜<small>g</small></th></tr></thead>
-      <tbody>${rows}<tr class="tot"><td class="f"><b>合计</b></td><td>${f1Dec(t.p)}</td><td>${f1Dec(t.f)}</td><td>${f1Dec(t.c)}</td><td>${f0Dec(intake)}</td><td>${t.veg ? f0Dec(t.veg) : "–"}</td></tr></tbody></table></div>
+        <div class="pills"><span class="pill">${T("摄入","In")} <b>${f0Dec(intake)}</b></span><span class="pill">${T("消耗","Burn")} <b>${f0Dec(b)}</b></span>${gap===null ? "" : `<span class="pill ${gap>=0 ? "g" : "r"}">${gap>=0 ? T("缺口","Deficit") : T("盈余","Surplus")} <b>${f0Dec(Math.abs(gap))}</b></span>`}
+        <button class="btn ghost" type="button" data-dedit="${k}" style="padding:4px 8px;font-size:12px">${T("编辑","Edit")}</button>
+        <button class="btn ghost" type="button" data-dshare="${k}" style="padding:4px 8px;font-size:12px">${T("长图","Card")}</button></div></div>
+      <div class="tbl"${dietState.open.has(k) ? "" : " hidden"}><table><thead><tr><th>${T("食物","Food")}</th><th>${T("蛋白质","Protein")}<small>g</small></th><th>${T("脂肪","Fat")}<small>g</small></th><th>${T("碳水","Carbs")}<small>g</small></th><th>${T("热量","kcal")}<small>kcal</small></th><th>${T("蔬菜","Veg")}<small>g</small></th></tr></thead>
+      <tbody>${rows}<tr class="tot"><td class="f"><b>${T("合计","Total")}</b></td><td>${f1Dec(t.p)}</td><td>${f1Dec(t.f)}</td><td>${f1Dec(t.c)}</td><td>${f0Dec(intake)}</td><td>${t.veg ? f0Dec(t.veg) : "–"}</td></tr></tbody></table></div>
       ${metaLine}
       ${d.note ? `<p class="note"${dietState.open.has(k) ? "" : " hidden"}>${escHtml(d.note)}</p>` : ""}
     </article>`;
@@ -2556,7 +2556,7 @@ function openDietEntryModal(initDate){
   function renderModal(){
     const t = dietTotals({ items: formState.items });
     const singleItem = formState.items.length === 1 ? formState.items[0] : {
-      name: "当日合计（手动录入）",
+      name: T("当日合计（手动录入）","Daily total (manual)"),
       kcal: t.kcal || "",
       p: t.p || "",
       f: t.f || "",
@@ -2570,75 +2570,75 @@ function openDietEntryModal(initDate){
       ? Math.round(numVal(formState.expendOverride))
       : (numVal(formState.active) !== null ? Math.round(bmr + numVal(formState.active)*ACT_FACTOR + TEF*estIntake) : null);
 
-    m.innerHTML = `<div class="sheet" role="dialog" aria-label="记录每日热量与饮食">
+    m.innerHTML = `<div class="sheet" role="dialog" aria-label="${T("记录每日热量与饮食","Log daily calories & diet")}">
       <h3>
-        <span>记录每日卡路里与饮食</span>
+        <span>${T("记录每日卡路里与饮食","Log daily calories & diet")}</span>
         <div class="row" style="gap:8px">
-          <button class="iconbtn" type="button" data-dsave aria-label="保存并关闭" title="保存并关闭" style="color:var(--ink);border-color:color-mix(in srgb,var(--ink) 28%,transparent);background:color-mix(in srgb,var(--ink) 6%,transparent)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:19px;height:19px;display:block"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg></button>
-          <button class="iconbtn" type="button" data-close aria-label="取消关闭" title="取消关闭">✕</button>
+          <button class="iconbtn" type="button" data-dsave aria-label="${T("保存并关闭","Save & close")}" title="${T("保存并关闭","Save & close")}" style="color:var(--ink);border-color:color-mix(in srgb,var(--ink) 28%,transparent);background:color-mix(in srgb,var(--ink) 6%,transparent)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:19px;height:19px;display:block"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg></button>
+          <button class="iconbtn" type="button" data-close aria-label="${T("取消关闭","Cancel & close")}" title="${T("取消关闭","Cancel & close")}">✕</button>
         </div>
       </h3>
       <div class="form-body">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <label class="flabel">日期
+          <label class="flabel">${T("日期","Date")}
             <input type="date" id="fdDate" value="${curDate}">
           </label>
-          <label class="flabel">当日体重 (kg)
-            <input type="number" step="0.1" id="fdWeight" placeholder="默认 ${weightAtDate(curDate).toFixed(1)}" value="${formState.kg!==null ? formState.kg : ""}">
+          <label class="flabel">${T("当日体重 (kg)","Weight today (kg)")}
+            <input type="number" step="0.1" id="fdWeight" placeholder="${T("默认","Default")} ${weightAtDate(curDate).toFixed(1)}" value="${formState.kg!==null ? formState.kg : ""}">
           </label>
         </div>
 
         <div class="mode-tabs" role="tablist">
-          <button type="button" class="${mode==="quick" ? "active" : ""}" data-fmode="quick">⚡ 快捷总热量录入</button>
-          <button type="button" class="${mode==="items" ? "active" : ""}" data-fmode="items">📋 食物明细录入</button>
+          <button type="button" class="${mode==="quick" ? "active" : ""}" data-fmode="quick">⚡ ${T("快捷总热量录入","Quick calorie entry")}</button>
+          <button type="button" class="${mode==="items" ? "active" : ""}" data-fmode="items">📋 ${T("食物明细录入","Itemized food entry")}</button>
         </div>
 
         ${mode==="quick" ? `
           <div class="burn-box">
-            <h4><span>当日饮食摄入</span><small style="font-weight:400;color:var(--muted)">直接输入总热量，三大营养素选填</small></h4>
+            <h4><span>${T("当日饮食摄入","Daily intake")}</span><small style="font-weight:400;color:var(--muted)">${T("直接输入总热量，三大营养素选填","Enter total calories; macros optional")}</small></h4>
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px">
-              <label class="flabel">摄入总热量 (kcal) *
-                <input type="number" step="1" id="qdKcal" placeholder="如 1800" value="${singleItem.kcal!=="" && singleItem.kcal!==null ? singleItem.kcal : ""}">
+              <label class="flabel">${T("摄入总热量 (kcal)","Total intake (kcal)")} *
+                <input type="number" step="1" id="qdKcal" placeholder="${T("如 1800","e.g. 1800")}" value="${singleItem.kcal!=="" && singleItem.kcal!==null ? singleItem.kcal : ""}">
               </label>
-              <label class="flabel">蛋白质 (g，选填)
-                <input type="number" step="0.1" id="qdP" placeholder="选填" value="${singleItem.p||""}">
+              <label class="flabel">${T("蛋白质 (g，选填)","Protein (g, opt.)")}
+                <input type="number" step="0.1" id="qdP" placeholder="${T("选填","opt.")}" value="${singleItem.p||""}">
               </label>
-              <label class="flabel">脂肪 (g，选填)
-                <input type="number" step="0.1" id="qdF" placeholder="选填" value="${singleItem.f||""}">
+              <label class="flabel">${T("脂肪 (g，选填)","Fat (g, opt.)")}
+                <input type="number" step="0.1" id="qdF" placeholder="${T("选填","opt.")}" value="${singleItem.f||""}">
               </label>
-              <label class="flabel">碳水 (g，选填)
-                <input type="number" step="0.1" id="qdC" placeholder="选填" value="${singleItem.c||""}">
+              <label class="flabel">${T("碳水 (g，选填)","Carbs (g, opt.)")}
+                <input type="number" step="0.1" id="qdC" placeholder="${T("选填","opt.")}" value="${singleItem.c||""}">
               </label>
-              <label class="flabel">蔬菜 (g，选填)
-                <input type="number" step="1" id="qdVeg" placeholder="选填" value="${singleItem.veg||""}">
+              <label class="flabel">${T("蔬菜 (g，选填)","Veg (g, opt.)")}
+                <input type="number" step="1" id="qdVeg" placeholder="${T("选填","opt.")}" value="${singleItem.veg||""}">
               </label>
-              <label class="flabel">说明
-                <input type="text" id="qdName" placeholder="当日合计（手动录入）" value="${escHtml(singleItem.name||"当日合计（手动录入）")}">
+              <label class="flabel">${T("说明","Note")}
+                <input type="text" id="qdName" placeholder="${T("当日合计（手动录入）","Daily total (manual)")}" value="${escHtml(singleItem.name||T("当日合计（手动录入）","Daily total (manual)"))}">
               </label>
             </div>
             <div class="row" style="justify-content:flex-start;margin-top:4px">
-              <button class="btn ghost" type="button" id="dcalcMacroBtn" style="padding:4px 8px;font-size:12px">按 4/9/4 自动由三大营养素计算热量</button>
+              <button class="btn ghost" type="button" id="dcalcMacroBtn" style="padding:4px 8px;font-size:12px">${T("按 4/9/4 自动由三大营养素计算热量","Auto-calc calories from macros (4/9/4)")}</button>
             </div>
           </div>
         ` : `
           <div class="burn-box">
             <h4>
-              <span>食物列表（合计：<b class="num">${f0Dec(t.kcal)}</b> kcal）</span>
-              <button class="btn ghost" type="button" id="daddItemRowBtn" style="padding:3px 8px;font-size:12px">+ 加一行</button>
+              <span>${T("食物列表","Food list")}（${T("合计","Total")}：<b class="num">${f0Dec(t.kcal)}</b> kcal）</span>
+              <button class="btn ghost" type="button" id="daddItemRowBtn" style="padding:3px 8px;font-size:12px">+ ${T("加一行","Add row")}</button>
             </h4>
             <div class="item-head">
-              <span>食物名称</span><span>热量kcal</span><span>蛋白g</span><span>脂肪g</span><span>碳水g</span><span>蔬菜g</span><span></span>
+              <span>${T("食物名称","Food")}</span><span>${T("热量","kcal")}kcal</span><span>${T("蛋白","Prot.")}g</span><span>${T("脂肪","Fat")}g</span><span>${T("碳水","Carbs")}g</span><span>${T("蔬菜","Veg")}g</span><span></span>
             </div>
             <div class="item-list" id="ditemListBox">
               ${(formState.items.length ? formState.items : [{name:"",kcal:"",p:"",f:"",c:"",veg:""}]).map((it,idx)=>`
                 <div class="item-row" data-idx="${idx}">
-                  <input class="iname" type="text" placeholder="食物" value="${escHtml(it.name||"")}" data-f="name">
-                  <input type="number" step="1" placeholder="热量" value="${it.kcal??""}" data-f="kcal">
-                  <input type="number" step="0.1" placeholder="蛋白" value="${it.p??""}" data-f="p">
-                  <input type="number" step="0.1" placeholder="脂肪" value="${it.f??""}" data-f="f">
-                  <input type="number" step="0.1" placeholder="碳水" value="${it.c??""}" data-f="c">
-                  <input type="number" step="1" placeholder="蔬菜" value="${it.veg??""}" data-f="veg">
-                  <button type="button" class="del-btn" data-ddel="${idx}" title="删除">✕</button>
+                  <input class="iname" type="text" placeholder="${T("食物","Food")}" value="${escHtml(it.name||"")}" data-f="name">
+                  <input type="number" step="1" placeholder="${T("热量","kcal")}" value="${it.kcal??""}" data-f="kcal">
+                  <input type="number" step="0.1" placeholder="${T("蛋白","Prot.")}" value="${it.p??""}" data-f="p">
+                  <input type="number" step="0.1" placeholder="${T("脂肪","Fat")}" value="${it.f??""}" data-f="f">
+                  <input type="number" step="0.1" placeholder="${T("碳水","Carbs")}" value="${it.c??""}" data-f="c">
+                  <input type="number" step="1" placeholder="${T("蔬菜","Veg")}" value="${it.veg??""}" data-f="veg">
+                  <button type="button" class="del-btn" data-ddel="${idx}" title="${T("删除","Delete")}">✕</button>
                 </div>
               `).join("")}
             </div>
@@ -2646,29 +2646,29 @@ function openDietEntryModal(initDate){
         `}
 
         <div class="burn-box">
-          <h4><span>当日总消耗</span></h4>
+          <h4><span>${T("当日总消耗","Total burn today")}</span></h4>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-            <label class="flabel">高驰手表活动消耗 (kcal)
-              <input type="number" step="1" id="fdActive" placeholder="手表 Active kcal" value="${formState.active!==null ? formState.active : ""}">
+            <label class="flabel">${T("高驰手表活动消耗 (kcal)","COROS watch active burn (kcal)")}
+              <input type="number" step="1" id="fdActive" placeholder="${T("手表 Active kcal","Watch Active kcal")}" value="${formState.active!==null ? formState.active : ""}">
             </label>
-            <label class="flabel">或指定当日总消耗 (kcal)
-              <input type="number" step="1" id="fdExpendOverride" placeholder="留空自动计算" value="${formState.expendOverride!==null ? formState.expendOverride : ""}">
+            <label class="flabel">${T("或指定当日总消耗 (kcal)","Or set total burn (kcal)")}
+              <input type="number" step="1" id="fdExpendOverride" placeholder="${T("留空自动计算","Blank = auto")}" value="${formState.expendOverride!==null ? formState.expendOverride : ""}">
             </label>
           </div>
           <div class="burn-preview" id="dburnPreview">
-            基代 <b>${bmr}</b> kcal · 预计总消耗：<b>${estBurn!==null ? estBurn+" kcal" : "待输入活动消耗或总消耗"}</b>
+            ${T("基代","BMR")} <b>${bmr}</b> kcal · ${T("预计总消耗","Est. total burn")}：<b>${estBurn!==null ? estBurn+" kcal" : T("待输入活动消耗或总消耗","enter activity or total burn")}</b>
           </div>
         </div>
 
-        <label class="flabel">备注（选填）
-          <input type="text" id="fdNote" placeholder="例如：推拉训练 1.5 小时" value="${escHtml(formState.note)}">
+        <label class="flabel">${T("备注（选填）","Note (opt.)")}
+          <input type="text" id="fdNote" placeholder="${T("例如：推拉训练 1.5 小时","e.g. push/pull session 1.5 h")}" value="${escHtml(formState.note)}">
         </label>
       </div>
       <div class="row" style="justify-content:space-between">
-        <button class="btn ghost" type="button" id="ddelDayBtn" style="color:var(--push);border-color:var(--push);padding:7px 12px">删除当日</button>
+        <button class="btn ghost" type="button" id="ddelDayBtn" style="color:var(--push);border-color:var(--push);padding:7px 12px">${T("删除当日","Delete day")}</button>
         <div class="row">
-          <button class="btn ghost" type="button" data-close style="padding:7px 14px">取消</button>
-          <button class="btn" type="button" id="dsaveEntryBtn" data-dsave aria-label="保存并关闭" title="保存并关闭" style="background:var(--cta);border-color:var(--cta);color:#fff;padding:8px 14px;display:inline-flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:19px;height:19px;display:block"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg></button>
+          <button class="btn ghost" type="button" data-close style="padding:7px 14px">${T("取消","Cancel")}</button>
+          <button class="btn" type="button" id="dsaveEntryBtn" data-dsave aria-label="${T("保存并关闭","Save & close")}" title="${T("保存并关闭","Save & close")}" style="background:var(--cta);border-color:var(--cta);color:#fff;padding:8px 14px;display:inline-flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:19px;height:19px;display:block"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg></button>
         </div>
       </div>
     </div>`;
@@ -2692,7 +2692,7 @@ function openDietEntryModal(initDate){
       const f = numVal(m.querySelector("#qdF")?.value) || 0;
       const c = numVal(m.querySelector("#qdC")?.value) || 0;
       const veg = numVal(m.querySelector("#qdVeg")?.value) || 0;
-      const name = (m.querySelector("#qdName")?.value || "").trim() || "当日合计（手动录入）";
+      const name = (m.querySelector("#qdName")?.value || "").trim() || T("当日合计（手动录入）","Daily total (manual)");
       if(kcal !== null || p || f || c || veg){
         formState.items = [{
           name,
@@ -2712,7 +2712,7 @@ function openDietEntryModal(initDate){
         let kcal = numVal(r.querySelector('[data-f="kcal"]')?.value);
         if(kcal === null && (p || f || c)) kcal = Math.round(p*4 + f*9 + c*4);
         const veg = numVal(r.querySelector('[data-f="veg"]')?.value) || 0;
-        return { name: name || (kcal!==null ? "未命名食物" : ""), p, f, c, kcal: kcal||0, veg };
+        return { name: name || (kcal!==null ? T("未命名食物","Unnamed food") : ""), p, f, c, kcal: kcal||0, veg };
       }).filter(it=>it.name || it.kcal || it.p || it.f || it.c || it.veg);
     }
   }
@@ -2727,7 +2727,7 @@ function openDietEntryModal(initDate){
       : (numVal(formState.active) !== null ? Math.round(bmr + numVal(formState.active)*ACT_FACTOR + TEF*estIntake) : null);
     const prev = m.querySelector("#dburnPreview");
     if(prev){
-      prev.innerHTML = `基代 <b>${bmr}</b> kcal · 预计总消耗：<b>${estBurn!==null ? estBurn+" kcal" : "待输入活动消耗或总消耗"}</b>`;
+      prev.innerHTML = `${T("基代","BMR")} <b>${bmr}</b> kcal · ${T("预计总消耗","Est. total burn")}：<b>${estBurn!==null ? estBurn+" kcal" : T("待输入活动消耗或总消耗","enter activity or total burn")}</b>`;
     }
   }
 
@@ -2800,7 +2800,7 @@ function openDietEntryModal(initDate){
         saveDietLocal();
         renderDietAll();
         if(typeof window.renderAll === "function") window.renderAll();
-        if(typeof window.toast === "function") window.toast("饮食记录已保存");
+        if(typeof window.toast === "function") window.toast(T("饮食记录已保存","Diet log saved"));
       }finally{
         m.remove();
       }
@@ -2840,12 +2840,12 @@ async function shareDietImage(k){
   cv.width = W*S; cv.height = H*S; cx.scale(S, S);
   cx.fillStyle = "#fff"; cx.fillRect(0, 0, W, H);
   cx.fillStyle = "#16212B"; cx.font = `700 30px ${FONT}`; cx.textBaseline = "middle"; cx.textAlign = "left";
-  cx.fillText(dotDateStr(k) + " 饮食账本 · 推拉机 track-TOR", PAD+4, PAD+22);
+  cx.fillText(dotDateStr(k) + " " + T("饮食账本 · 推拉机 track-TOR","Diet log · track-TOR") , PAD+4, PAD+22);
   let yy = PAD + CAPH; const x0 = PAD;
   const colX = []; let acc = x0; for(const w of cw){ colX.push(acc); acc += w; }
   cx.fillStyle = "#16212B"; cx.fillRect(x0, yy, TW, HEADH);
   cx.fillStyle = "#fff"; cx.font = `700 22px ${FONT}`;
-  ["食物","蛋白质 g","脂肪 g","碳水 g","热量 kcal","蔬菜 g"].forEach((h,i)=>{ cx.textAlign="center"; cx.fillText(h, colX[i]+cw[i]/2, yy+HEADH/2); });
+  [T("食物","Food"),T("蛋白质","Protein")+" g",T("脂肪","Fat")+" g",T("碳水","Carbs")+" g",T("热量","kcal")+" kcal",T("蔬菜","Veg")+" g"].forEach((h,i)=>{ cx.textAlign="center"; cx.fillText(h, colX[i]+cw[i]/2, yy+HEADH/2); });
   yy += HEADH; const startBody = yy;
   items.forEach((r,ri)=>{
     const h = rowH[ri];
@@ -2856,20 +2856,20 @@ async function shareDietImage(k){
     yy += h;
   });
   cx.fillStyle = "#E4EAEE"; cx.fillRect(x0, yy, TW, TOTH);
-  cx.fillStyle = "#16212B"; cx.font = `700 23px ${FONT}`; cx.textAlign = "left"; cx.fillText("合计", colX[0]+14, yy+TOTH/2);
+  cx.fillStyle = "#16212B"; cx.font = `700 23px ${FONT}`; cx.textAlign = "left"; cx.fillText(T("合计","Total"), colX[0]+14, yy+TOTH/2);
   cx.textAlign = "center"; [f1Dec(t.p), f1Dec(t.f), f1Dec(t.c), f0Dec(t.kcal), t.veg?f0Dec(t.veg):"–"].forEach((v,vi)=>cx.fillText(v, colX[vi+1]+cw[vi+1]/2, yy+TOTH/2));
   yy += TOTH;
   cx.strokeStyle = "#D4DBE0"; cx.strokeRect(x0+.5, PAD+CAPH+.5, TW-1, yy-PAD-CAPH-1);
   const blob = await new Promise(r=>cv.toBlob(r, "image/png"));
   const url = URL.createObjectURL(blob);
   const mask = document.createElement("div"); mask.className = "mask";
-  mask.innerHTML = `<div class="sheet img-sheet"><div class="imgbox"><img alt="饮食长图" src="${url}"></div>
-    <p>长按或右键保存图片，可直接分享到微信朋友圈。</p>
-    <div class="row"><button class="btn ghost" type="button" data-close>关闭</button><button class="btn" id="dsvImg" type="button" style="background:var(--cta);color:#fff">保存图片</button></div></div>`;
+  mask.innerHTML = `<div class="sheet img-sheet"><div class="imgbox"><img alt="${T("饮食长图","Diet card")}" src="${url}"></div>
+    <p>${T("长按或右键保存图片，可直接分享到微信朋友圈。","Long-press or right-click to save; share directly to Moments.")}</p>
+    <div class="row"><button class="btn ghost" type="button" data-close>${T("关闭","Close")}</button><button class="btn" id="dsvImg" type="button" style="background:var(--cta);color:#fff">${T("保存图片","Save image")}</button></div></div>`;
   document.body.appendChild(mask);
   mask.querySelector("[data-close]").addEventListener("click", ()=>mask.remove());
   mask.querySelector("#dsvImg").addEventListener("click", ()=>{
-    const a = document.createElement("a"); a.href = url; a.download = `饮食账本-${k}.png`; a.click(); a.remove();
+    const a = document.createElement("a"); a.href = url; a.download = `${T("饮食账本","Diet-log")}-${k}.png`; a.click(); a.remove();
   });
 }
 
@@ -3048,8 +3048,8 @@ fetch("/api/coros/status").then(r=>r.json()).then(data=>{
     const stEl = document.getElementById("dietSyncStatus");
     if(stEl){
       stEl.innerHTML = data.connected
-        ? "高驰 MCP 已连接 · 点击右上角同步"
-        : ("高驰待登录：<a href=\"" + escHtml(data.pending_login_url) + "\" target=\"_blank\" rel=\"noopener\" style=\"color:var(--push);text-decoration:underline\">点击授权</a>");
+        ? T("高驰 MCP 已连接 · 点击右上角同步","COROS MCP connected · tap sync at top-right")
+        : (T("高驰待登录：","COROS needs login: ")+"<a href=\"" + escHtml(data.pending_login_url) + "\" target=\"_blank\" rel=\"noopener\" style=\"color:var(--push);text-decoration:underline\">"+T("点击授权","Authorize")+"</a>");
     }
   }
 }).catch(()=>{});
