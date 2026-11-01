@@ -1845,33 +1845,111 @@ async function corosPing(tk){
   }catch(e){ return false; }
 }
 
-/* ---------- COROS token 手动粘贴（方案：token 存本机浏览器，不上传公开仓库） ---------- */
+/* ---------- COROS 连接：自动授权优先（纯前端 PKCE），手动粘贴 token 兜底 ---------- */
 function readCorosToken(){
   try{ return JSON.parse(localStorage.getItem("tracktor-coros-token") || "null"); }catch(e){ return null; }
 }
+
+/* --- 纯前端 PKCE 授权流程 --- */
+const COROS_ISSUER = "https://mcpus.coros.com";
+const COROS_REDIRECT = "https://vincent0923.github.io/Track-TOR/";
+const COROS_SCOPE = "openid offline_access mcp.tools";
+
+function _b64url(buf){ let s=""; for(let i=0;i<buf.length;i++) s+=String.fromCharCode(buf[i]); return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
+function _randBytes(n){ const a=new Uint8Array(n); (crypto.getRandomValues ? crypto.getRandomValues(a) : a.forEach((_,i)=>a[i]=Math.floor(Math.random()*256))); return a; }
+function _pkceVerifier(){ return _b64url(_randBytes(32)); }
+async function _pkceChallenge(v){ const d=new TextEncoder().encode(v); const h=await crypto.subtle.digest("SHA-256", d); return _b64url(new Uint8Array(h)); }
+
+async function _corosPost(url, body, headers){
+  const h = Object.assign({"Content-Type":"application/json"}, headers||{});
+  const r = await fetch(url, { method:"POST", headers:h, body: JSON.stringify(body||{}) });
+  const txt = await r.text();
+  let j = {}; try{ j = JSON.parse(txt); }catch(e){}
+  if(!r.ok) throw new Error(j.error || j.message || ("HTTP "+r.status));
+  return j;
+}
+
+/* 动态注册公开客户端（无 secret） */
+async function corosRegisterClient(){
+  const j = await _corosPost(COROS_ISSUER + "/connect/register", {
+    client_name: "Track-TOR Web",
+    redirect_uris: [COROS_REDIRECT],
+    grant_types: ["authorization_code","refresh_token"],
+    response_types: ["code"],
+    scope: COROS_SCOPE,
+    token_endpoint_auth_method: "none"
+  });
+  if(!j.client_id) throw new Error("register missing client_id");
+  return j.client_id;
+}
+
+/* 创建 CLI 登录会话 */
+async function corosCreateSession(clientId){
+  return await _corosPost(COROS_ISSUER + "/api/v1/cli/login-sessions", { clientId });
+}
+
+/* 轮询 claim 会话状态，返回 {status, loginTicket?, ...} */
+async function corosClaim(sessionId, pollToken){
+  const r = await fetch(COROS_ISSUER + "/api/v1/cli/login-sessions/" + encodeURIComponent(sessionId) + "/claim", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json", "X-Poll-Token": pollToken }
+  });
+  const txt = await r.text();
+  let j = {}; try{ j = JSON.parse(txt); }catch(e){}
+  if(!r.ok) throw new Error(j.error || ("HTTP "+r.status));
+  return j;
+}
+
+/* 用授权码换 token（PKCE） */
+async function corosExchangeCode(clientId, code, verifier){
+  const body = new URLSearchParams({
+    grant_type: "authorization_code",
+    client_id: clientId,
+    code: code,
+    redirect_uri: COROS_REDIRECT,
+    code_verifier: verifier
+  });
+  const r = await fetch(COROS_ISSUER + "/oauth2/token", {
+    method:"POST",
+    headers:{ "Content-Type":"application/x-www-form-urlencoded" },
+    body: body.toString()
+  });
+  const txt = await r.text();
+  let j = {}; try{ j = JSON.parse(txt); }catch(e){}
+  if(!r.ok) throw new Error(j.error_description || j.error || ("HTTP "+r.status));
+  return j;
+}
+
 function promptCorosToken(){
   const cur = readCorosToken();
   const mask = document.createElement("div");
   mask.className = "mask";
-  mask.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="${T("连接高驰","Connect COROS")}" style="max-width:460px">
+  mask.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="${T("连接高驰","Connect COROS")}" style="max-width:480px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
       <b style="font-size:16px">${T("连接高驰","Connect COROS")}</b>
       <button type="button" data-close class="iconbtn" aria-label="${T("关闭","Close")}" style="font-size:18px">×</button>
     </div>
-    <p class="sub" style="margin:0 0 10px">${T(
-      "粘贴你的高驰令牌（access token）即可直连同步。令牌只保存在当前浏览器的本地存储中，不会上传到任何服务器。",
-      "Paste your COROS access token to sync directly. The token stays in this browser's local storage only and is never uploaded."
+    <p class="sub" style="margin:0 0 12px">${T(
+      "同步健康数据需要先连接你的高驰账号。",
+      "Connect your COROS account to sync health data."
     )}</p>
-    <div class="field"><label for="corosTokenInp">${T("高驰令牌","COROS Token")}</label>
-      <textarea id="corosTokenInp" rows="4" style="font-family:monospace;font-size:12px" placeholder='{"access_token":"...","refresh_token":"...","client_id":"...","expires_at_epoch":...}'></textarea>
+
+    <div id="corosAuthBox">
+      <button id="corosAuthBtn" type="button" class="btn" style="width:100%;background:var(--push);font-size:15px;padding:12px">${T("授权登录高驰账号","Authorize COROS account")}</button>
+      <p class="note" id="corosAuthMsg" style="margin:10px 0 0;min-height:16px"></p>
     </div>
-    <p class="note" style="margin:8px 0 0">${T(
-      "提示：令牌约 30 天过期，过期后回到这里重新粘贴即可。",
-      "Tip: tokens expire in ~30 days; paste a fresh one here when needed."
-    )}</p>
-    <div class="row" style="margin-top:12px;justify-content:flex-end">
-      <button id="corosTokClear" type="button" class="btn ghost" ${cur?"":"hidden"}>${T("清除已存令牌","Clear saved token")}</button>
-      <button id="corosTokGo" type="button" class="btn" style="background:var(--push)">${T("保存并连接","Save & connect")}</button>
+
+    <div style="margin-top:14px">
+      <button type="button" id="corosAdvToggle" style="border:0;background:none;color:var(--muted);font-size:12px;padding:0;cursor:pointer;text-decoration:underline">${T("已有令牌？手动粘贴","Have a token? Paste manually")}</button>
+      <div id="corosAdvBox" hidden style="margin-top:8px">
+        <div class="field"><label for="corosTokenInp">${T("高驰令牌","COROS Token")}</label>
+          <textarea id="corosTokenInp" rows="4" style="font-family:monospace;font-size:12px" placeholder='{"access_token":"...","refresh_token":"...","client_id":"...","expires_at_epoch":...}'></textarea>
+        </div>
+        <div class="row" style="margin-top:10px;justify-content:flex-end">
+          <button id="corosTokClear" type="button" class="btn ghost" ${cur?"":"hidden"}>${T("清除已存令牌","Clear saved token")}</button>
+          <button id="corosTokGo" type="button" class="btn" style="background:var(--push)">${T("保存并连接","Save & connect")}</button>
+        </div>
+      </div>
     </div>
   </div>`;
   document.body.appendChild(mask);
@@ -1881,6 +1959,13 @@ function promptCorosToken(){
   mask.querySelector("[data-close]").addEventListener("click", close);
   mask.addEventListener("click", e=>{ if(e.target===mask) close(); });
 
+  /* 高级选项折叠 */
+  mask.querySelector("#corosAdvToggle").addEventListener("click", ()=>{
+    const box = mask.querySelector("#corosAdvBox");
+    box.hidden = !box.hidden;
+  });
+
+  /* 清除令牌 */
   mask.querySelector("#corosTokClear").addEventListener("click", ()=>{
     try{ localStorage.removeItem("tracktor-coros-token"); }catch(e){}
     mcp = null; mcpReady = false; syncUI();
@@ -1888,22 +1973,22 @@ function promptCorosToken(){
     close();
   });
 
+  /* 手动粘贴令牌（兜底） */
   mask.querySelector("#corosTokGo").addEventListener("click", async ()=>{
     const raw = inp.value.trim();
     if(!raw){ syncMsg(T("请先粘贴令牌","Please paste a token first")); return; }
     let tk = null;
     try{ tk = JSON.parse(raw); }catch(e){}
     if(!tk){
-      /* 允许直接粘贴纯 access_token 字符串：包一层最小结构 */
       if(/^[A-Za-z0-9._~\-]{40,}$/.test(raw)){
-        tk = { access_token: raw, token_type: "Bearer", issuer: "https://mcpus.coros.com" };
+        tk = { access_token: raw, token_type: "Bearer", issuer: COROS_ISSUER };
       } else {
         syncMsg(T("令牌格式无法识别，请粘贴完整的 JSON 或 access_token。","Token format not recognised — paste the full JSON or a raw access_token."));
         return;
       }
     }
     if(!tk.access_token){ syncMsg(T("令牌缺少 access_token 字段","Token is missing access_token")); return; }
-    if(!tk.issuer){ tk.issuer = "https://mcpus.coros.com"; }
+    if(!tk.issuer){ tk.issuer = COROS_ISSUER; }
     try{ localStorage.setItem("tracktor-coros-token", JSON.stringify(tk)); }catch(e){
       syncMsg(T("无法保存到本地存储","Could not save to local storage")); return;
     }
@@ -1919,9 +2004,177 @@ function promptCorosToken(){
     }
   });
 
+  /* 自动授权主流程 */
+  mask.querySelector("#corosAuthBtn").addEventListener("click", async ()=>{
+    const btn = mask.querySelector("#corosAuthBtn");
+    const msgEl = mask.querySelector("#corosAuthMsg");
+    btn.disabled = true;
+    btn.textContent = T("正在准备登录…","Preparing login…");
+    msgEl.textContent = "";
+    try{
+      /* 1. 注册 client + 生成 PKCE */
+      const verifier = _pkceVerifier();
+      const clientId = await corosRegisterClient();
+      const session = await corosCreateSession(clientId);
+      const loginUrl = session.loginUrl || session.login_url;
+      const sessionId = session.sessionId || session.session_id;
+      const pollToken = session.pollToken || session.poll_token;
+      if(!loginUrl || !sessionId || !pollToken) throw new Error("session missing fields");
+
+      /* 保存授权上下文（供页面刷新后从 URL code 恢复） */
+      try{
+        sessionStorage.setItem("tracktor-coros-pending", JSON.stringify({ clientId, verifier, sessionId, pollToken, ts: Date.now() }));
+      }catch(e){}
+
+      /* 2. 打开登录链接 */
+      btn.textContent = T("请在新窗口登录高驰…","Log in to COROS in the new window…");
+      msgEl.textContent = T("新窗口已打开，请登录并授权。完成后会自动连接。","A new window opened — log in and authorize. It will auto-connect.");
+      window.open(loginUrl, "_blank");
+
+      /* 3. 轮询 claim，直到 authorized */
+      let ticket = null;
+      for(let i=0;i<100;i++){   /* 最多约 5 分钟 */
+        await new Promise(r=>setTimeout(r, 3000));
+        const res = await corosClaim(sessionId, pollToken);
+        const st = String(res.status || "").toLowerCase();
+        if(st === "authorized"){
+          ticket = res.loginTicket || res.login_ticket;
+          break;
+        }
+        if(st && st !== "pending") throw new Error("session status: " + st);
+      }
+      if(!ticket) throw new Error("authorization timeout");
+
+      /* 4. 拿 loginTicket 访问 authorize_url 换 code：直接让用户跳转（会回到本页带 code） */
+      const challenge = await _pkceChallenge(verifier);
+      const state = _pkceVerifier();
+      const authUrl = COROS_ISSUER + "/oauth2/authorize?" + new URLSearchParams({
+        response_type: "code",
+        client_id: clientId,
+        redirect_uri: COROS_REDIRECT,
+        scope: COROS_SCOPE,
+        code_challenge: challenge,
+        code_challenge_method: "S256",
+        resource: COROS_ISSUER + "/mcp",
+        state: state,
+        login_ticket: ticket
+      }).toString();
+      sessionStorage.setItem("tracktor-coros-pending", JSON.stringify({ clientId, verifier, state, ts: Date.now() }));
+      window.location.href = authUrl;
+
+    }catch(e){
+      btn.disabled = false;
+      btn.textContent = T("授权登录高驰账号","Authorize COROS account");
+      msgEl.textContent = T("授权失败：","Authorization failed: ") + (e.message || e);
+      syncMsg(T("授权失败，请重试或改用「手动粘贴」。","Authorization failed — retry or paste token manually."));
+    }
+  });
+
   inp.addEventListener("keydown", e=>{ if(e.key==="Enter" && (e.metaKey||e.ctrlKey)) mask.querySelector("#corosTokGo").click(); });
 }
-syncUI();connectMcp();
+
+/* 页面加载时：检测 URL 是否带回授权 code（从高驰跳转回来） */
+async function handleCorosCallback(){
+  try{
+    const q = new URLSearchParams(window.location.search);
+    const code = q.get("code");
+    if(!code) return false;
+    const st = q.get("state");
+    const pend = JSON.parse(sessionStorage.getItem("tracktor-coros-pending") || "null");
+    if(!pend || !pend.verifier || !pend.clientId) return false;
+    if(pend.state && st && st !== pend.state) return false;
+    /* 换 token */
+    syncMsg(T("授权成功，正在获取令牌…","Authorized — fetching token…"));
+    const tkResp = await corosExchangeCode(pend.clientId, code, pend.verifier);
+    const tk = {
+      access_token: tkResp.access_token,
+      refresh_token: tkResp.refresh_token,
+      token_type: tkResp.token_type || "Bearer",
+      expires_in: tkResp.expires_in,
+      obtained_at_epoch: Math.floor(Date.now()/1000),
+      expires_at_epoch: Math.floor(Date.now()/1000) + (tkResp.expires_in||3600),
+      client_id: pend.clientId,
+      issuer: COROS_ISSUER
+    };
+    if(!tk.access_token || !tk.refresh_token) throw new Error("token response missing fields");
+    localStorage.setItem("tracktor-coros-token", JSON.stringify(tk));
+    sessionStorage.removeItem("tracktor-coros-pending");
+    /* 清掉 URL 里的 code/state，避免刷新重复换码 */
+    if(window.history && window.history.replaceState){
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+    await connectMcp();
+    if(mcpReady){
+      syncMsg(T("高驰已连接，点击右上角同步即可拉取健康数据。","COROS connected — tap Sync to pull health data."));
+    }
+    return true;
+  }catch(e){
+    syncMsg(T("获取令牌失败：","Token fetch failed: ") + (e.message||e));
+    return false;
+  }
+}
+
+syncUI();connectMcp();handleCorosCallback();
+
+/* ---------- 每 3 天自动提醒备份进度（防浏览器清缓存丢数据） ---------- */
+const BK_REMIND_K = LS + "-lastbackup";
+function lastBackupTs(){ try{ return parseInt(localStorage.getItem(BK_REMIND_K)||"0",10)||0; }catch(e){ return 0; } }
+function markBackedUp(){ try{ localStorage.setItem(BK_REMIND_K, String(Date.now())); }catch(e){} }
+function backupRemindDue(){
+  const t = lastBackupTs();
+  if(!t) return true;                       /* 从未备份过，也提醒 */
+  const days = (Date.now() - t) / 864e5;
+  return days >= 3;
+}
+function maybeRemindBackup(){
+  try{
+    if(!backupRemindDue()) return;
+    /* 延迟到页面渲染稳定后弹提醒 */
+    setTimeout(()=>{
+      const mask = document.createElement("div");
+      mask.className = "mask";
+      mask.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="${T("备份提醒","Backup reminder")}" style="max-width:480px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <b style="font-size:16px">${T("该备份进度了","Time to back up")}</b>
+          <button type="button" data-close class="iconbtn" aria-label="${T("关闭","Close")}" style="font-size:18px">×</button>
+        </div>
+        <p class="sub" style="margin:0 0 12px">${T(
+          "浏览器偶尔会清空本地数据。建议每 3 天备份一次进度，复制文本存到微信「文件传输助手」，需要时可一键恢复。",
+          "Browsers occasionally clear local data. Back up every 3 days — copy the text to WeChat File Transfer so you can restore anytime."
+        )}</p>
+        <button id="bkRemindCopy" type="button" class="btn" style="width:100%;background:var(--push);font-size:15px;padding:12px">${T("复制进度文本","Copy progress text")}</button>
+        <div class="row" style="margin-top:10px;justify-content:flex-end">
+          <button id="bkRemindLater" type="button" class="btn ghost">${T("稍后再说","Later")}</button>
+        </div>
+      </div>`;
+      document.body.appendChild(mask);
+      const close = ()=>{ mask.remove(); };
+      mask.querySelector("[data-close]").addEventListener("click", close);
+      mask.addEventListener("click", e=>{ if(e.target===mask) close(); });
+      mask.querySelector("#bkRemindLater").addEventListener("click", close);
+      mask.querySelector("#bkRemindCopy").addEventListener("click", async ()=>{
+        let text=""; try{ text = await encodeBackup(); }catch(e){}
+        if(!text){ syncMsg(T("生成进度文本失败","Couldn't build the progress text")); return; }
+        let ok=false;
+        try{ await navigator.clipboard.writeText(text); ok=true; }catch(e){}
+        if(!ok){ try{ const ta=document.createElement("textarea"); ta.value=text; ta.setAttribute("readonly",""); ta.style.cssText="position:fixed;top:0;left:0;opacity:0"; document.body.appendChild(ta); ta.select(); ok=document.execCommand("copy"); ta.remove(); }catch(e){} }
+        if(ok){
+          markBackedUp();
+          close();
+          toast(T("已复制，打开微信粘贴到「文件传输助手」即可","Copied — paste into WeChat File Transfer"));
+        } else {
+          syncMsg(T("复制失败，请在数据页用「备份进度」手动复制","Copy failed — use Data → back up progress"));
+        }
+      });
+    }, 1200);
+  }catch(e){}
+}
+/* 用户手动点微信备份按钮时，记录已备份时间 */
+try{
+  const _wxBtn = document.getElementById("wxBtn");
+  if(_wxBtn){ _wxBtn.addEventListener("click", ()=>{ setTimeout(markBackedUp, 500); }); }
+}catch(e){}
+maybeRemindBackup();
 
 async function connect(){
   const c=window.claude;
