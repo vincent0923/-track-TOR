@@ -12,3 +12,6 @@ coros-token.json
 *.token.json
 .coros-mcp-state/
 手机端首次导入口令*.txt
+
+# 存档文件夹（待删除的无用文件，含历史凭证）
+ss/
