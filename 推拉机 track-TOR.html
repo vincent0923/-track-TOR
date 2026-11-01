@@ -1,8 +1,8 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
 /* ===== 饮食页 (Diet Tab) 样式 ===== */
-nav.tabs .t-train{flex:3;font-size:16px;padding:10px 0}
-nav.tabs .t-diet{flex:3;font-size:16px;padding:10px 0}
-nav.tabs .t-data{flex:2.5;font-size:16px;padding:10px 0}
+nav.tabs .t-train{flex:2;font-size:16px;padding:10px 0}
+nav.tabs .t-diet{flex:1;font-size:16px;padding:10px 0}
+nav.tabs .t-data{flex:1;font-size:16px;padding:10px 0}
 .diet-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:10px}
 .diet-stats .stat b.g{color:var(--ok)}
 .diet-stats .stat b.r{color:var(--push)}
@@ -116,13 +116,14 @@ header.top h1 .h1s{display:block;font-size:12px;font-weight:600;color:var(--mute
 .stat span{font-size:11px;color:var(--muted);letter-spacing:.04em}
 nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;gap:4px;background:var(--bg);padding-block:8px}
 nav.tabs button{flex:1;font:inherit;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:10px;padding:9px 0;cursor:pointer}
-nav.tabs .t-train{flex:3;font-size:17px;padding:11px 0}
-nav.tabs .t-data{flex:2}
-nav.tabs .t-wx{flex:0 0 46px;display:grid;place-items:center;padding:0}
-nav.tabs .t-wx svg{width:26px;height:26px}
+nav.tabs .t-train{flex:2;font-size:17px;padding:11px 0}
+nav.tabs .t-diet{flex:1;font-size:17px;padding:11px 0}
+nav.tabs .t-data{flex:1;font-size:17px;padding:11px 0}
+nav.tabs .t-wx{flex:1;font-size:15px;padding:11px 0;display:flex;align-items:center;justify-content:center;gap:5px;color:var(--cta)}
+nav.tabs .t-wx svg{width:18px;height:18px;flex:0 0 auto}
 .wxs textarea{width:100%;min-height:150px;font:13px/1.45 var(--f-body);padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--sunk);color:var(--ink);resize:vertical}
 .wxs p{margin:0 0 8px;font-size:13px;color:var(--muted)}
-.wxs .dp-f .wxgo{background:#07C160;border-color:#07C160;color:#fff}
+.wxs .dp-f .wxgo{background:var(--cta);border-color:var(--cta);color:#fff}
 nav.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 button{font:inherit;color:inherit}
 button:focus-visible,input:focus-visible{outline:2px solid var(--pull);outline-offset:2px}
@@ -217,17 +218,23 @@ svg.lk{width:12px;height:12px;vertical-align:-1px;margin-right:3px}
   background:rgba(52,68,86,.28);color:rgba(240,244,248,.8);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);box-shadow:0 1px 6px rgba(0,0,0,.08)}
 .totop svg{width:26px;height:26px}
 .totop:active{background:rgba(52,68,86,.8)}
-.dp-mask{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.4);display:flex;align-items:flex-end;justify-content:center}
+.dp-mask{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.4);display:flex;align-items:flex-end;justify-content:center}
 .dp{width:100%;max-width:420px;background:var(--surface);color:var(--ink);border-radius:16px 16px 0 0;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -6px 24px rgba(0,0,0,.25)}
 .dp-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
 .dp-h b{font-size:17px}
 .dp-nav{width:42px;height:42px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:22px;line-height:1;cursor:pointer}
-.dp-g{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center}
-.dp-w{font-size:12px;color:var(--muted);padding:4px 0}
-.dp-pad{height:42px}
-.dp-d{height:42px;border:0;border-radius:10px;background:none;color:var(--ink);font-family:var(--f-num);font-size:19px;font-weight:600;cursor:pointer;padding:0}
-.dp-d.today{box-shadow:inset 0 0 0 2px var(--cta)}
-.dp-d.sel{background:var(--ink);color:var(--bg)}
+/* ===== 滚轮式日期选择器 ===== */
+.dp-wheel{display:flex;gap:6px;padding:6px 0;user-select:none}
+.dp-col{position:relative;flex:1;height:196px;overflow-y:auto;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;border:1px solid var(--line);border-radius:12px;background:var(--sunk);padding:74px 0}
+.dp-col::-webkit-scrollbar{display:none}
+.dp-col::before,.dp-col::after{content:"";position:absolute;left:0;right:0;height:74px;z-index:2;pointer-events:none}
+.dp-col::before{top:0;background:linear-gradient(var(--sunk),transparent)}
+.dp-col::after{bottom:0;background:linear-gradient(transparent,var(--sunk))}
+.dp-selbar{position:absolute;left:0;right:0;top:74px;height:48px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--cta) 8%,transparent);pointer-events:none;z-index:0}
+.dp-item{position:relative;z-index:1;height:48px;display:flex;align-items:center;justify-content:center;font-family:var(--f-num);font-size:19px;font-weight:600;color:var(--muted);scroll-snap-align:center;cursor:pointer;white-space:nowrap}
+.dp-item.sel{color:var(--ink);font-size:22px}
+.dp-item.today{color:var(--cta)}
+.dp-hint{text-align:center;font-size:12px;color:var(--muted);margin:8px 0 0}
 .dp-f{display:flex;gap:8px;margin-top:12px}
 .dp-f button{flex:1;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:600;cursor:pointer}
 .dp-f .dp-today{background:var(--cta);border-color:var(--cta);color:#fff}
@@ -372,7 +379,7 @@ h1 .ver{font-family:var(--f-num);font-size:12px;font-weight:400;color:var(--mute
     <button id="tab-train" role="tab" aria-selected="true" data-tab="train" class="t-train">🏋️ <span class="zh">训练</span><span class="en">Train</span></button>
     <button id="tab-diet" role="tab" aria-selected="false" data-tab="diet" class="t-diet">🍽️ <span class="zh">饮食</span><span class="en">Diet</span></button>
     <button id="tab-data" role="tab" aria-selected="false" data-tab="data" class="t-data">📊 <span class="zh">数据</span><span class="en">Data</span></button>
-    <button id="wxBtn" type="button" class="t-wx" aria-label="备份到微信 / Back up to WeChat" title="备份到微信 / Back up to WeChat"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="9" width="17" height="12.5" rx="2.2" fill="#07C160"/><path d="M12 1.6 6.8 7h3.6v2h3.2V7h3.6z" fill="#07C160"/><rect x="10.4" y="9" width="3.2" height="7.5" fill="#fff"/></svg></button>
+    <button id="wxBtn" type="button" class="t-wx" aria-label="备份进度 / Back up progress" title="备份进度 / Back up progress"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 8.5a4 4 0 0 1 .5 7.97"/><path d="M12 12v8M9 15l3-3 3 3"/></svg><span class="zh">备份</span><span class="en">Backup</span></button>
   </nav>
 
   <main>
@@ -674,31 +681,91 @@ function enhanceDates(){
     if(w.getAttribute("aria-label")!==al)w.setAttribute("aria-label",al);
   });
 }
-let dpInp=null,dpY=0,dpM=0;
-function openDP(inp){dpInp=inp;const p=(inp.value||today()).split("-");dpY=+p[0];dpM=+p[1]-1;renderDP()}
+let dpInp=null,dpY=0,dpM=0,dpD=1;
+function dpDaysInMonth(y,m){return new Date(y,m+1,0).getDate()}
+function openDP(inp){dpInp=inp;const p=(inp.value||today()).split("-");dpY=+p[0];dpM=+p[1]-1;dpD=+p[2];renderDP()}
+function dpSelISO(){return dpY+"-"+pad(dpM+1)+"-"+pad(dpD)}
+function dpWheelCol(col,vals,labels,selIdx,isToday){
+  let h='<div class="dp-selbar"></div>';
+  vals.forEach((v,i)=>{
+    h+='<div class="dp-item'+(i===selIdx?" sel":"")+(isToday(i,v)?" today":"")+'" data-v="'+v+'" data-i="'+i+'">'+labels(i,v)+'</div>';
+  });
+  return '<div class="dp-col" data-col="'+col+'">'+h+'</div>';
+}
 function renderDP(){
   let m=document.getElementById("dpMask");
   if(!m){m=document.createElement("div");m.id="dpMask";m.className="dp-mask";document.body.appendChild(m);m.addEventListener("click",dpClick)}
-  const sel=dpInp.value, td=today(), lead=(new Date(dpY,dpM,1).getDay()+6)%7, days=new Date(dpY,dpM+1,0).getDate();
-  const W=LANG==="en"?["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]:["一","二","三","四","五","六","日"];
-  let g=W.map(w=>'<div class="dp-w">'+w+'</div>').join("")+'<span></span>'.repeat(lead);
-  for(let d=1;d<=days;d++){const iso=dpY+"-"+pad(dpM+1)+"-"+pad(d);
-    g+='<button type="button" class="dp-d'+(iso===td?" today":"")+(iso===sel?" sel":"")+'" data-dp="'+iso+'" aria-label="'+fmtD(iso)+'">'+d+'</button>'}
-  /* always 6 week rows, so the panel height (and the arrows) never move when changing month */
-  g+='<span class="dp-pad"></span>'.repeat(42-lead-days);
+  const nowY=new Date().getFullYear();
+  const years=[];for(let y=nowY-5;y<=nowY+1;y++)years.push(y);
+  const months=[];for(let mo=1;mo<=12;mo++)months.push(mo);
+  const days=dpDaysInMonth(dpY,dpM);
+  const dayVals=[];for(let d=1;d<=days;d++)dayVals.push(d);
+  const td=today(), tY=+td.slice(0,4), tM=+td.slice(5,7), tD=+td.slice(8,10);
+  const yIdx=years.indexOf(dpY), mIdx=months.indexOf(dpM+1), dIdx=Math.min(dpD,days)-1;
+  const mLabel=LANG==="en"?(i,v)=>["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][v-1]:(i,v)=>v+"月";
+  const colYear=dpWheelCol("y",years,i=>i,yIdx,(i,v)=>v===tY);
+  const colMon=dpWheelCol("m",months,mLabel,mIdx,(i,v)=>v===tM&&dpY===tY);
+  const colDay=dpWheelCol("d",dayVals,i=>i,dIdx,(i,v)=>v===tD&&dpY===tY&&dpM+1===tM);
   m.innerHTML='<div class="dp" role="dialog" aria-modal="true" aria-label="'+T("选择日期","Choose a date")+'">'
-    +'<div class="dp-h"><button type="button" class="dp-nav" data-dpn="-1" aria-label="'+T("上个月","Previous month")+'">‹</button>'
-    +'<b>'+(LANG==="en"?MONF[dpM]+" "+dpY:dpY+"年"+(dpM+1)+"月")+'</b>'
-    +'<button type="button" class="dp-nav" data-dpn="1" aria-label="'+T("下个月","Next month")+'">›</button></div>'
-    +'<div class="dp-g">'+g+'</div>'
+    +'<div class="dp-h"><b id="dpTitle">'+fmtD(dpSelISO())+'</b>'
+    +'<button type="button" class="dp-nav" data-dpclose aria-label="'+T("关闭","Close")+'" style="width:auto;height:auto;padding:6px 12px;font-size:15px;border-radius:10px">'+T("完成","Done")+'</button></div>'
+    +'<div class="dp-wheel">'
+    +colYear+colMon+colDay
+    +'</div>'
+    +'<div class="dp-hint">'+T("上下滚动选择年 / 月 / 日","Scroll to pick year / month / day")+'</div>'
     +'<div class="dp-f"><button type="button" data-dpx="1">'+T("取消","Cancel")+'</button><button type="button" class="dp-today" data-dp="'+td+'">'+T("今天","Today")+'</button></div></div>';
   m.hidden=false;
+  /* 初始滚动到选中项 */
+  const cols=m.querySelectorAll(".dp-col");
+  cols[0].scrollTop=yIdx*48;
+  cols[1].scrollTop=mIdx*48;
+  cols[2].scrollTop=dIdx*48;
+  /* 绑定滚动事件（实时高亮，滚动停止后才在必要时重建日列） */
+  cols.forEach(col=>{
+    let settle=null;
+    col.addEventListener("scroll",()=>{
+      const kind=col.dataset.col;
+      const idx=Math.round(col.scrollTop/48);
+      const item=col.querySelector('.dp-item[data-i="'+idx+'"]');
+      if(!item)return;
+      const v=+item.dataset.v;
+      if(kind==="y"){dpY=v;}
+      else if(kind==="m"){dpM=v-1;}
+      else if(kind==="d"){dpD=v;}
+      if(kind!=="d"){const dn=dpDaysInMonth(dpY,dpM);if(dpD>dn)dpD=dn;}
+      paintSel(col);
+      updateTitle();
+      clearTimeout(settle);
+      settle=setTimeout(()=>{
+        const dn=dpDaysInMonth(dpY,dpM);
+        const dayCol=m.querySelector('.dp-col[data-col="d"]');
+        if(dayCol && dayCol.querySelectorAll(".dp-item").length!==dn){ renderDP(); }
+      },180);
+    },{passive:true});
+    col.addEventListener("click",e=>{
+      const it=e.target.closest(".dp-item");if(!it)return;
+      const kind=col.dataset.col, v=+it.dataset.v;
+      if(kind==="y"){dpY=v;const dn=dpDaysInMonth(dpY,dpM);if(dpD>dn)dpD=dn;}
+      else if(kind==="m"){dpM=v-1;const dn=dpDaysInMonth(dpY,dpM);if(dpD>dn)dpD=dn;}
+      else dpD=v;
+      if(kind!=="d"){renderDP();return}
+      col.scrollTop=(v-1)*48; paintSel(col); updateTitle();
+    });
+  });
+}
+function paintSel(col){
+  const idx=Math.round(col.scrollTop/48);
+  col.querySelectorAll(".dp-item").forEach(it=>it.classList.toggle("sel",+it.dataset.i===idx));
+}
+function updateTitle(){
+  const t=document.getElementById("dpTitle");if(t)t.textContent=fmtD(dpSelISO());
 }
 function closeDP(){const m=document.getElementById("dpMask");if(m)m.hidden=true;dpInp=null}
 function dpClick(e){
   if(e.target.id==="dpMask"){closeDP();return}
-  const n=e.target.closest("[data-dpn]");
-  if(n){dpM+=+n.dataset.dpn;if(dpM<0){dpM=11;dpY--}if(dpM>11){dpM=0;dpY++}renderDP();return}
+  const c=e.target.closest("[data-dpclose]");
+  if(c){const inp=dpInp,iso=dpSelISO();closeDP();inp.value=iso;
+    inp.dispatchEvent(new Event("input",{bubbles:true}));inp.dispatchEvent(new Event("change",{bubbles:true}));enhanceDates();return}
   const d=e.target.closest("[data-dp]");
   if(d){const inp=dpInp;closeDP();inp.value=d.dataset.dp;
     inp.dispatchEvent(new Event("input",{bubbles:true}));inp.dispatchEvent(new Event("change",{bubbles:true}));enhanceDates();return}
@@ -1530,7 +1597,7 @@ document.getElementById("bkCopy").addEventListener("click",async()=>{
   let ok=false;
   try{await navigator.clipboard.writeText(txt);ok=true}catch(e){}
   if(!ok){try{const ta=document.createElement("textarea");ta.value=txt;ta.setAttribute("readonly","");ta.style.cssText="position:fixed;top:0;left:0;opacity:0";document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,txt.length);ok=document.execCommand("copy");ta.remove()}catch(e){}}
-  try{if(!ok)throw 0;toast(T("已复制 "+txt.length+" 个字符，可存到备忘录或微信文件传输助手","Copied "+txt.length+" characters — paste into Notes or a message to yourself"))}
+  try{if(!ok)throw 0;markBackedUp();toast(T("已复制 "+txt.length+" 个字符，可存到备忘录或微信文件传输助手","Copied "+txt.length+" characters — paste into Notes or a message to yourself"))}
   catch(e){showPaste(T("剪贴板不可用，请手动复制下面的文本","Clipboard unavailable — copy the text below manually"),txt);document.getElementById("bkPasteGo").hidden=true}
 });
 /* ---------- back up to WeChat: the importable progress text ---------- */
@@ -1550,14 +1617,20 @@ function wxSheet(text){
 }
 /* sends ONLY the importable progress text. System share sheet where the browser offers one (Chrome, Safari);
    on platforms without a share sheet it copies straight to the clipboard; the text box is the last resort. */
-document.getElementById("wxBtn").addEventListener("click",async()=>{
-  let text="";try{text=await encodeBackup()}catch(e){toast(T("生成进度文本失败","Couldn't build the progress text"));return}
-  if(navigator.share){
-    try{await navigator.share({text});return}
-    catch(e){if(e&&e.name==="AbortError")return}
+document.getElementById("wxBtn").addEventListener("click",()=>{
+  /* 跳转到数据页并展开「备份进度」面板 */
+  const dataTab=document.querySelector('[data-tab="data"]');
+  if(dataTab){
+    document.querySelectorAll("nav.tabs button").forEach(x=>x.setAttribute("aria-selected",x===dataTab));
+    ["train","diet","data"].forEach(k=>{
+      const el=document.getElementById("pane-"+k);
+      if(el) el.hidden=(k!=="data");
+    });
+    if(typeof renderData==="function") renderData();
+    try{localStorage.setItem(LS+"-tab","data")}catch(err){}
   }
-  try{await navigator.clipboard.writeText(text);toast(T("进度文本已复制，打开微信粘贴到「文件传输助手」","Progress text copied — paste it into WeChat File Transfer"));return}catch(e){}
-  wxSheet(text);
+  const foldBk=document.getElementById("foldBk");
+  if(foldBk){ foldBk.open=true; setTimeout(()=>{ try{foldBk.scrollIntoView({behavior:"smooth",block:"start"})}catch(e){} },80); }
 });
 let pendingImport=null;
 async function stageImport(text){
@@ -2110,7 +2183,7 @@ async function handleCorosCallback(){
 
 syncUI();connectMcp();handleCorosCallback();
 
-/* ---------- 每 3 天自动提醒备份进度（防浏览器清缓存丢数据） ---------- */
+/* ---------- 每 5 天自动提醒备份进度（防浏览器清缓存丢数据） ---------- */
 const BK_REMIND_K = LS + "-lastbackup";
 function lastBackupTs(){ try{ return parseInt(localStorage.getItem(BK_REMIND_K)||"0",10)||0; }catch(e){ return 0; } }
 function markBackedUp(){ try{ localStorage.setItem(BK_REMIND_K, String(Date.now())); }catch(e){} }
@@ -2118,7 +2191,7 @@ function backupRemindDue(){
   const t = lastBackupTs();
   if(!t) return true;                       /* 从未备份过，也提醒 */
   const days = (Date.now() - t) / 864e5;
-  return days >= 3;
+  return days >= 5;
 }
 function maybeRemindBackup(){
   try{
@@ -2133,41 +2206,20 @@ function maybeRemindBackup(){
           <button type="button" data-close class="iconbtn" aria-label="${T("关闭","Close")}" style="font-size:18px">×</button>
         </div>
         <p class="sub" style="margin:0 0 12px">${T(
-          "浏览器偶尔会清空本地数据。建议每 3 天备份一次进度，复制文本存到微信「文件传输助手」，需要时可一键恢复。",
-          "Browsers occasionally clear local data. Back up every 3 days — copy the text to WeChat File Transfer so you can restore anytime."
+          "浏览器偶尔会清空本地数据。建议每 5 天备份一次进度，去「数据 → 备份进度」把进度文本复制存到微信，需要时可一键恢复。",
+          "Browsers occasionally clear local data. Every 5 days or so, back up via Data → Back up progress — copy the text to WeChat so you can restore anytime."
         )}</p>
-        <button id="bkRemindCopy" type="button" class="btn" style="width:100%;background:var(--push);font-size:15px;padding:12px">${T("复制进度文本","Copy progress text")}</button>
-        <div class="row" style="margin-top:10px;justify-content:flex-end">
-          <button id="bkRemindLater" type="button" class="btn ghost">${T("稍后再说","Later")}</button>
-        </div>
+        <button id="bkRemindOk" type="button" class="btn" style="width:100%;background:var(--cta);font-size:15px;padding:12px">${T("确定","OK")}</button>
       </div>`;
       document.body.appendChild(mask);
       const close = ()=>{ mask.remove(); };
       mask.querySelector("[data-close]").addEventListener("click", close);
       mask.addEventListener("click", e=>{ if(e.target===mask) close(); });
-      mask.querySelector("#bkRemindLater").addEventListener("click", close);
-      mask.querySelector("#bkRemindCopy").addEventListener("click", async ()=>{
-        let text=""; try{ text = await encodeBackup(); }catch(e){}
-        if(!text){ syncMsg(T("生成进度文本失败","Couldn't build the progress text")); return; }
-        let ok=false;
-        try{ await navigator.clipboard.writeText(text); ok=true; }catch(e){}
-        if(!ok){ try{ const ta=document.createElement("textarea"); ta.value=text; ta.setAttribute("readonly",""); ta.style.cssText="position:fixed;top:0;left:0;opacity:0"; document.body.appendChild(ta); ta.select(); ok=document.execCommand("copy"); ta.remove(); }catch(e){} }
-        if(ok){
-          markBackedUp();
-          close();
-          toast(T("已复制，打开微信粘贴到「文件传输助手」即可","Copied — paste into WeChat File Transfer"));
-        } else {
-          syncMsg(T("复制失败，请在数据页用「备份进度」手动复制","Copy failed — use Data → back up progress"));
-        }
-      });
+      mask.querySelector("#bkRemindOk").addEventListener("click", close);
     }, 1200);
   }catch(e){}
 }
-/* 用户手动点微信备份按钮时，记录已备份时间 */
-try{
-  const _wxBtn = document.getElementById("wxBtn");
-  if(_wxBtn){ _wxBtn.addEventListener("click", ()=>{ setTimeout(markBackedUp, 500); }); }
-}catch(e){}
+/* 用户真正点击「复制进度」备份后，才记录已备份时间（见 bkCopy 的监听） */
 maybeRemindBackup();
 
 async function connect(){
@@ -2200,7 +2252,7 @@ connect();
     o.connect(g).connect(c.destination);o.start(t0);o.stop(t0+len+0.02);
   }
   const S={
-    tap:()=>tone(520,0,0.05,"triangle",0.12,380),
+    tap:()=>{tone(1200,0,0.03,"sine",0.10,760);tone(2200,0,0.02,"sine",0.05)},
     key:()=>tone(1500,0,0.025,"square",0.035),
     inc:()=>tone(880,0,0.06,"triangle",0.15,1180),
     dec:()=>tone(660,0,0.06,"triangle",0.15,470),
