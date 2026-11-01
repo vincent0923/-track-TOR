@@ -207,13 +207,6 @@ svg.lk{width:12px;height:12px;vertical-align:-1px;margin-right:3px}
 .field label{font-size:12px;color:var(--muted)}
 .field input,.field textarea{width:100%;min-width:0;font:inherit;font-size:16px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink)}
 .field input[type=number]{font-family:var(--f-num);font-size:20px;font-weight:600}
-.dwrap{position:relative;display:block;min-width:0}
-.dwrap .dtxt{display:flex;align-items:center;height:48px;font-family:var(--f-num);font-size:20px;font-weight:600;line-height:1;padding:0 10px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-:root:not([data-lang="en"]) .dwrap .dtxt{font-size:16px}
-.dwrap{cursor:pointer;border-radius:9px}
-.dwrap input[type=date]{position:absolute;inset:0;width:100%;height:100%;opacity:0;padding:0;border:0;pointer-events:none}
-.dwrap:focus-visible{outline:none}
-.dwrap:focus-visible .dtxt{outline:2px solid var(--pull);outline-offset:2px}
 .totop{position:fixed;left:calc(14px + env(safe-area-inset-left,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:25;width:48px;height:48px;padding:0;border:0;border-radius:12px;display:grid;place-items:center;cursor:pointer;
   background:rgba(52,68,86,.28);color:rgba(240,244,248,.8);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);box-shadow:0 1px 6px rgba(0,0,0,.08)}
 .totop svg{width:26px;height:26px}
@@ -222,19 +215,6 @@ svg.lk{width:12px;height:12px;vertical-align:-1px;margin-right:3px}
 .dp{width:100%;max-width:420px;background:var(--surface);color:var(--ink);border-radius:16px 16px 0 0;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -6px 24px rgba(0,0,0,.25)}
 .dp-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
 .dp-h b{font-size:17px}
-.dp-nav{width:42px;height:42px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:22px;line-height:1;cursor:pointer}
-/* ===== 滚轮式日期选择器 ===== */
-.dp-wheel{display:flex;gap:6px;padding:6px 0;user-select:none}
-.dp-col{position:relative;flex:1;height:196px;overflow-y:auto;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;border:1px solid var(--line);border-radius:12px;background:var(--sunk);padding:74px 0}
-.dp-col::-webkit-scrollbar{display:none}
-.dp-col::before,.dp-col::after{content:"";position:absolute;left:0;right:0;height:74px;z-index:2;pointer-events:none}
-.dp-col::before{top:0;background:linear-gradient(var(--sunk),transparent)}
-.dp-col::after{bottom:0;background:linear-gradient(transparent,var(--sunk))}
-.dp-selbar{position:absolute;left:0;right:0;top:74px;height:48px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--cta) 8%,transparent);pointer-events:none;z-index:0}
-.dp-item{position:relative;z-index:1;height:48px;display:flex;align-items:center;justify-content:center;font-family:var(--f-num);font-size:19px;font-weight:600;color:var(--muted);scroll-snap-align:center;cursor:pointer;white-space:nowrap}
-.dp-item.sel{color:var(--ink);font-size:22px}
-.dp-item.today{color:var(--cta)}
-.dp-hint{text-align:center;font-size:12px;color:var(--muted);margin:8px 0 0}
 .dp-f{display:flex;gap:8px;margin-top:12px}
 .dp-f button{flex:1;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:600;cursor:pointer}
 .dp-f .dp-today{background:var(--cta);border-color:var(--cta);color:#fff}
@@ -659,119 +639,7 @@ const LAB=p=>T((p.kind==="push"?"推练":"拉练")+" D"+p.day,(p.kind==="push"?"
 const SHORT=p=>T((p.kind==="push"?"推":"拉")+"D"+p.day,(p.kind==="push"?"Push":"Pull")+" D"+p.day);
 function today(){const d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
 window.today = today;
-/* date fields: the hidden native input keeps the value (yyyy-mm-dd); what you see and tap is our own
-   field + month calendar, so the picker follows the page language. zh: 2026年10月14日 · en (AU): 14/Oct/2026 */
-const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const MONF=["January","February","March","April","May","June","July","August","September","October","November","December"];
-function fmtD(v){if(!v)return "—";const p=v.split("-");if(p.length!==3)return v;
-  return LANG==="en"?p[2]+"/"+MON[+p[1]-1]+"/"+p[0]:p[0]+"年"+(+p[1])+"月"+(+p[2])+"日"}
-function enhanceDates(){
-  document.querySelectorAll('input[type=date]').forEach(inp=>{
-    let w=inp.parentElement;
-    if(!w.classList.contains("dwrap")){
-      w=document.createElement("span");w.className="dwrap";inp.parentNode.insertBefore(w,inp);w.appendChild(inp);
-      const s=document.createElement("span");s.className="dtxt";w.insertBefore(s,inp);
-      inp.tabIndex=-1;w.tabIndex=0;w.setAttribute("role","button");
-      w.addEventListener("click",()=>openDP(inp));
-      w.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();openDP(inp)}});
-    }
-    const s=w.querySelector(".dtxt"), txt=fmtD(inp.value);
-    if(s.textContent!==txt)s.textContent=txt;
-    const lab=inp.id&&document.querySelector('label[for="'+inp.id+'"]'), al=(lab?lab.textContent+"：":"")+txt;
-    if(w.getAttribute("aria-label")!==al)w.setAttribute("aria-label",al);
-  });
-}
-let dpInp=null,dpY=0,dpM=0,dpD=1;
-function dpDaysInMonth(y,m){return new Date(y,m+1,0).getDate()}
-function openDP(inp){dpInp=inp;const p=(inp.value||today()).split("-");dpY=+p[0];dpM=+p[1]-1;dpD=+p[2];renderDP()}
-function dpSelISO(){return dpY+"-"+pad(dpM+1)+"-"+pad(dpD)}
-function dpWheelCol(col,vals,labels,selIdx,isToday){
-  let h='<div class="dp-selbar"></div>';
-  vals.forEach((v,i)=>{
-    h+='<div class="dp-item'+(i===selIdx?" sel":"")+(isToday(i,v)?" today":"")+'" data-v="'+v+'" data-i="'+i+'">'+labels(i,v)+'</div>';
-  });
-  return '<div class="dp-col" data-col="'+col+'">'+h+'</div>';
-}
-function renderDP(){
-  let m=document.getElementById("dpMask");
-  if(!m){m=document.createElement("div");m.id="dpMask";m.className="dp-mask";document.body.appendChild(m);m.addEventListener("click",dpClick)}
-  const nowY=new Date().getFullYear();
-  const years=[];for(let y=nowY-5;y<=nowY+1;y++)years.push(y);
-  const months=[];for(let mo=1;mo<=12;mo++)months.push(mo);
-  const days=dpDaysInMonth(dpY,dpM);
-  const dayVals=[];for(let d=1;d<=days;d++)dayVals.push(d);
-  const td=today(), tY=+td.slice(0,4), tM=+td.slice(5,7), tD=+td.slice(8,10);
-  const yIdx=years.indexOf(dpY), mIdx=months.indexOf(dpM+1), dIdx=Math.min(dpD,days)-1;
-  const mLabel=LANG==="en"?(i,v)=>["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][v-1]:(i,v)=>v+"月";
-  const colYear=dpWheelCol("y",years,i=>i,yIdx,(i,v)=>v===tY);
-  const colMon=dpWheelCol("m",months,mLabel,mIdx,(i,v)=>v===tM&&dpY===tY);
-  const colDay=dpWheelCol("d",dayVals,i=>i,dIdx,(i,v)=>v===tD&&dpY===tY&&dpM+1===tM);
-  m.innerHTML='<div class="dp" role="dialog" aria-modal="true" aria-label="'+T("选择日期","Choose a date")+'">'
-    +'<div class="dp-h"><b id="dpTitle">'+fmtD(dpSelISO())+'</b>'
-    +'<button type="button" class="dp-nav" data-dpclose aria-label="'+T("关闭","Close")+'" style="width:auto;height:auto;padding:6px 12px;font-size:15px;border-radius:10px">'+T("完成","Done")+'</button></div>'
-    +'<div class="dp-wheel">'
-    +colYear+colMon+colDay
-    +'</div>'
-    +'<div class="dp-hint">'+T("上下滚动选择年 / 月 / 日","Scroll to pick year / month / day")+'</div>'
-    +'<div class="dp-f"><button type="button" data-dpx="1">'+T("取消","Cancel")+'</button><button type="button" class="dp-today" data-dp="'+td+'">'+T("今天","Today")+'</button></div></div>';
-  m.hidden=false;
-  /* 初始滚动到选中项 */
-  const cols=m.querySelectorAll(".dp-col");
-  cols[0].scrollTop=yIdx*48;
-  cols[1].scrollTop=mIdx*48;
-  cols[2].scrollTop=dIdx*48;
-  /* 绑定滚动事件（实时高亮，滚动停止后才在必要时重建日列） */
-  cols.forEach(col=>{
-    let settle=null;
-    col.addEventListener("scroll",()=>{
-      const kind=col.dataset.col;
-      const idx=Math.round(col.scrollTop/48);
-      const item=col.querySelector('.dp-item[data-i="'+idx+'"]');
-      if(!item)return;
-      const v=+item.dataset.v;
-      if(kind==="y"){dpY=v;}
-      else if(kind==="m"){dpM=v-1;}
-      else if(kind==="d"){dpD=v;}
-      if(kind!=="d"){const dn=dpDaysInMonth(dpY,dpM);if(dpD>dn)dpD=dn;}
-      paintSel(col);
-      updateTitle();
-      clearTimeout(settle);
-      settle=setTimeout(()=>{
-        const dn=dpDaysInMonth(dpY,dpM);
-        const dayCol=m.querySelector('.dp-col[data-col="d"]');
-        if(dayCol && dayCol.querySelectorAll(".dp-item").length!==dn){ renderDP(); }
-      },180);
-    },{passive:true});
-    col.addEventListener("click",e=>{
-      const it=e.target.closest(".dp-item");if(!it)return;
-      const kind=col.dataset.col, v=+it.dataset.v;
-      if(kind==="y"){dpY=v;const dn=dpDaysInMonth(dpY,dpM);if(dpD>dn)dpD=dn;}
-      else if(kind==="m"){dpM=v-1;const dn=dpDaysInMonth(dpY,dpM);if(dpD>dn)dpD=dn;}
-      else dpD=v;
-      if(kind!=="d"){renderDP();return}
-      col.scrollTop=(v-1)*48; paintSel(col); updateTitle();
-    });
-  });
-}
-function paintSel(col){
-  const idx=Math.round(col.scrollTop/48);
-  col.querySelectorAll(".dp-item").forEach(it=>it.classList.toggle("sel",+it.dataset.i===idx));
-}
-function updateTitle(){
-  const t=document.getElementById("dpTitle");if(t)t.textContent=fmtD(dpSelISO());
-}
-function closeDP(){const m=document.getElementById("dpMask");if(m)m.hidden=true;dpInp=null}
-function dpClick(e){
-  if(e.target.id==="dpMask"){closeDP();return}
-  const c=e.target.closest("[data-dpclose]");
-  if(c){const inp=dpInp,iso=dpSelISO();closeDP();inp.value=iso;
-    inp.dispatchEvent(new Event("input",{bubbles:true}));inp.dispatchEvent(new Event("change",{bubbles:true}));enhanceDates();return}
-  const d=e.target.closest("[data-dp]");
-  if(d){const inp=dpInp;closeDP();inp.value=d.dataset.dp;
-    inp.dispatchEvent(new Event("input",{bubbles:true}));inp.dispatchEvent(new Event("change",{bubbles:true}));enhanceDates();return}
-  if(e.target.closest("[data-dpx]"))closeDP();
-}
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&dpInp)closeDP()});
+/* date fields use the browser's native <input type="date"> picker: light, localized, and reliable. */
 /* flame: particle fire rising off the top edge of the 练 button. One fixed canvas follows the button
    (it is re-rendered often), skips drawing while the button is off screen or hidden. */
 (function(){
@@ -882,7 +750,6 @@ document.getElementById("toTop").addEventListener("click",()=>{
   window.scrollTo({top:0,behavior:smooth?"smooth":"auto"});
   const se=document.scrollingElement;if(se&&se!==document.documentElement)se.scrollTo({top:0,behavior:smooth?"smooth":"auto"});
 });
-new MutationObserver(enhanceDates).observe(document.body,{childList:true,subtree:true});
 function md(s){if(!s)return "";const p=s.split("-");return (+p[1])+"."+(+p[2])}
 function dnum(s){const p=s.split("-");return Date.UTC(+p[0],+p[1]-1,+p[2])/864e5}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
@@ -1178,7 +1045,7 @@ document.getElementById("pane-train").addEventListener("click",e=>{
     open.add(sid);renderTrain();foldIn([bodyOf(sid)],FOLD_MS);return}
   if(t.dataset.act==="all"){t.classList.remove("pop");void t.offsetWidth;t.classList.add("pop");setTimeout(collapseAll,120);return}
   if(t.dataset.act==="next"){const cur=currentSid();if(!cur)return;const was=open.has(cur);open.clear();keepEditing();open.add(cur);renderTrain();if(!was)foldIn([bodyOf(cur)],FOLD_MS);
-    const fd=document.getElementById("fd-"+cur);if(fd){fd.value=today();enhanceDates()}
+    const fd=document.getElementById("fd-"+cur);if(fd){fd.value=today()}
     const el=document.getElementById("c-"+cur);if(el){el.scrollIntoView({behavior:"smooth",block:"start"});el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash")}return}
   const {act,sid,ex}=t.dataset; const i=+t.dataset.i;
   if(act==="val"||act==="note"||act==="date") return;
