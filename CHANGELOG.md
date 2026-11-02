@@ -6,6 +6,26 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 
 ---
 
+## [v1.13a] — 2026-11-03
+
+### 变更 / Changed
+- 🗂️ **数据合成一份**：训练、身体数据和饮食以前分开存，体重和高驰活动热量还各存了两处。现在每天的身体和高驰数据放在一起，体重只存一份。第一次打开新版时自动搬过去，旧的进度文件照样能导入。
+  All records now live in one place: each day's body and COROS numbers together, with weight stored once. Existing data moves over automatically the first time you open this version, and older progress files still import.
+- 代码按功能拆成几个文件，网页结构、样式和程序分开。用起来没有变化。
+  The code is split into files by feature, with page structure, styles, and scripts kept apart. Nothing changes in use.
+- 更新后打开网页总会拿到最新的程序，没网时才用手机里缓存的版本。
+  After an update the app always loads the latest code, falling back to the copy on your phone only when offline.
+
+### 修复 / Fixed
+- ⚖️ 计算某天的热量消耗时，如果那天没有体重，以前只看饮食里另存的少数几条体重，常常用 64 kg 之类的固定值。现在用你附近几天的真实体重，基础代谢更准。
+  On days without a weight, calorie burn used to fall back on a few weights stored only in the diet log, often a fixed value. It now uses your real weights from the nearby days, so BMR is more accurate.
+- 在饮食弹窗里记的体重现在也会出现在体重图和「全部记录」里。
+  A weight entered in the diet window now also shows in the weight chart and the records list.
+- 切换语言时饮食页也会一起切换。
+  Switching language now updates the diet page too.
+
+---
+
 ## [v1.12a] — 2026-11-03
 
 ### 新增 / Added

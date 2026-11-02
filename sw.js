@@ -1,5 +1,5 @@
 // Service Worker for 推拉机 track-TOR PWA
-const CACHE_NAME = "tracktor-pwa-v3";
+const CACHE_NAME = "tracktor-pwa-v4";
 const ASSETS = [
   "./",
   "./index.html",
@@ -7,6 +7,16 @@ const ASSETS = [
   "./icon-192.png",
   "./icon-512.png",
   "./icon.svg",
+  "./css/app.css",
+  "./js/core.js",
+  "./js/ui.js",
+  "./js/train.js",
+  "./js/progress.js",
+  "./js/backup.js",
+  "./js/coros.js",
+  "./js/welcome.js",
+  "./js/diet.js",
+  "./js/main.js",
   "./fonts/barlow-condensed-500.woff2",
   "./fonts/barlow-condensed-600.woff2",
   "./fonts/barlow-condensed-700.woff2"
@@ -29,8 +39,10 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
   const url = new URL(e.request.url);
-  // Network first for HTML navigation to ensure latest version is loaded
-  if (e.request.mode === "navigate" || url.pathname.endsWith(".html") || url.pathname === "/") {
+  if (url.origin !== self.location.origin) return;   // COROS and other sites go straight to the network
+  // Network first for the page and its code, so an update never mixes new HTML with old scripts;
+  // the cached copy is used only when offline
+  if (e.request.mode === "navigate" || /\.(html|js|css)$/.test(url.pathname) || url.pathname.endsWith("/")) {
     e.respondWith(
       fetch(e.request).then((resp) => {
         if (resp && resp.status === 200) {
@@ -38,11 +50,11 @@ self.addEventListener("fetch", (e) => {
           caches.open(CACHE_NAME).then((cache) => cache.put(e.request, copy));
         }
         return resp;
-      }).catch(() => caches.match(e.request).then(cached => cached || caches.match("./index.html")))
+      }).catch(() => caches.match(e.request).then(cached => cached || (e.request.mode === "navigate" ? caches.match("./index.html") : Response.error())))
     );
     return;
   }
-  // Cache first for static assets (icons, manifest)
+  // Cache first for files that never change in place (icons, fonts, manifest)
   e.respondWith(
     caches.match(e.request).then((cached) => cached || fetch(e.request).then((resp) => {
       if (resp && resp.status === 200) {
