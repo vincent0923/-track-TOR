@@ -36,8 +36,8 @@
 1. 打开 [网页](https://vincent0923.github.io/Track-TOR/)，想要的话装到手机主屏：
    - Android（Chrome）：菜单 →「安装应用」
    - iPhone（Safari）：分享 →「添加到主屏幕」
-2. 点右上角「连接高驰」，选账号所在区域，登录授权一次。不用高驰也能记训练和饮食。
-3. 点「同步高驰」，然后开练。
+2. 第一次打开时填性别、生日、身高和目标，都可以留空，以后在「数据 › 目标」里改。
+3. 有高驰手表的话，点「连接高驰」，选账号所在区域，登录授权一次。授权后会自动同步，并填好性别、生日和身高。授权不成功就换个区域再试。不用高驰也能记训练和饮食。
 
 ## 你的数据
 
@@ -45,12 +45,13 @@
 - 高驰由你的浏览器直接连接，不经过第三方。
 - 浏览器偶尔会清空本地数据，记得定期点备份图标保存进度文件。
 - 进度文件带着你的高驰授权，换手机恢复后不用重新授权，所以不要把它发给别人。
+- 想断开高驰，在「备份进度」里登出，可以选择保留数据，或只清除高驰同步来的数据。
 
 ## 更多
 
 产品定位、设计取向和后续计划见 [产品说明](docs/PRODUCT.md)，版本记录见 [更新日志](CHANGELOG.md)。
 
-当前版本 **v1.10a**。Alpha 表示已经在日常使用，还在持续打磨。
+当前版本 **v1.11a**。Alpha 表示已经在日常使用，还在持续打磨。
 
 © 2026 vincent0923，保留所有权利。见 [LICENSE](LICENSE)。
 
@@ -92,8 +93,8 @@ Most people don't need another training plan. They need a reason to keep going. 
 1. Open the [web app](https://vincent0923.github.io/Track-TOR/). You can also add it to your home screen:
    - Android (Chrome): Menu → Install app
    - iPhone (Safari): Share → Add to Home Screen
-2. Tap **Connect COROS**, choose your account region, and authorize once. Training and diet logging work without COROS.
-3. Tap **Sync COROS**, then start training.
+2. On first open, fill in your sex, birthday, height, and goals. Any of them can stay blank; change them later under Data › Goals.
+3. If you have a COROS watch, tap **Connect COROS**, choose your account region, and authorize once. It syncs right away and fills in your sex, birthday, and height. If authorization fails, try another region. Training and diet logging work without COROS.
 
 ## Your data
 
@@ -101,11 +102,12 @@ Most people don't need another training plan. They need a reason to keep going. 
 - Your browser connects to COROS directly, with no third party in between.
 - Browsers sometimes clear local data, so tap the backup icon now and then to save a progress file.
 - The progress file includes your COROS authorization, so restoring on a new phone needs no new sign-in. Don't send it to other people.
+- To disconnect COROS, log out from the Back up panel. You can keep your data or delete only what COROS synced.
 
 ## More
 
 See the [product notes](docs/PRODUCT.md) (in Chinese) for positioning, design principles, and plans, and the [changelog](CHANGELOG.md) for version history.
 
-Current version: **v1.10a**. Alpha means it's in daily use and still being refined.
+Current version: **v1.11a**. Alpha means it's in daily use and still being refined.
 
 © 2026 vincent0923. All rights reserved. See [LICENSE](LICENSE).

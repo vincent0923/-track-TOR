@@ -6,6 +6,28 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 
 ---
 
+## [v1.11a] — 2026-11-03
+
+### 新增 / Added
+- 👋 **第一次打开先填资料**：性别、生日、身高、现在体重和三个目标，都可以留空。也可以直接连接高驰，授权后自动同步，并填好性别、生日和身高。
+  First open asks for your sex, birthday, height, current weight, and three goals. Everything is optional. You can also connect COROS instead: it syncs right after authorization and fills in sex, birthday, and height.
+- 「目标」面板加了性别和生日。没设的目标在进度卡上显示「设目标」，点一下直接打开目标面板。
+  The Goals panel now has sex and birthday. A goal you haven't set shows "Set goal" on its card; tap it to open the Goals panel.
+- 🚪 **登出高驰**：在「备份进度」面板里。可以保留全部数据，也可以只清除高驰同步来的体重、睡眠、HRV、静息心率和活动热量，手动记录都留着。要确认两次才会登出。
+  Log out of COROS from the Back up panel. Keep all data, or delete only what COROS synced (weight, sleep, HRV, resting heart rate, activity calories) while keeping your manual entries. Logging out takes two confirmations.
+
+### 变更 / Changed
+- 基础代谢按你自己的性别、生日和身高计算，不再用写死的默认值。
+  Basal metabolic rate now uses your own sex, birthday, and height instead of built-in defaults.
+- 高驰授权失败时提示换个区域再试。
+  A failed COROS authorization now suggests trying another region.
+
+### 修复 / Fixed
+- 新用户第一次打开不再立刻弹出「该备份进度了」，5 天后才提醒。
+  New users no longer see "Time to back up" the moment they first open the app; the first reminder comes after 5 days.
+
+---
+
 ## [v1.10a] — 2026-11-03
 
 ### 修复 / Fixed

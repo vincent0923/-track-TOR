@@ -254,7 +254,7 @@ svg.lk{width:12px;height:12px;vertical-align:-1px;margin-right:3px}
 .fgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .field{display:grid;gap:3px;min-width:0}
 .field label{font-size:12px;color:var(--muted)}
-.field input,.field textarea{width:100%;min-width:0;font:inherit;font-size:16px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink)}
+.field input,.field textarea,.field select{width:100%;min-width:0;font:inherit;font-size:16px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink)}
 .field input[type=number]{font-family:var(--f-num);font-size:20px;font-weight:600}
 .totop{position:fixed;left:calc(14px + env(safe-area-inset-left,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:25;width:48px;height:48px;padding:0;border:0;border-radius:12px;display:grid;place-items:center;cursor:pointer;
   background:rgba(52,68,86,.28);color:rgba(240,244,248,.8);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);box-shadow:0 1px 6px rgba(0,0,0,.08)}
@@ -344,6 +344,7 @@ table.log td{font-family:var(--f-num);font-size:17px}
 @keyframes chev{from{background-position:0 50%}to{background-position:12px 50%}}
 .fw{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:40}
 .gb .gr{font-size:11px;color:var(--muted);font-family:var(--f-num);letter-spacing:.02em}
+.gset{border:0;background:none;padding:0;font:inherit;font-weight:700;color:var(--g);text-decoration:underline;cursor:pointer}
 details.fold{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin-top:10px}
 details.fold>summary{list-style:none;cursor:pointer;padding:12px 14px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
 details.fold>summary::-webkit-details-marker{display:none}
@@ -390,7 +391,7 @@ h1 .ver{font-family:var(--f-num);font-size:12px;font-weight:400;color:var(--mute
 <div class="wrap">
   <header class="top">
     <div class="trow">
-      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.10a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
+      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.11a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
       <button id="pwaInstallBtn" type="button" style="display:none;background:var(--cta);border:0;color:#fff;font-weight:700;font-size:12px;padding:5px 11px;border-radius:999px;cursor:pointer;margin-right:6px">📲 <span class="zh">安装 App</span><span class="en">Install</span></button><button id="syncBtn" class="syncbtn off"><span class="zh">连接中</span><span class="en">Connecting</span></button>
     </div>
     <div class="hrow"><p class="sub"><span class="zh">下一次</span><span class="en">Next</span> <b id="stNext" class="num" style="font-size:16px;color:var(--ink)">—</b></p><div class="hbtns">
@@ -488,6 +489,8 @@ h1 .ver{font-family:var(--f-num);font-size:12px;font-weight:400;color:var(--mute
 
       <details class="fold savefold" id="foldGoal"><summary><span class="sumt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4"/><path d="M12 13v4M8.5 20h7M10 17h4v3h-4z"/></svg><span class="zh">目标</span><span class="en">Goals</span></span><span class="saveic" aria-label="保存并收起"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg></span></summary><div class="fbody">
         <div class="gsec"><div class="fgrid">
+          <div class="field"><label for="gS"><span class="zh">性别</span><span class="en">Sex</span></label><select id="gS" data-g="sex"><option value=""></option><option value="m">♂</option><option value="f">♀</option></select></div>
+          <div class="field"><label for="gB"><span class="zh">生日</span><span class="en">Birthday</span></label><input id="gB" type="date" data-g="b"></div>
           <div class="field"><label for="gH"><span class="zh">身高（cm）</span><span class="en">Height (cm)</span></label><input id="gH" type="number" inputmode="decimal" step="0.5" data-g="h"><span class="hsrc" id="gHsrc"></span></div>
           <div class="field"><label for="gP"><span class="zh">目标引体（个）</span><span class="en">Pull-up goal (reps)</span></label><input id="gP" type="number" inputmode="numeric" step="1" min="1" data-g="p"></div>
         </div></div>
@@ -514,6 +517,19 @@ h1 .ver{font-family:var(--f-num);font-size:12px;font-weight:400;color:var(--mute
         <button id="bkPasteShow" type="button" style="border:0;background:none;color:var(--muted);font-size:12px;padding:0;margin-top:10px;cursor:pointer;text-decoration:underline"><span class="zh">有旧版进度文本？粘贴导入</span><span class="en">Have old progress text? Paste it</span></button>
         <div id="bkPasteWrap" hidden style="margin-top:10px"><div class="field"><label for="bkPaste"><span class="zh">粘贴进度文本</span><span class="en">Paste progress text</span></label><textarea id="bkPaste" rows="2"></textarea></div>
         <div class="row" style="margin-top:8px"><button id="bkPasteGo" class="btn ghost"><span class="zh">导入</span><span class="en">Import</span></button></div></div>
+        <div id="coOut" hidden style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line)">
+          <button id="coOutBtn" type="button" class="btn ghost ibtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg><span class="zh">登出高驰</span><span class="en">Log out of COROS</span></button>
+          <div id="coOut1" hidden style="margin-top:10px;display:grid;gap:8px">
+            <p class="note" style="margin:0"><span class="zh">登出后不再同步。已有数据怎么处理？</span><span class="en">Syncing stops after logout. What about the data already here?</span></p>
+            <button type="button" class="btn ghost" data-co="keep"><span class="zh">保留全部数据</span><span class="en">Keep all data</span></button>
+            <button type="button" class="btn ghost" data-co="wipe"><span class="zh">清除高驰同步的数据，手动记录保留</span><span class="en">Delete COROS-synced data, keep manual entries</span></button>
+            <button type="button" class="btn ghost" data-co="cancel"><span class="zh">取消</span><span class="en">Cancel</span></button>
+          </div>
+          <div id="coOut2" hidden style="margin-top:10px;display:grid;gap:8px">
+            <p class="note" style="margin:0" id="coOutMsg"></p>
+            <div class="row"><button type="button" id="coOutYes" class="btn" style="background:var(--push)"><span class="zh">确定登出</span><span class="en">Log out</span></button><button type="button" class="btn ghost" data-co="cancel"><span class="zh">取消</span><span class="en">Cancel</span></button></div>
+          </div>
+        </div>
       </div></details>
 
       <details class="fold savefold" id="foldLog">
@@ -811,10 +827,14 @@ let toastT;
 function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2600)}
 
 /* ---------- state & storage ---------- */
-const GDEF={h:168,hC:168,hSrc:"coros",w:61,z:78,p:10};
+/* nothing personal by default: the welcome sheet or a COROS sync fills these in */
+const GDEF={h:null,hC:null,hSrc:"coros",w:null,z:null,p:null,b:null,sex:null};
+const H_FALLBACK=170;
 const state = window.state = {sessions:{}, metrics:{}, settings:Object.assign({},GDEF)};
 const open = new Set();
 const LS = "pushpull-v1";
+/* first visit on this browser: nothing saved yet (read before anything writes) */
+const FRESH = (()=>{try{return !localStorage.getItem(LS)&&!localStorage.getItem("tracktor-diet-v1")&&!localStorage.getItem("diet_ledger_state_v2")&&!localStorage.getItem("tracktor-coros-token")}catch(e){return false}})();
 let lsOk = true;
 function lsLoad(){
   let j=null;
@@ -1396,7 +1416,7 @@ function renderStats(){
   renderGoals();
 }
 /* ---------- goals ---------- */
-const hM=()=>(+state.settings.h||168)/100;
+const hM=()=>(+state.settings.h||H_FALLBACK)/100;
 const bmi=w=>w/hM()/hM();
 const IC={
   pullups:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h18"/><path d="M8 4v4l2.5 3M16 4v4l-2.5 3"/><circle cx="12" cy="9.5" r="1.8"/><path d="M12 11.5v5M12 16.5l-2 4M12 16.5l2 4"/></svg>',
@@ -1423,16 +1443,19 @@ function milestone(k,pct,name){
 }
 let PRIV=false;try{PRIV=localStorage.getItem("pushpull-v1-priv")==="1"}catch(e){}
 document.getElementById("goals").addEventListener("click",e=>{
+  const sg=e.target.closest("[data-setgoal]");
+  if(sg){document.querySelector('[data-tab="data"]').click();setDataSub("charts");const f=document.getElementById("foldGoal");f.open=true;
+    setTimeout(()=>f.scrollIntoView({behavior:"smooth",block:"center"}),50);return}
   if(!e.target.closest("[data-priv]"))return;
   PRIV=!PRIV;try{localStorage.setItem("pushpull-v1-priv",PRIV?"1":"0")}catch(err){}
   renderGoals();
 });
 function renderGoals(){
-  const st=state.settings, HT=+st.h||168, wr=v=>(v/HT).toFixed(3), WL=T("腰高比","WHtR");
+  const st=state.settings, HT=+st.h||H_FALLBACK, wr=v=>(v/HT).toFixed(3), WL=T("腰高比","WHtR");
   const GOALS=[
-    {k:"pullups",name:T("引体","Pull-ups"),target:+st.p,unit:T("个","reps"),color:"var(--pull)",start:0},
-    {k:"waist",name:T("腰围","Waist"),target:+st.z,unit:"cm",color:"var(--ok)"},
-    {k:"weight",name:T("体重","Weight"),target:+st.w,unit:"kg",color:"var(--sleep)"}
+    {k:"pullups",name:T("引体","Pull-ups"),target:+st.p>0?+st.p:null,unit:T("个","reps"),color:"var(--pull)",start:0},
+    {k:"waist",name:T("腰围","Waist"),target:+st.z>0?+st.z:null,unit:"cm",color:"var(--ok)"},
+    {k:"weight",name:T("体重","Weight"),target:+st.w>0?+st.w:null,unit:"kg",color:"var(--sleep)"}
   ];
   let h="";
   GOALS.forEach(g=>{
@@ -1445,17 +1468,21 @@ function renderGoals(){
         if(g.k==="waist")curTxt=PRIV?"<small>"+WL+"</small> "+wr(cur):curTxt+" <small>（"+WL+" "+wr(cur)+"）</small>"}
     }
     let pct=0;
-    if(start!=null&&start!==g.target) pct=Math.max(0,Math.min(100,Math.round((cur-start)/(g.target-start)*100)));
-    GP[g.k]={name:g.name,pct,ok:start!=null&&cur!=null};
-    if(start!=null&&cur!=null)milestone(g.k,pct,g.name);
+    const noT=g.target==null;
+    if(!noT&&start!=null&&start!==g.target) pct=Math.max(0,Math.min(100,Math.round((cur-start)/(g.target-start)*100)));
+    GP[g.k]={name:g.name,pct,ok:!noT&&start!=null&&cur!=null};
+    if(!noT&&start!=null&&cur!=null)milestone(g.k,pct,g.name);
     const startTxt=start==null?"—":(g.k==="weight"?start.toFixed(1):start);
     const pv=g.k!=="pullups";
     const icon='<span class="gi" aria-hidden="true">'+IC[g.k]+'</span>';
-    const range=PRIV&&pv
+    const setBtn='<button type="button" class="gset" data-setgoal="'+g.k+'">'+T('设目标','Set goal')+'</button>';
+    const range=noT
+      ?(PRIV&&pv?'':T('起点 ','Start ')+startTxt+' → ')+setBtn
+      :PRIV&&pv
       ?(g.k==="weight"?(start==null?"—":"BMI "+bmi(start).toFixed(1))+' → BMI '+bmi(g.target).toFixed(1):(start==null?"—":WL+" "+wr(start))+' → '+WL+' '+wr(g.target))
       :T('起点 ','Start ')+startTxt+T(' → 目标 ',' → Goal ')+g.target+' '+g.unit+(g.k==="weight"?'（BMI '+bmi(g.target).toFixed(1)+'）':g.k==="waist"?'（'+WL+' '+wr(g.target)+'）':'');
     h+='<div class="goal" style="--g:'+g.color+'">'+icon+'<div class="gb">'
-      +'<div class="gh"><b>'+g.name+'</b><span class="gv">'+curTxt+'</span><span class="gp">'+(start==null?"—":pct+"%")+'</span></div>'
+      +'<div class="gh"><b>'+g.name+'</b><span class="gv">'+curTxt+'</span><span class="gp">'+(start==null||noT?"—":pct+"%")+'</span></div>'
       +'<div class="bar" role="progressbar" aria-label="'+g.name+T('进度',' progress')+'" aria-valuenow="'+pct+'" aria-valuemin="0" aria-valuemax="100"><i style="width:'+pct+'%"></i></div>'
       +'<div class="gr">'+range+'</div></div></div>';
   });
@@ -1477,15 +1504,15 @@ function scaleSvg(min,max,bands,cur,tgt,dec){
   return '<svg viewBox="0 0 '+W+' 76" role="img">'+g+'</svg>';
 }
 function renderGoalPanel(){
-  const st=state.settings, H=+st.h||168;
-  [["gH","h"],["gP","p"],["gW","w"],["gZ","z"]].forEach(([id,k])=>{const el=document.getElementById(id);if(el&&document.activeElement!==el)el.value=st[k]??""});
-  document.getElementById("gHsrc").innerHTML=st.hSrc==="manual"?T('手动填写','Entered manually')+(st.hC?' · <button type="button" id="gHreset">'+T('改用高驰 ','Use COROS ')+st.hC+'</button>':''):T('来自高驰','From COROS');
+  const st=state.settings, H=+st.h||H_FALLBACK;
+  [["gS","sex"],["gB","b"],["gH","h"],["gP","p"],["gW","w"],["gZ","z"]].forEach(([id,k])=>{const el=document.getElementById(id);if(el&&document.activeElement!==el)el.value=st[k]??""});
+  document.getElementById("gHsrc").innerHTML=st.hSrc==="manual"?T('手动填写','Entered manually')+(st.hC?' · <button type="button" id="gHreset">'+T('改用高驰 ','Use COROS ')+st.hC+'</button>':''):(st.hC&&st.h?T('来自高驰','From COROS'):'');
   const cw=curWeight(), cz=curWaist();
-  const bT=bmi(+st.w), bC=cw!=null?bmi(cw):null;
-  document.getElementById("gWc").innerHTML='<b>BMI '+bT.toFixed(1)+'</b>'+T('当前 ','Now ')+(bC!=null?bC.toFixed(1)+T('（',' (')+cw.toFixed(1)+T(' kg 7 日均）',' kg 7-day avg)'):'—');
+  const bT=+st.w>0?bmi(+st.w):null, bC=cw!=null?bmi(cw):null;
+  document.getElementById("gWc").innerHTML='<b>BMI '+(bT!=null?bT.toFixed(1):'—')+'</b>'+T('当前 ','Now ')+(bC!=null?bC.toFixed(1)+T('（',' (')+cw.toFixed(1)+T(' kg 7 日均）',' kg 7-day avg)'):'—');
   document.getElementById("scBmi").innerHTML=scaleSvg(16,31,[{to:18.5,c:"var(--pull)"},{to:24,c:"var(--ok)"},{to:28,c:"var(--cta)"},{to:31,c:"var(--push)"}],bC,bT,1);
-  const rT=+st.z/H, rC=cz!=null?cz/H:null;
-  document.getElementById("gZc").innerHTML='<b>'+T('腰高比 ','WHtR ')+rT.toFixed(3)+'</b>'+T('当前 ','Now ')+(rC!=null?rC.toFixed(3)+T('（',' (')+cz+T(' cm）',' cm)'):'—');
+  const rT=+st.z>0?+st.z/H:null, rC=cz!=null?cz/H:null;
+  document.getElementById("gZc").innerHTML='<b>'+T('腰高比 ','WHtR ')+(rT!=null?rT.toFixed(3):'—')+'</b>'+T('当前 ','Now ')+(rC!=null?rC.toFixed(3)+T('（',' (')+cz+T(' cm）',' cm)'):'—');
   document.getElementById("scWhtr").innerHTML=scaleSvg(0.4,0.66,[{to:0.5,c:"var(--ok)"},{to:0.6,c:"var(--cta)"},{to:0.66,c:"var(--push)"}],rC,rT,2);
 }
 /* closing a save panel saves it. Goals: blurring a focused field fires its change event, which stores the value.
@@ -1501,8 +1528,10 @@ function commitFold(d,quiet){
 }
 function saveSettings(){lsSave()}
 document.getElementById("foldGoal").addEventListener("change",e=>{
-  const k=e.target.dataset.g;if(!k)return;const v=numOrNull(e.target.value);
-  if(k==="h"){if(v==null||v<100||v>230){state.settings.h=state.settings.hC||168;state.settings.hSrc="coros"}else{state.settings.h=v;state.settings.hSrc="manual"}}
+  const k=e.target.dataset.g;if(!k)return;
+  if(k==="b"||k==="sex"){state.settings[k]=e.target.value||null;saveSettings();renderAll();if(window.renderDietAll)renderDietAll();return}
+  const v=numOrNull(e.target.value);
+  if(k==="h"){if(v==null||v<100||v>230){state.settings.h=state.settings.hC||null;state.settings.hSrc="coros"}else{state.settings.h=v;state.settings.hSrc="manual"}}
   else{if(v==null||v<=0){renderGoalPanel();return}state.settings[k]=v}
   saveSettings();renderGoals();
 });
@@ -1670,6 +1699,7 @@ const SYNC_K=LS+"-lastsync";
 function lastSync(){try{return localStorage.getItem(SYNC_K)||""}catch(e){return ""}}
 function syncUI(){
   const b=document.getElementById("syncBtn");
+  const co=document.getElementById("coOut");if(co){const has=!!readCorosToken();if(co.hidden===has){co.hidden=!has;coOutStep(0)}}
   if(syncing){b.className="syncbtn busy";b.textContent=T("同步中…","Syncing…");return}
   if(!mcpReady){b.className="syncbtn off";b.textContent=mcp===null?T("连接高驰","Connect COROS"):T("同步高驰mcp","Sync COROS");return}
   const ls=lastSync();
@@ -1797,6 +1827,11 @@ document.getElementById("syncBtn").addEventListener("click",async()=>{
       if(!ut&&u.payload)ut=JSON.stringify(u.payload);
       const hm=/Height:\s*([\d.]+)\s*cm/i.exec(ut);
       if(hm){const hv=+hm[1];state.settings.hC=hv;if(state.settings.hSrc!=="manual")state.settings.h=hv;saveSettings()}
+      /* birthday and sex only fill empty fields, so anything the user typed stays */
+      const bm=/Birthday:\s*(\d{4}-\d{2}-\d{2})/i.exec(ut), gm=/Gender:\s*(male|female)/i.exec(ut);
+      if(bm&&!state.settings.b)state.settings.b=bm[1];
+      if(gm&&!state.settings.sex)state.settings.sex=gm[1].toLowerCase()==="female"?"f":"m";
+      if(bm||gm){saveSettings();if(window.renderDietAll)renderDietAll()}
       const wm=/Weight:\s*([\d.]+)\s*kg/i.exec(ut);
       if(wm){
         const w=+(+wm[1]).toFixed(1), td=today();
@@ -1860,6 +1895,41 @@ async function corosPing(tk){
 function readCorosToken(){
   try{ return JSON.parse(localStorage.getItem("tracktor-coros-token") || "null"); }catch(e){ return null; }
 }
+
+/* --- 登出高驰：两步确认。可选清掉同步来的数据，手动记录（引体、手动体重、腰围、饮食）都保留 --- */
+let coOutMode=null;
+function coOutStep(n){
+  const a=document.getElementById("coOut1"),b=document.getElementById("coOut2");if(!a)return;
+  a.hidden=n!==1;b.hidden=n!==2;document.getElementById("coOutBtn").hidden=n!==0;
+}
+function corosLogout(wipe){
+  try{ localStorage.removeItem("tracktor-coros-token"); sessionStorage.removeItem("tracktor-coros-pending"); }catch(e){}
+  if(wipe){
+    const SYNCED=["weightC","sleep","sleepH","hrv","rhr"];
+    for(const [d,m] of Object.entries(state.metrics)){
+      SYNCED.forEach(k=>delete m[k]);
+      if(Object.keys(m).every(k=>k==="date"||m[k]==null))delete state.metrics[d];
+    }
+    const st=state.settings; st.hC=null; if(st.hSrc!=="manual")st.h=null;
+    if(window.dietState){ window.dietState.coros={}; if(window.saveDietLocal)window.saveDietLocal(); }
+    /* next login backfills history again */
+    ["-hrvbf","-sleepbf","-rhrbf2","-lastsync"].forEach(k=>{try{localStorage.removeItem(LS+k)}catch(e){}});
+    lsSave(); renderAll(); if(window.renderDietAll)renderDietAll();
+  }
+  mcp=null; mcpReady=false; syncUI();
+  toast(wipe?T("已登出高驰，同步的数据已清除","Logged out of COROS; synced data deleted"):T("已登出高驰，数据都保留","Logged out of COROS; all data kept"));
+}
+document.getElementById("coOut").addEventListener("click",e=>{
+  if(e.target.closest("#coOutBtn")){coOutStep(1);return}
+  if(e.target.closest("#coOutYes")){corosLogout(coOutMode==="wipe");coOutStep(0);return}
+  const c=e.target.closest("[data-co]");if(!c)return;
+  if(c.dataset.co==="cancel"){coOutStep(0);return}
+  coOutMode=c.dataset.co;
+  document.getElementById("coOutMsg").textContent=coOutMode==="wipe"
+    ?T("确定登出并清除高驰同步的体重、睡眠、HRV、静息心率和活动热量吗？清除后不能恢复，除非先保存进度文件。","Log out and delete synced weight, sleep, HRV, resting heart rate, and activity calories? This can't be undone unless you save a progress file first.")
+    :T("确定登出高驰吗？数据都会留着，重新连接后接着同步。","Log out of COROS? All data stays, and syncing resumes when you reconnect.");
+  coOutStep(2);
+});
 
 /* --- 纯前端 PKCE 授权流程 --- */
 const COROS_REGIONS = { cn:"https://mcpcn.coros.com", eu:"https://mcpeu.coros.com", us:"https://mcpus.coros.com" };
@@ -2110,7 +2180,7 @@ function promptCorosToken(){
       btn.disabled = false;
       regionSel.disabled = false;
       btn.textContent = T("授权登录高驰账号","Authorize COROS account");
-      msgEl.textContent = T("授权失败：","Authorization failed: ") + (e.message || e);
+      msgEl.textContent = T("授权失败：","Authorization failed: ") + (e.message || e) + T("。可以换个区域再试。",". Try another region.");
       syncMsg(T("授权失败，请重试或改用「手动粘贴」。","Authorization failed — retry or paste token manually."));
     }
   });
@@ -2151,7 +2221,8 @@ async function handleCorosCallback(){
     }
     await connectMcp();
     if(mcpReady){
-      syncMsg(T("高驰已连接，点击右上角同步即可拉取健康数据。","COROS connected — tap Sync to pull health data."));
+      syncMsg(T("高驰已连接，正在同步…","COROS connected — syncing…"));
+      document.getElementById("syncBtn").click();
     }
     return true;
   }catch(e){
@@ -2168,7 +2239,7 @@ function lastBackupTs(){ try{ return parseInt(localStorage.getItem(BK_REMIND_K)|
 function markBackedUp(){ try{ localStorage.setItem(BK_REMIND_K, String(Date.now())); }catch(e){} }
 function backupRemindDue(){
   const t = lastBackupTs();
-  if(!t) return true;                       /* 从未备份过，也提醒 */
+  if(!t){ markBackedUp(); return false; }   /* 第一次打开：从现在起算 5 天，不一上来就提醒 */
   const days = (Date.now() - t) / 864e5;
   return days >= 5;
 }
@@ -2199,7 +2270,60 @@ function maybeRemindBackup(){
   }catch(e){}
 }
 /* 用户真正保存进度文件后，才记录已备份时间（见 bkSave 的监听） */
-maybeRemindBackup();
+if(FRESH && !/[?&]code=/.test(location.search)) showWelcome(); else maybeRemindBackup();
+
+/* ---------- 第一次打开：填几项个人资料和目标，都能留空，之后在「目标」里改 ---------- */
+function showWelcome(){
+  const ic = p=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>';
+  const fld = (id,zh,en,attrs)=>`<div class="field"><label for="${id}">${T(zh,en)}</label><input id="${id}" ${attrs}></div>`;
+  const mask = document.createElement("div");
+  mask.className = "mask";
+  mask.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="${T("欢迎","Welcome")}" style="max-width:480px;grid-template-rows:auto minmax(0,1fr) auto">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <b style="font-size:17px">👋 ${T("欢迎来到推拉机","Welcome to track-TOR")}</b>
+      <button type="button" data-close class="iconbtn" aria-label="${T("关闭","Close")}">${CLOSE_ICON}</button>
+    </div>
+    <div style="overflow:auto;display:grid;gap:12px">
+      <p class="sub" style="margin:0">${T("填几项，热量和目标进度才算得准。可以留空，以后在「数据 › 目标」里改。","Fill in a few things so calories and goal progress are accurate. Anything can stay blank; change it later under Data › Goals.")}</p>
+      <div class="mode-tabs" id="wSex" role="group" aria-label="${T("性别","Sex")}"><button type="button" data-v="m" style="font-size:22px;padding:4px" aria-label="${T("男","Male")}">♂</button><button type="button" data-v="f" style="font-size:22px;padding:4px" aria-label="${T("女","Female")}">♀</button></div>
+      <div class="fgrid">
+        ${fld("wB","生日","Birthday",'type="date"')}
+        ${fld("wH","身高（cm）","Height (cm)",'type="number" inputmode="decimal" step="0.5"')}
+        ${fld("wW0","现在体重（kg）","Weight now (kg)",'type="number" inputmode="decimal" step="0.1"')}
+        ${fld("wP","目标引体（个）","Pull-up goal (reps)",'type="number" inputmode="numeric" step="1" min="1"')}
+        ${fld("wW","目标体重（kg）","Target weight (kg)",'type="number" inputmode="decimal" step="0.5"')}
+        ${fld("wZ","目标腰围（cm）","Target waist (cm)",'type="number" inputmode="decimal" step="0.5"')}
+      </div>
+    </div>
+    <div style="display:grid;gap:8px">
+      <button id="wGo" type="button" class="btn ibtn" style="width:100%;background:var(--cta);font-size:15px;padding:12px">${ic('<path d="M5 12l5 5L20 7"/>')}${T("开始","Start")}</button>
+      <button id="wCoros" type="button" class="btn ghost ibtn" style="width:100%">${ic('<rect x="7" y="6" width="10" height="12" rx="3"/><path d="M9 6V3h6v3M9 18v3h6v-3M12 10v2l1.5 1"/>')}${T("有高驰手表？连接后自动读取","Have a COROS watch? Connect to fill these in")}</button>
+    </div>
+  </div>`;
+  document.body.appendChild(mask);
+  const q = id=>mask.querySelector("#"+id);
+  let sex = null;
+  q("wSex").addEventListener("click", e=>{
+    const b = e.target.closest("button[data-v]"); if(!b) return;
+    sex = sex===b.dataset.v ? null : b.dataset.v;
+    q("wSex").querySelectorAll("button").forEach(x=>x.classList.toggle("active", x.dataset.v===sex));
+  });
+  const save = ()=>{
+    const st = state.settings, num = id=>{ const v = numOrNull(q(id).value); return v!=null && v>0 ? v : null; };
+    if(sex) st.sex = sex;
+    if(/^\d{4}-\d{2}-\d{2}$/.test(q("wB").value)) st.b = q("wB").value;
+    const h = num("wH"); if(h!=null && h>=100 && h<=230){ st.h = h; st.hSrc = "manual"; }
+    const p = num("wP"), w = num("wW"), z = num("wZ");
+    if(p!=null) st.p = Math.round(p); if(w!=null) st.w = w; if(z!=null) st.z = z;
+    const w0 = num("wW0"); if(w0!=null) saveMetric(today(), {weight: +w0.toFixed(1)});
+    lsSave(); renderAll(); if(window.renderDietAll) renderDietAll();
+  };
+  const close = ()=>mask.remove();
+  q("wGo").addEventListener("click", ()=>{ save(); close(); });
+  q("wCoros").addEventListener("click", ()=>{ save(); close(); promptCorosToken(); });
+  /* closing without "Start" still counts as visited, so the sheet never comes back */
+  mask.querySelector("[data-close]").addEventListener("click", ()=>{ lsSave(); close(); });
+}
 
 /* ---------- sound: synthesised with Web Audio, no files ---------- */
 (function(){
@@ -2325,7 +2449,8 @@ const dietState = window.dietState = {
   open: new Set()
 };
 
-const BIRTH = "1984-09-23", W_DEFAULT = 64.3, ACT_FACTOR = 0.5, TEF = 0.09, TEF_DEFAULT = 1850;
+/* used only until the user fills in their own profile or weight */
+const AGE_DEFAULT = 30, W_DEFAULT = 65, ACT_FACTOR = 0.5, TEF = 0.09, TEF_DEFAULT = 1850;
 
 function numVal(v){ return (v===null||v===undefined||v===""||isNaN(+v)) ? null : +v; }
 function f1Dec(v){ return v===null ? "–" : (Math.round(v*10)/10).toFixed(1).replace("-","−"); }
@@ -2353,8 +2478,11 @@ function intakeOf(date){
   return d.items && d.items.length ? dietTotals(d).kcal : null;
 }
 
+function profile(){ const st = window.state || (typeof state!=="undefined" ? state : null); return (st && st.settings) || {}; }
 function ageAtDate(date){
-  const [by,bm,bd] = BIRTH.split("-").map(Number), [y,m,d] = date.split("-").map(Number);
+  const b = profile().b;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(b||"")) return AGE_DEFAULT;
+  const [by,bm,bd] = b.split("-").map(Number), [y,m,d] = date.split("-").map(Number);
   return y - by - ((m<bm || (m===bm && d<bd)) ? 1 : 0);
 }
 
@@ -2369,9 +2497,10 @@ function weightAtDate(date){
   return ks.length ? numVal(dietState.weights[ks[0]].kg) : W_DEFAULT;
 }
 
+/* Mifflin-St Jeor: +5 for men, -161 for women, the midpoint when sex is not set */
 function bmrOfDate(date){
-  const st = window.state || (typeof state!=="undefined" ? state : null); const h = (st && st.settings && st.settings.h) ? st.settings.h : 168;
-  return 10 * weightAtDate(date) + 6.25 * h - 5 * ageAtDate(date) + 5;
+  const p = profile(), h = p.h ? p.h : 170 /* = H_FALLBACK */, sx = p.sex==="m" ? 5 : p.sex==="f" ? -161 : -78;
+  return 10 * weightAtDate(date) + 6.25 * h - 5 * ageAtDate(date) + sx;
 }
 
 function burnOfDate(date){
