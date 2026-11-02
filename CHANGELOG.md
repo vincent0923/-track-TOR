@@ -19,10 +19,14 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 ### 变更 / Changed
 - 基础代谢按你自己的性别、生日和身高计算，不再用写死的默认值。
   Basal metabolic rate now uses your own sex, birthday, and height instead of built-in defaults.
-- 高驰授权失败时提示换个区域再试。
-  A failed COROS authorization now suggests trying another region.
+- 连接高驰的窗口加了提示：授权失败就稍等一分钟再试，或换个区域，不要连续点。失败时的提示也一样。
+  The COROS connect window now advises waiting a minute or trying another region if authorization fails, and not tapping repeatedly. Failure messages say the same.
 - 高驰授权成功后自动关掉登录页，不用自己关。高驰拒绝授权时也会提示原因，不再没有反应。
   The COROS login page now closes itself after you authorize, and a refused authorization shows the reason instead of doing nothing.
+
+### 移除 / Removed
+- 去掉手动粘贴高驰令牌，只保留一键授权。
+  Removed manual COROS token pasting; one-tap authorization is the only way to connect.
 
 ### 修复 / Fixed
 - 新用户第一次打开不再立刻弹出「该备份进度了」，5 天后才提醒。

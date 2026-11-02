@@ -1869,32 +1869,7 @@ async function connectMcp(){
   if(!tk.expires_at_epoch || tk.expires_at_epoch - Date.now()/1000 < COROS_RENEW_WITHIN) await refreshCorosToken(tk);
 }
 
-/* 轻量连通性探测：用 token 调一次 initialize，成功返回 true，失败返回 false（不抛错） */
-async function corosPing(tk){
-  try{
-    const issuer = (tk.issuer || "https://mcpus.coros.com").replace(/\/+$/, "");
-    const headers = {
-      "Authorization": (tk.token_type || "Bearer") + " " + tk.access_token,
-      "Content-Type": "application/json",
-      "Accept": "application/json, text/event-stream"
-    };
-    const r = await fetch(issuer + "/mcp", {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        jsonrpc: "2.0", id: 1, method: "initialize",
-        params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "COROS MCP Gateway CLI", version: "1.0.0" } }
-      }),
-      signal: AbortSignal.timeout(8000)
-    });
-    if(!r.ok) return false;
-    const raw = await r.text();
-    const p = parseMcpResponseText(r.headers.get("content-type") || "", raw);
-    return !!(p && p.result);
-  }catch(e){ return false; }
-}
-
-/* ---------- COROS 连接：自动授权优先（纯前端 PKCE），手动粘贴 token 兜底 ---------- */
+/* ---------- COROS 连接：纯前端 PKCE 授权 ---------- */
 function readCorosToken(){
   try{ return JSON.parse(localStorage.getItem("tracktor-coros-token") || "null"); }catch(e){ return null; }
 }
@@ -2021,7 +1996,6 @@ async function corosExchangeCode(issuer, clientId, code, verifier){
 }
 
 function promptCorosToken(){
-  const cur = readCorosToken();
   const mask = document.createElement("div");
   mask.className = "mask";
   mask.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="${T("连接高驰","Connect COROS")}" style="max-width:480px">
@@ -2043,25 +2017,12 @@ function promptCorosToken(){
         </select>
       </div>
       <button id="corosAuthBtn" type="button" class="btn" style="width:100%;background:var(--push);font-size:15px;padding:12px">${T("授权登录高驰账号","Authorize COROS account")}</button>
-      <p class="note" id="corosAuthMsg" style="margin:10px 0 0;min-height:16px"></p>
+      <p class="note" style="margin:10px 0 0">💡 ${T("授权失败的话，稍等一分钟再试，或换个区域。请不要连续点，太频繁会被高驰暂时拒绝。","If authorization fails, wait a minute and try again, or pick another region. Please don't tap repeatedly; COROS temporarily refuses rapid attempts.")}</p>
+      <p class="note" id="corosAuthMsg" style="margin:6px 0 0;min-height:16px"></p>
     </div>
 
-    <div style="margin-top:14px">
-      <button type="button" id="corosAdvToggle" style="border:0;background:none;color:var(--muted);font-size:12px;padding:0;cursor:pointer;text-decoration:underline">${T("已有令牌？手动粘贴","Have a token? Paste manually")}</button>
-      <div id="corosAdvBox" hidden style="margin-top:8px">
-        <div class="field"><label for="corosTokenInp">${T("高驰令牌","COROS Token")}</label>
-          <textarea id="corosTokenInp" rows="4" style="font-family:monospace;font-size:12px" placeholder='{"access_token":"...","refresh_token":"...","client_id":"...","expires_at_epoch":...}'></textarea>
-        </div>
-        <div class="row" style="margin-top:10px;justify-content:flex-end">
-          <button id="corosTokClear" type="button" class="btn ghost" ${cur?"":"hidden"}>${T("清除已存令牌","Clear saved token")}</button>
-          <button id="corosTokGo" type="button" class="btn" style="background:var(--push)">${T("保存并连接","Save & connect")}</button>
-        </div>
-      </div>
-    </div>
   </div>`;
   document.body.appendChild(mask);
-  const inp = mask.querySelector("#corosTokenInp");
-  if(cur){ try{ inp.value = JSON.stringify(cur, null, 2); }catch(e){} }
   const regionSel = mask.querySelector("#corosRegionSel");
   regionSel.value = corosRegion();
   regionSel.addEventListener("change", ()=>{ try{ localStorage.setItem(COROS_REGION_K, regionSel.value); }catch(e){} });
@@ -2069,53 +2030,6 @@ function promptCorosToken(){
   const close = ()=>{ mask.remove(); };
   mask.querySelector("[data-close]").addEventListener("click", close);
   mask.addEventListener("click", e=>{ if(e.target===mask) close(); });
-
-  /* 高级选项折叠 */
-  mask.querySelector("#corosAdvToggle").addEventListener("click", ()=>{
-    const box = mask.querySelector("#corosAdvBox");
-    box.hidden = !box.hidden;
-  });
-
-  /* 清除令牌 */
-  mask.querySelector("#corosTokClear").addEventListener("click", ()=>{
-    try{ localStorage.removeItem("tracktor-coros-token"); }catch(e){}
-    mcp = null; mcpReady = false; syncUI();
-    syncMsg(T("已清除令牌","Token cleared"));
-    close();
-  });
-
-  /* 手动粘贴令牌（兜底） */
-  mask.querySelector("#corosTokGo").addEventListener("click", async ()=>{
-    const raw = inp.value.trim();
-    if(!raw){ syncMsg(T("请先粘贴令牌","Please paste a token first")); return; }
-    let tk = null;
-    try{ tk = JSON.parse(raw); }catch(e){}
-    if(!tk){
-      if(/^[A-Za-z0-9._~\-]{40,}$/.test(raw)){
-        tk = { access_token: raw, token_type: "Bearer", issuer: regionIssuer() };
-      } else {
-        syncMsg(T("令牌格式无法识别，请粘贴完整的 JSON 或 access_token。","Token format not recognised — paste the full JSON or a raw access_token."));
-        return;
-      }
-    }
-    if(!tk.access_token){ syncMsg(T("令牌缺少 access_token 字段","Token is missing access_token")); return; }
-    if(!tk.issuer){ tk.issuer = regionIssuer(); }
-    try{ localStorage.setItem("tracktor-coros-token", JSON.stringify(tk)); }catch(e){
-      syncMsg(T("无法保存到本地存储","Could not save to local storage")); return;
-    }
-    close();
-    syncMsg(T("令牌已保存，正在连接高驰…","Token saved, connecting to COROS…"));
-    mcp = null; mcpReady = false;
-    if(await corosPing(tk)){
-      await connectMcp();
-      syncMsg(T("高驰已连接，点击右上角同步。","COROS connected — tap Sync."));
-    } else {
-      try{ localStorage.removeItem("tracktor-coros-token"); }catch(e){}
-      syncUI();
-      promptCorosToken();
-      syncMsg(T("连接失败，请检查令牌是否有效或是否过期。","Connection failed — check that the token is valid and not expired."));
-    }
-  });
 
   /* 自动授权主流程 */
   mask.querySelector("#corosAuthBtn").addEventListener("click", async ()=>{
@@ -2185,12 +2099,11 @@ function promptCorosToken(){
       btn.disabled = false;
       regionSel.disabled = false;
       btn.textContent = T("授权登录高驰账号","Authorize COROS account");
-      msgEl.textContent = T("授权失败：","Authorization failed: ") + (e.message || e) + T("。可以换个区域再试。",". Try another region.");
-      syncMsg(T("授权失败，请重试或改用「手动粘贴」。","Authorization failed — retry or paste token manually."));
+      msgEl.textContent = T("授权失败：","Authorization failed: ") + (e.message || e) + T("。稍等一分钟再试，或换个区域。",". Wait a minute and retry, or try another region.");
+      syncMsg(T("授权失败。稍等一分钟再试，或换个区域。","Authorization failed. Wait a minute and retry, or try another region."));
     }
   });
 
-  inp.addEventListener("keydown", e=>{ if(e.key==="Enter" && (e.metaKey||e.ctrlKey)) mask.querySelector("#corosTokGo").click(); });
 }
 
 /* 页面加载时：检测 URL 是否带回授权 code（从高驰跳转回来） */
@@ -2203,7 +2116,7 @@ async function handleCorosCallback(){
     if(!code && err && sessionStorage.getItem("tracktor-coros-pending")){
       sessionStorage.removeItem("tracktor-coros-pending");
       if(window.history && window.history.replaceState) window.history.replaceState({}, "", window.location.pathname);
-      syncMsg(T("高驰授权没有完成：","COROS authorization didn't finish: ") + (q.get("error_description") || err) + T("。可以换个区域再试。",". Try another region."));
+      syncMsg(T("高驰授权没有完成：","COROS authorization didn't finish: ") + (q.get("error_description") || err) + T("。稍等一分钟再试，或换个区域。",". Wait a minute and retry, or try another region."));
       return false;
     }
     if(!code) return false;
