@@ -67,8 +67,13 @@
 .subtabs button{flex:1;font-size:20px;line-height:1;padding:8px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer}
 .subtabs button[aria-selected="true"]{background:var(--sunk);border-color:var(--ink)}
 .chartbox h3 .num{margin-left:auto}
-.chartbox h3 .chedit{flex:none;align-self:center;width:32px;height:32px;display:grid;place-items:center;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--surface);color:var(--cta);cursor:pointer}
-.chartbox h3 .chedit svg{width:17px;height:17px;display:block}
+.chedit{flex:none;align-self:center;width:32px;height:32px;display:grid;place-items:center;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--surface);color:var(--cta);cursor:pointer}
+.chedit svg{width:17px;height:17px;display:block}
+.kcal-row{display:flex;align-items:flex-end;gap:8px}
+.kcal-row .flabel{flex:1;min-width:0}
+.calc-btn{flex:none;width:52px;height:40px;display:grid;place-items:center;padding:0;border:1px solid var(--cta);border-radius:8px;background:var(--cta);color:#fff;cursor:pointer}
+.calc-btn:disabled{border-color:var(--line);background:var(--sunk);color:var(--muted);cursor:default}
+.calc-btn svg{width:19px;height:19px;display:block}
 .btn.recsave{display:inline-grid;place-items:center;width:52px;height:44px;padding:0;background:var(--cta);color:#fff}
 .recsave svg{width:21px;height:21px;display:block}
 .xblock{margin-top:16px;padding-top:4px;border-top:2px dashed var(--line)}
@@ -383,7 +388,7 @@ h1 .ver{font-family:var(--f-num);font-size:12px;font-weight:400;color:var(--mute
 <div class="wrap">
   <header class="top">
     <div class="trow">
-      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.07a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
+      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.08a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
       <button id="pwaInstallBtn" type="button" style="display:none;background:var(--cta);border:0;color:#fff;font-weight:700;font-size:12px;padding:5px 11px;border-radius:999px;cursor:pointer;margin-right:6px">📲 <span class="zh">安装 App</span><span class="en">Install</span></button><button id="syncBtn" class="syncbtn off"><span class="zh">连接中</span><span class="en">Connecting</span></button>
     </div>
     <div class="hrow"><p class="sub"><span class="zh">下一次</span><span class="en">Next</span> <b id="stNext" class="num" style="font-size:16px;color:var(--ink)">—</b></p><div class="hbtns">
@@ -610,6 +615,8 @@ h1 .ver{font-family:var(--f-num);font-size:12px;font-weight:400;color:var(--mute
 
 <script>
 const CLOSE_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+const PENCIL_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9a2.1 2.1 0 0 0-3-3L5 17z"/><path d="M14 20h6"/></svg>';
+const CALC_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M8.5 6.5h7"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01M8.5 14.5h.01M12 14.5h.01M15.5 14.5h.01M8.5 18h.01M12 18h.01M15.5 18h.01"/></svg>';
 const SAVE_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>';
 (function(){
 "use strict";
@@ -2578,7 +2585,7 @@ function renderDietDays(){
     return `<article class="diet-day">
       <div class="dhead"><h3><button class="dtoggle" type="button" data-dtoggle="${k}" aria-expanded="${dietState.open.has(k)}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>${dotDateStr(k)}</button></h3>
         <div class="pills"><span class="pill">${T("摄入","In")} <b>${f0Dec(intake)}</b></span><span class="pill">${T("消耗","Burn")} <b>${f0Dec(b)}</b></span>${gap===null ? "" : `<span class="pill ${gap>=0 ? "g" : "r"}">${gap>=0 ? T("缺口","Deficit") : T("盈余","Surplus")} <b>${f0Dec(Math.abs(gap))}</b></span>`}
-        <button class="btn ghost" type="button" data-dedit="${k}" style="padding:4px 8px;font-size:12px">${T("编辑","Edit")}</button></div></div>
+        <button class="chedit" type="button" data-dedit="${k}" aria-label="${T("编辑","Edit")}" title="${T("编辑","Edit")}">${PENCIL_ICON}</button></div></div>
       <div class="tbl"${dietState.open.has(k) ? "" : " hidden"}><table><thead><tr><th>${T("食物","Food")}</th><th>${T("蛋白质","Protein")}<small>g</small></th><th>${T("脂肪","Fat")}<small>g</small></th><th>${T("碳水","Carbs")}<small>g</small></th><th>${T("热量","kcal")}<small>kcal</small></th><th>${T("蔬菜","Veg")}<small>g</small></th></tr></thead>
       <tbody>${rows}<tr class="tot"><td class="f"><b>${T("合计","Total")}</b></td><td>${f1Dec(t.p)}</td><td>${f1Dec(t.f)}</td><td>${f1Dec(t.c)}</td><td>${f0Dec(intake)}</td><td>${t.veg ? f0Dec(t.veg) : "–"}</td></tr></tbody></table></div>
       ${metaLine}
@@ -2699,7 +2706,10 @@ function openDietEntryModal(initDate){
 
         ${mode==="total" ? `
           <div class="burn-box">
-            ${numInp("tdKcal", T("总热量 kcal","Total kcal"), total.kcal, 1)}
+            <div class="kcal-row">
+              ${numInp("tdKcal", T("总热量 kcal","Total kcal"), total.kcal, 1)}
+              <button class="calc-btn" type="button" id="tdCalc" aria-label="${T("按蛋白、脂肪、碳水估算总热量","Estimate calories from protein, fat and carbs")}" title="${T("按蛋白、脂肪、碳水估算总热量","Estimate calories from protein, fat and carbs")}"${macroKcal(total)===null ? " disabled" : ""}>${CALC_ICON}</button>
+            </div>
             <div class="total-grid">
               ${numInp("tdP", T("蛋白 g","Protein g"), total.p, 0.1)}
               ${numInp("tdF", T("脂肪 g","Fat g"), total.f, 0.1)}
@@ -2810,6 +2820,12 @@ function openDietEntryModal(initDate){
     if(typeof window.renderAll === "function") window.renderAll();
   }
 
+  /* 蛋白、脂肪、碳水都填了才有估算值，按 4/9/4 算；0 也算填了 */
+  function macroKcal(v){
+    const p = numVal(v.p), f = numVal(v.f), c = numVal(v.c);
+    return (p === null || f === null || c === null) ? null : Math.round(p*4 + f*9 + c*4);
+  }
+
   function sameTotal(a,b){ return ["kcal","p","f","c","veg"].every(k=>(numVal(a[k])||0)===(numVal(b[k])||0)); }
 
   /* 总热量视图写回当天：没改就保留原有明细，改了才换成一条合计。返回 false 表示需要留在面板里 */
@@ -2843,6 +2859,21 @@ function openDietEntryModal(initDate){
         renderModal();
       });
     });
+    const calcBtn = m.querySelector("#tdCalc");
+    if(calcBtn){
+      m.querySelectorAll("#tdP,#tdF,#tdC").forEach(inp=>{
+        inp.addEventListener("input", ()=>{
+          syncFormFromDOM();
+          calcBtn.disabled = macroKcal(total) === null;
+        });
+      });
+      calcBtn.addEventListener("click", ()=>{
+        syncFormFromDOM();
+        m.querySelector("#tdKcal").value = macroKcal(total);
+        syncFormFromDOM();
+        m.querySelector("#dburnPreview").innerHTML = burnPreviewHtml();
+      });
+    }
     const addRowBtn = m.querySelector("#daddItemRowBtn");
     if(addRowBtn){
       addRowBtn.addEventListener("click", ()=>{

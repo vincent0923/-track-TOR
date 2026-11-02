@@ -6,6 +6,18 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 
 ---
 
+## [v1.08a] — 2026-11-02
+
+### 新增 / Added
+- 🧮 **估算总热量**：手动记录饮食时，蛋白质、脂肪、碳水都填好后，计算器按钮由灰变橙，按下按 4/9/4 填入估算的总热量，方便粗略核对。
+  Estimate calories: once protein, fat, and carbs are filled in, the calculator button turns orange. Tap it to fill in an estimate (4/9/4 kcal per gram) as a rough cross-check.
+
+### 变更 / Changed
+- ✏️ 饮食页的编辑按钮改用手写图标，与图表上的记录按钮一致。
+  The diet page's edit button now uses the same pencil icon as the charts.
+
+---
+
 ## [v1.07a] — 2026-11-02
 
 ### 变更 / Changed
