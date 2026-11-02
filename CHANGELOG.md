@@ -6,6 +6,28 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 
 ---
 
+## [v1.12a] — 2026-11-03
+
+### 新增 / Added
+- 👤 **个人资料面板**：性别、出生年月、身高和现在体重从「目标」里拆出来，单独放在数据页。默认模糊显示，点眼睛或点输入框才看得清，收起面板又会模糊。改「现在体重」会记成当天的手动体重。
+  A separate Profile panel on the Data page holds sex, birth month, height, and current weight. Values are blurred until you tap the eye or a field, and blur again when the panel closes. Changing "Weight now" logs a manual weight for today.
+
+### 变更 / Changed
+- 🎂 生日只填年和月。
+  Birthday is now just year and month.
+- 「目标」面板只留引体、体重和腰围三个目标。把目标清空就是取消这个目标。
+  The Goals panel keeps only the pull-up, weight, and waist goals. Clearing a box removes that goal.
+- ⚡ 数字字体放进仓库，不再从 Google Fonts 加载。打开网页不再访问任何外部网站，国内打开更快。
+  The number font is now bundled instead of loaded from Google Fonts, so opening the app makes no outside requests and loads faster in China.
+- 整理代码：训练和饮食两部分合到同一层，去掉重复的代码和没用的函数。
+  Code cleanup: training and diet code now share one scope, and duplicated and unused code is gone.
+
+### 修复 / Fixed
+- 英文界面的目标进度卡不再出现中文括号。
+  The goal cards in English no longer show Chinese full-width brackets.
+
+---
+
 ## [v1.11a] — 2026-11-03
 
 ### 新增 / Added

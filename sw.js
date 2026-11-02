@@ -1,12 +1,15 @@
 // Service Worker for 推拉机 track-TOR PWA
-const CACHE_NAME = "tracktor-pwa-v2";
+const CACHE_NAME = "tracktor-pwa-v3";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png",
-  "./icon.svg"
+  "./icon.svg",
+  "./fonts/barlow-condensed-500.woff2",
+  "./fonts/barlow-condensed-600.woff2",
+  "./fonts/barlow-condensed-700.woff2"
 ];
 
 self.addEventListener("install", (e) => {

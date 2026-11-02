@@ -129,9 +129,12 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="icon-192.png">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&display=swap">
+<style>
+/* Barlow Condensed, self-hosted (SIL OFL, see fonts/OFL.txt) */
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/barlow-condensed-500.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/barlow-condensed-600.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:700;font-display:swap;src:url(fonts/barlow-condensed-700.woff2) format("woff2")}
+</style>
 <style>
 /* Layout: one narrow column, phone first. A sticky summary strip, three tabs (训练 / 数据 / 要点),
    sessions as stacked cards; push sessions marked in rust, pull sessions in cobalt. */
@@ -344,6 +347,9 @@ table.log td{font-family:var(--f-num);font-size:17px}
 @keyframes chev{from{background-position:0 50%}to{background-position:12px 50%}}
 .fw{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:40}
 .gb .gr{font-size:11px;color:var(--muted);font-family:var(--f-num);letter-spacing:.02em}
+.mehead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.mefields.hid input,.mefields.hid select{filter:blur(6px)}
+.mefields.hid .hsrc{visibility:hidden}
 .gset{border:0;background:none;padding:0;font:inherit;font-weight:700;color:var(--g);text-decoration:underline;cursor:pointer}
 details.fold{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin-top:10px}
 details.fold>summary{list-style:none;cursor:pointer;padding:12px 14px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
@@ -391,7 +397,7 @@ h1 .ver{font-family:var(--f-num);font-size:12px;font-weight:400;color:var(--mute
 <div class="wrap">
   <header class="top">
     <div class="trow">
-      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.11a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
+      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.12a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
       <button id="pwaInstallBtn" type="button" style="display:none;background:var(--cta);border:0;color:#fff;font-weight:700;font-size:12px;padding:5px 11px;border-radius:999px;cursor:pointer;margin-right:6px">📲 <span class="zh">安装 App</span><span class="en">Install</span></button><button id="syncBtn" class="syncbtn off"><span class="zh">连接中</span><span class="en">Connecting</span></button>
     </div>
     <div class="hrow"><p class="sub"><span class="zh">下一次</span><span class="en">Next</span> <b id="stNext" class="num" style="font-size:16px;color:var(--ink)">—</b></p><div class="hbtns">
@@ -487,11 +493,18 @@ h1 .ver{font-family:var(--f-num);font-size:12px;font-weight:400;color:var(--mute
       <div class="chartbox"><h3><span class="zh">HRV</span><span class="en">HRV</span> <span id="cvHrv" class="num">—</span></h3><p><span style="color:var(--muted)">●</span> <span class="zh">夜间心率变异性，每晚一点</span><span class="en">Overnight heart-rate variability, one dot per night</span>　<span class="zh">线为移动平均</span><span class="en">Line: moving average</span></p><p class="maline" data-ch="hrv"><span class="maseg rgseg" role="group" aria-label="Range"><button type="button" data-rg="7"><span class="zh">7天</span><span class="en">7D</span></button><button type="button" data-rg="30"><span class="zh">30天</span><span class="en">30D</span></button><button type="button" data-rg="60"><span class="zh">60天</span><span class="en">60D</span></button><button type="button" data-rg="90"><span class="zh">90天</span><span class="en">90D</span></button><button type="button" data-rg="0"><span class="zh">全部</span><span class="en">All</span></button></span><span class="maseg" role="group" aria-label="MA"><button type="button" data-ma="7">MA7</button><button type="button" data-ma="14">MA14</button><button type="button" data-ma="30">MA30</button></span></p><div id="chHrv"></div></div>
       <div class="chartbox"><h3><span class="zh">静息心率</span><span class="en">Resting heart rate</span> <span id="cvRhr" class="num">—</span></h3><p><span style="color:var(--muted)">●</span> <span class="zh">每天一点，线为移动平均；越低通常说明恢复越好</span><span class="en">One dot per day, line is the moving average; lower usually means better recovery</span></p><p class="maline" data-ch="rhr"><span class="maseg rgseg" role="group" aria-label="Range"><button type="button" data-rg="7"><span class="zh">7天</span><span class="en">7D</span></button><button type="button" data-rg="30"><span class="zh">30天</span><span class="en">30D</span></button><button type="button" data-rg="60"><span class="zh">60天</span><span class="en">60D</span></button><button type="button" data-rg="90"><span class="zh">90天</span><span class="en">90D</span></button><button type="button" data-rg="0"><span class="zh">全部</span><span class="en">All</span></button></span><span class="maseg" role="group" aria-label="MA"><button type="button" data-ma="7">MA7</button><button type="button" data-ma="14">MA14</button><button type="button" data-ma="30">MA30</button></span></p><div id="chRhr"></div></div>
 
+      <details class="fold savefold" id="foldMe"><summary><span class="sumt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span class="zh">个人资料</span><span class="en">Profile</span></span><span class="saveic" aria-label="保存并收起"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg></span></summary><div class="fbody">
+        <div class="mehead"><span class="note" style="margin:0"><span class="zh">用来算基础代谢和 BMI</span><span class="en">Used for BMR and BMI</span></span><button type="button" class="iconbtn" id="meEye" aria-pressed="false"></button></div>
+        <div class="fgrid mefields hid" id="meFields">
+          <div class="field"><label for="gS"><span class="zh">性别</span><span class="en">Sex</span></label><select id="gS" data-g="sex"><option value=""></option><option value="m">♂</option><option value="f">♀</option></select></div>
+          <div class="field"><label for="gB"><span class="zh">出生年月</span><span class="en">Birth month</span></label><input id="gB" type="month" data-g="b"></div>
+          <div class="field"><label for="gH"><span class="zh">身高（cm）</span><span class="en">Height (cm)</span></label><input id="gH" type="number" inputmode="decimal" step="0.5" data-g="h"><span class="hsrc" id="gHsrc"></span></div>
+          <div class="field"><label for="gCW"><span class="zh">现在体重（kg）</span><span class="en">Weight now (kg)</span></label><input id="gCW" type="number" inputmode="decimal" step="0.1" data-g="cw"><span class="hsrc" id="gCWsrc"></span></div>
+        </div>
+      </div></details>
+
       <details class="fold savefold" id="foldGoal"><summary><span class="sumt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4"/><path d="M12 13v4M8.5 20h7M10 17h4v3h-4z"/></svg><span class="zh">目标</span><span class="en">Goals</span></span><span class="saveic" aria-label="保存并收起"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg></span></summary><div class="fbody">
         <div class="gsec"><div class="fgrid">
-          <div class="field"><label for="gS"><span class="zh">性别</span><span class="en">Sex</span></label><select id="gS" data-g="sex"><option value=""></option><option value="m">♂</option><option value="f">♀</option></select></div>
-          <div class="field"><label for="gB"><span class="zh">生日</span><span class="en">Birthday</span></label><input id="gB" type="date" data-g="b"></div>
-          <div class="field"><label for="gH"><span class="zh">身高（cm）</span><span class="en">Height (cm)</span></label><input id="gH" type="number" inputmode="decimal" step="0.5" data-g="h"><span class="hsrc" id="gHsrc"></span></div>
           <div class="field"><label for="gP"><span class="zh">目标引体（个）</span><span class="en">Pull-up goal (reps)</span></label><input id="gP" type="number" inputmode="numeric" step="1" min="1" data-g="p"></div>
         </div></div>
         <div class="gsec">
@@ -636,7 +649,8 @@ const CLOSE_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" str
 const PENCIL_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9a2.1 2.1 0 0 0-3-3L5 17z"/><path d="M14 20h6"/></svg>';
 const CALC_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M8.5 6.5h7"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01M8.5 14.5h.01M12 14.5h.01M15.5 14.5h.01M8.5 18h.01M12 18h.01M15.5 18h.01"/></svg>';
 const SAVE_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>';
-(function(){
+const EYE_ON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+      EYE_OFF='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.9 17.9A10.4 10.4 0 0 1 12 19c-6.5 0-10-7-10-7a18.5 18.5 0 0 1 5.1-5.9M9.9 5.2A9.7 9.7 0 0 1 12 5c6.5 0 10 7 10 7a18.6 18.6 0 0 1-2.2 3.2M14.1 14.1a3 3 0 1 1-4.2-4.2"/><path d="M2 2l20 20"/></svg>';
 "use strict";
 /* ---------- program ---------- */
 const STRETCH = {id:"stretch",name:"拉伸",en:"Stretch",unit:"分钟",target:5,sets:1};
@@ -697,16 +711,13 @@ const BYID = Object.fromEntries(PROGRAM.map(s=>[s.sid,s]));
 
 /* ---------- helpers ---------- */
 function pad(n){return String(n).padStart(2,"0")}
-window.pad = pad;
 let LANG="zh";try{LANG=localStorage.getItem("pushpull-v1-lang")||"zh"}catch(e){}
 const T=(zh,en)=>LANG==="en"?en:zh;
-window.T = T;
 const N=e=>T(e.name,e.en), NS=e=>T(e.name.replace(/（.*）/,""),e.en.replace(/\s*\(.*\)/,"")), NOTE=e=>T(e.note,e.noteEn);
 const U=u=>T(u,{"个":"reps","秒":"s","分钟":"min"}[u]||u);
 const LAB=p=>T((p.kind==="push"?"推练":"拉练")+" D"+p.day,(p.kind==="push"?"Push":"Pull")+" D"+p.day);
 const SHORT=p=>T((p.kind==="push"?"推":"拉")+"D"+p.day,(p.kind==="push"?"Push":"Pull")+" D"+p.day);
 function today(){const d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
-window.today = today;
 /* date fields use the browser's native <input type="date"> picker: light, localized, and reliable. */
 /* flame: particle fire rising off the top edge of the 练 button. One fixed canvas follows the button
    (it is re-rendered often), skips drawing while the button is off screen or hidden. */
@@ -822,7 +833,6 @@ function md(s){if(!s)return "";const p=s.split("-");return (+p[1])+"."+(+p[2])}
 function dnum(s){const p=s.split("-");return Date.UTC(+p[0],+p[1]-1,+p[2])/864e5}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
 function numOrNull(v){if(v===""||v==null)return null;const n=Number(v);return isFinite(n)?n:null}
-function clone(o){return JSON.parse(JSON.stringify(o))}
 let toastT;
 function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2600)}
 
@@ -830,8 +840,10 @@ function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t
 /* nothing personal by default: the welcome sheet or a COROS sync fills these in */
 const GDEF={h:null,hC:null,hSrc:"coros",w:null,z:null,p:null,b:null,sex:null};
 const H_FALLBACK=170;
-const state = window.state = {sessions:{}, metrics:{}, settings:Object.assign({},GDEF)};
-const open = new Set();
+const state = {sessions:{}, metrics:{}, settings:Object.assign({},GDEF)};
+/* diet ledger state; filled by loadDietData() */
+const dietState = { days:{}, coros:{}, weights:{}, range:14, gw:7, open:new Set() };
+const openDays = new Set();
 const LS = "pushpull-v1";
 /* first visit on this browser: nothing saved yet (read before anything writes) */
 const FRESH = (()=>{try{return !localStorage.getItem(LS)&&!localStorage.getItem("tracktor-diet-v1")&&!localStorage.getItem("diet_ledger_state_v2")&&!localStorage.getItem("tracktor-coros-token")}catch(e){return false}})();
@@ -849,7 +861,7 @@ function lsSave(){
   try{localStorage.setItem(LS,JSON.stringify(state));lsOk=true}catch(e){if(lsOk){lsOk=false;toast(T("这个浏览器不允许保存，请先保存进度文件","This browser can't save data — save a progress file now"))}}
 }
 
-window.loadTrainData = async function loadTrainData(){
+async function loadTrainData(){
   lsLoad();
   renderAll();
 }
@@ -1016,7 +1028,7 @@ function renderTrain(){
     const [d,n]=sessionProgress(p.sid);
     const avail=isAvail(p.sid);
     const pill = done?'<span class="pill done">✓ '+(s.date?md(s.date):T("已完成","Done"))+'</span>':isCur?'<span class="pill now">'+T("下一次","Next")+'</span>':avail?'<span class="pill now">'+T("可练","Ready")+'</span>':'<span class="pill later">'+LOCK+T("未解锁","Locked")+'</span>';
-    const isOpen=open.has(p.sid);
+    const isOpen=openDays.has(p.sid);
     html+='<article class="card '+p.kind+(done?" isdone":"")+(avail?"":" future")+'" id="c-'+p.sid+'">'
       +'<button class="shead" data-toggle="'+p.sid+'" aria-expanded="'+isOpen+'">'
       +'<span class="tag">'+LAB(p)+'</span>'
@@ -1124,9 +1136,9 @@ function collapseAll(){
   const fb=dataVisible?ds.map(d=>d.querySelector(":scope>.fbody")):[];
   foldOut(bs.concat(fb),FOLD_MS).then(()=>{
     if(dataVisible)ds.forEach(d=>{d.open=false;const b=d.querySelector(":scope>.fbody");if(b)b.removeAttribute("style")});
-    open.clear();keepEditing();renderTrain()});
+    openDays.clear();keepEditing();renderTrain()});
 }
-function keepEditing(){unlocked.forEach(sid=>open.add(sid))}
+function keepEditing(){unlocked.forEach(sid=>openDays.add(sid))}
 /* "修改记录" asks once more before a finished day can be edited */
 function confirmEdit(sid){
   let m=document.getElementById("edMask");
@@ -1134,7 +1146,7 @@ function confirmEdit(sid){
     m.addEventListener("click",e=>{
       if(e.target===m||e.target.closest("[data-edx]")){m.hidden=true;return}
       const ok=e.target.closest("[data-edok]");
-      if(ok){const id=ok.dataset.edok;m.hidden=true;unlocked.add(id);open.add(id);renderTrain()}
+      if(ok){const id=ok.dataset.edok;m.hidden=true;unlocked.add(id);openDays.add(id);renderTrain()}
     })}
   m.innerHTML='<div class="dp" role="alertdialog" aria-modal="true" aria-labelledby="edT"><div class="dp-h"><b id="edT">'+T("修改记录","Edit record")+' · '+LAB(BYID[sid])+'</b></div>'
     +'<p class="edmsg">'+T("已完成的记录，按实际训练顺序排列。不建议修改过往记录：改动可能打乱训练顺序。","This record is shown in the order you trained. Editing past records is not recommended: changes can alter the training order.")+'</p>'
@@ -1163,11 +1175,11 @@ document.getElementById("pane-train").addEventListener("click",e=>{
   const xt=e.target.closest("[data-xa]"); if(xt){extraAct(xt);return}
   const t=e.target.closest("[data-toggle],[data-act]"); if(!t) return;
   if(t.dataset.toggle){const sid=t.dataset.toggle;
-    if(open.has(sid)&&unlocked.has(sid)){toast(T("正在修改这一天，按「保存」后才能收起","You're editing this day; tap Save before closing it"));return}
-    if(open.has(sid)){const b=document.querySelector("#c-"+sid+" .sbody");foldOut(b?[b]:[],FOLD_MS).then(()=>{open.delete(sid);renderTrain()});return}
-    open.add(sid);renderTrain();foldIn([bodyOf(sid)],FOLD_MS);return}
+    if(openDays.has(sid)&&unlocked.has(sid)){toast(T("正在修改这一天，按「保存」后才能收起","You're editing this day; tap Save before closing it"));return}
+    if(openDays.has(sid)){const b=document.querySelector("#c-"+sid+" .sbody");foldOut(b?[b]:[],FOLD_MS).then(()=>{openDays.delete(sid);renderTrain()});return}
+    openDays.add(sid);renderTrain();foldIn([bodyOf(sid)],FOLD_MS);return}
   if(t.dataset.act==="all"){t.classList.remove("pop");void t.offsetWidth;t.classList.add("pop");setTimeout(collapseAll,120);return}
-  if(t.dataset.act==="next"){const cur=currentSid();if(!cur)return;const was=open.has(cur);open.clear();keepEditing();open.add(cur);renderTrain();if(!was)foldIn([bodyOf(cur)],FOLD_MS);
+  if(t.dataset.act==="next"){const cur=currentSid();if(!cur)return;const was=openDays.has(cur);openDays.clear();keepEditing();openDays.add(cur);renderTrain();if(!was)foldIn([bodyOf(cur)],FOLD_MS);
     const fd=document.getElementById("fd-"+cur);if(fd){fd.value=today()}
     const el=document.getElementById("c-"+cur);if(el){el.scrollIntoView({behavior:"smooth",block:"start"});el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash")}return}
   const {act,sid,ex}=t.dataset; const i=+t.dataset.i;
@@ -1176,7 +1188,7 @@ document.getElementById("pane-train").addEventListener("click",e=>{
   if(act==="save"){unlocked.delete(sid);lsSave();
     toast(LAB(BYID[sid])+T(" 的修改已保存"," changes saved"));
     const b=document.querySelector("#c-"+sid+" .sbody");
-    foldOut(b?[b]:[],SAVE_FOLD_MS).then(()=>{open.delete(sid);renderAll();
+    foldOut(b?[b]:[],SAVE_FOLD_MS).then(()=>{openDays.delete(sid);renderAll();
       window.scrollTo({top:0,behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})});
     return}
   const s=sessionDoc(sid);
@@ -1212,7 +1224,7 @@ document.getElementById("pane-train").addEventListener("click",e=>{
       body.style.transition="height "+DUR+"ms cubic-bezier(.4,0,.2,1),opacity "+DUR+"ms ease,padding "+DUR+"ms ease";
       body.style.height="0px";body.style.opacity="0";body.style.paddingTop="0px";body.style.paddingBottom="0px"}
     setTimeout(()=>{
-      open.clear();keepEditing();autoOpened=true;renderAll();finishing=false;
+      openDays.clear();keepEditing();autoOpened=true;renderAll();finishing=false;
       window.scrollTo({top:0,behavior:slow?"smooth":"auto"});
     },DUR);
     return;
@@ -1288,6 +1300,9 @@ function wtDots(){const out=[];Object.values(state.metrics).filter(m=>m.date).fo
   if(m.weightC!=null&&m.weight==null)out.push({date:m.date,x:dnum(m.date),y:+m.weightC,c:"var(--muted)",tag:"COROS "});
   if(m.weight!=null)out.push({date:m.date,x:dnum(m.date),y:+m.weight,c:"var(--ok)",tag:T("手动 ","Manual ")});});
   return out.sort((a,b)=>a.x-b.x)}
+/* latest single weight reading; a manual entry beats COROS on the same day */
+function lastWeight(){const ms=Object.values(state.metrics).filter(m=>m.date&&(m.weight!=null||m.weightC!=null)).sort((a,b)=>a.date<b.date?1:-1);
+  const m=ms[0];return m?{date:m.date,y:+(m.weight??m.weightC),src:m.weight!=null?"m":"c"}:null}
 function avg7(pts,n=7){return pts.map(p=>{const w=pts.filter(q=>q.x<=p.x&&q.x>p.x-n);return {x:p.x,y:w.reduce((a,q)=>a+q.y,0)/w.length,date:p.date}})}
 function niceTicks(lo,hi,n){const span=hi-lo||1;const raw=span/n;const mag=Math.pow(10,Math.floor(Math.log10(raw)));const st=[1,2,2.5,5,10].map(m=>m*mag).find(s=>s>=raw);const a=Math.floor(lo/st)*st,b=Math.ceil(hi/st)*st;const out=[];for(let v=a;v<=b+1e-9;v+=st)out.push(+v.toFixed(4));return out}
 
@@ -1454,7 +1469,7 @@ document.getElementById("goals").addEventListener("click",e=>{
   renderGoals();
 });
 function renderGoals(){
-  const st=state.settings, HT=+st.h||H_FALLBACK, wr=v=>(v/HT).toFixed(3), WL=T("腰高比","WHtR");
+  const st=state.settings, HT=+st.h||H_FALLBACK, wr=v=>(v/HT).toFixed(3), WL=T("腰高比","WHtR"), par=t=>T("（"+t+"）"," ("+t+")");
   const GOALS=[
     {k:"pullups",name:T("引体","Pull-ups"),target:+st.p>0?+st.p:null,unit:T("个","reps"),color:"var(--pull)",start:0},
     {k:"waist",name:T("腰围","Waist"),target:+st.z>0?+st.z:null,unit:"cm",color:"var(--ok)"},
@@ -1465,10 +1480,10 @@ function renderGoals(){
     let start=null,cur=null,curTxt="—";
     if(g.k==="weight"){
       const all=wtMerged(); if(all.length){start=all[0].y;const a=avg7(all);cur=+a[a.length-1].y.toFixed(1);
-        curTxt=PRIV?"<small>BMI</small> "+bmi(cur).toFixed(1):cur.toFixed(1)+" kg <small>（BMI "+bmi(cur).toFixed(1)+"）</small>"}
+        curTxt=PRIV?"<small>BMI</small> "+bmi(cur).toFixed(1):cur.toFixed(1)+" kg <small>"+par("BMI "+bmi(cur).toFixed(1))+"</small>"}
     }else{
       const sr=g.k==="pullups"?pullSeries():series(g.k); if(g.start!=null)start=g.start; if(sr.length){if(g.start==null)start=sr[0].y;cur=sr[sr.length-1].y;curTxt=cur+" "+g.unit;
-        if(g.k==="waist")curTxt=PRIV?"<small>"+WL+"</small> "+wr(cur):curTxt+" <small>（"+WL+" "+wr(cur)+"）</small>"}
+        if(g.k==="waist")curTxt=PRIV?"<small>"+WL+"</small> "+wr(cur):curTxt+" <small>"+par(WL+" "+wr(cur))+"</small>"}
     }
     let pct=0;
     const noT=g.target==null;
@@ -1483,15 +1498,13 @@ function renderGoals(){
       ?(PRIV&&pv?'':T('起点 ','Start ')+startTxt+' → ')+setBtn
       :PRIV&&pv
       ?(g.k==="weight"?(start==null?"—":"BMI "+bmi(start).toFixed(1))+' → BMI '+bmi(g.target).toFixed(1):(start==null?"—":WL+" "+wr(start))+' → '+WL+' '+wr(g.target))
-      :T('起点 ','Start ')+startTxt+T(' → 目标 ',' → Goal ')+g.target+' '+g.unit+(g.k==="weight"?'（BMI '+bmi(g.target).toFixed(1)+'）':g.k==="waist"?'（'+WL+' '+wr(g.target)+'）':'');
+      :T('起点 ','Start ')+startTxt+T(' → 目标 ',' → Goal ')+g.target+' '+g.unit+(g.k==="weight"?par('BMI '+bmi(g.target).toFixed(1)):g.k==="waist"?par(WL+' '+wr(g.target)):'');
     h+='<div class="goal" style="--g:'+g.color+'">'+icon+'<div class="gb">'
       +'<div class="gh"><b>'+g.name+'</b><span class="gv">'+curTxt+'</span><span class="gp">'+(start==null||noT?"—":pct+"%")+'</span></div>'
       +'<div class="bar" role="progressbar" aria-label="'+g.name+T('进度',' progress')+'" aria-valuenow="'+pct+'" aria-valuemin="0" aria-valuemax="100"><i style="width:'+pct+'%"></i></div>'
       +'<div class="gr">'+range+'</div></div></div>';
   });
-  h+='<button type="button" class="privbtn'+(PRIV?' on':'')+'" data-priv="1" aria-pressed="'+PRIV+'" aria-label="'+T('隐私模式','Privacy view')+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
-    +(PRIV?'<path d="M17.9 17.9A10.4 10.4 0 0 1 12 19c-6.5 0-10-7-10-7a18.5 18.5 0 0 1 5.1-5.9M9.9 5.2A9.7 9.7 0 0 1 12 5c6.5 0 10 7 10 7a18.6 18.6 0 0 1-2.2 3.2M14.1 14.1a3 3 0 1 1-4.2-4.2"/><path d="M2 2l20 20"/>'
-          :'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>')+'</svg></button>';
+  h+='<button type="button" class="privbtn'+(PRIV?' on':'')+'" data-priv="1" aria-pressed="'+PRIV+'" aria-label="'+T('隐私模式','Privacy view')+'">'+(PRIV?EYE_OFF:EYE_ON)+'</button>';
   document.getElementById("goals").innerHTML=h;
   renderGoalPanel();
 }
@@ -1508,7 +1521,9 @@ function scaleSvg(min,max,bands,cur,tgt,dec){
 }
 function renderGoalPanel(){
   const st=state.settings, H=+st.h||H_FALLBACK;
-  [["gS","sex"],["gB","b"],["gH","h"],["gP","p"],["gW","w"],["gZ","z"]].forEach(([id,k])=>{const el=document.getElementById(id);if(el&&document.activeElement!==el)el.value=st[k]??""});
+  const lw=lastWeight();
+  [["gS",st.sex],["gB",(st.b||"").slice(0,7)],["gH",st.h],["gCW",lw&&lw.y],["gP",st.p],["gW",st.w],["gZ",st.z]].forEach(([id,v])=>{const el=document.getElementById(id);if(el&&document.activeElement!==el)el.value=v??""});
+  document.getElementById("gCWsrc").textContent=lw?md(lw.date)+(lw.src==="c"?T(' · 高驰',' · COROS'):''):'';
   document.getElementById("gHsrc").innerHTML=st.hSrc==="manual"?T('手动填写','Entered manually')+(st.hC?' · <button type="button" id="gHreset">'+T('改用高驰 ','Use COROS ')+st.hC+'</button>':''):(st.hC&&st.h?T('来自高驰','From COROS'):'');
   const cw=curWeight(), cz=curWaist();
   const bT=+st.w>0?bmi(+st.w):null, bC=cw!=null?bmi(cw):null;
@@ -1524,28 +1539,40 @@ function commitFold(d,quiet){
   const a=document.activeElement;
   if(a&&d.contains(a)&&a.blur)a.blur();
   if(d.id==="foldGoal"){saveSettings();if(!quiet)toast(T("目标已保存","Goals saved"))}
+  else if(d.id==="foldMe"){saveSettings();meEye(false);if(!quiet)toast(T("资料已保存","Profile saved"))}
   else if(d.id==="foldLog"){
     if(pendingDel){pendingDel=null;renderAll()}
     if(!quiet)toast(T("记录已保存","Records saved"));
   }
 }
 function saveSettings(){lsSave()}
-document.getElementById("foldGoal").addEventListener("change",e=>{
-  const k=e.target.dataset.g;if(!k)return;
-  if(k==="b"||k==="sex"){state.settings[k]=e.target.value||null;saveSettings();renderAll();if(window.renderDietAll)renderDietAll();return}
+/* profile and goal fields: each input carries data-g with the settings key it edits */
+function onSettingChange(e){
+  const k=e.target.dataset.g;if(!k)return;const st=state.settings;
+  if(k==="b"||k==="sex"){st[k]=e.target.value||null;saveSettings();renderAll();renderDietAll();return}
   const v=numOrNull(e.target.value);
-  if(k==="h"){if(v==null||v<100||v>230){state.settings.h=state.settings.hC||null;state.settings.hSrc="coros"}else{state.settings.h=v;state.settings.hSrc="manual"}}
-  else{if(v==null||v<=0){renderGoalPanel();return}state.settings[k]=v}
-  saveSettings();renderGoals();
-});
-document.getElementById("foldGoal").addEventListener("click",e=>{
+  if(k==="cw"){if(v!=null&&v>=20&&v<=300){saveMetric(today(),{weight:+v.toFixed(1)});renderAll();renderDietAll()}else renderGoalPanel();return}
+  if(k==="h"){if(v==null||v<100||v>230){st.h=st.hC||null;st.hSrc="coros"}else{st.h=v;st.hSrc="manual"}}
+  else if(v==null)st[k]=null;            /* an emptied goal is unset */
+  else if(v<=0){renderGoalPanel();return}
+  else st[k]=v;
+  saveSettings();renderGoals();renderDietAll();
+}
+document.getElementById("foldGoal").addEventListener("change",onSettingChange);
+document.getElementById("foldMe").addEventListener("change",onSettingChange);
+/* profile values stay blurred until the eye is opened or a field is touched; closing the panel blurs them again */
+function meEye(on){
+  const b=document.getElementById("meEye");
+  document.getElementById("meFields").classList.toggle("hid",!on);
+  b.innerHTML=on?EYE_ON:EYE_OFF;b.setAttribute("aria-pressed",on);b.setAttribute("aria-label",on?T("隐藏资料","Hide profile"):T("显示资料","Show profile"));
+}
+meEye(false);
+document.getElementById("meEye").addEventListener("click",()=>meEye(document.getElementById("meFields").classList.contains("hid")));
+document.getElementById("meFields").addEventListener("focusin",()=>meEye(true));
+document.getElementById("foldMe").addEventListener("click",e=>{
   if(e.target.id!=="gHreset")return;state.settings.h=state.settings.hC;state.settings.hSrc="coros";saveSettings();renderGoals();
 });
 function renderAll(){renderStats();renderTrain();renderData()}
-window.renderAll = renderAll;
-window.renderGoals = renderGoals;
-window.saveMetric = saveMetric;
-window.toast = toast;
 
 /* ---------- tabs ---------- */
 /* the data tab holds two views; older installs that saved the diet tab open on the diet view */
@@ -1556,8 +1583,8 @@ function setDataSub(sub){
   document.querySelectorAll(".subtabs button").forEach(x=>x.setAttribute("aria-selected",x.dataset.sub===sub));
   document.getElementById("pane-diet").hidden=sub!=="diet";
   document.getElementById("pane-charts").hidden=sub!=="charts";
-  if(sub==="diet"&&typeof renderDietAll==="function")renderDietAll();
-  if(sub==="charts"&&typeof renderData==="function")renderData();
+  if(sub==="diet")renderDietAll();
+  if(sub==="charts")renderData();
   try{localStorage.setItem(LS+"-sub",sub)}catch(e){}
 }
 document.querySelector(".subtabs").addEventListener("click",e=>{const b=e.target.closest("[data-sub]");if(b)setDataSub(b.dataset.sub)});
@@ -1567,7 +1594,7 @@ document.querySelector("nav.tabs").addEventListener("click",e=>{
   document.querySelectorAll("nav.tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
   ["train","data"].forEach(k=>{document.getElementById("pane-"+k).hidden=k!==b.dataset.tab});
   if(b.dataset.tab==="data")setDataSub(dataSub);
-  if(b.dataset.tab==="train" && typeof renderTrain==="function") renderTrain();
+  if(b.dataset.tab==="train") renderTrain();
   try{localStorage.setItem(LS+"-tab",b.dataset.tab)}catch(err){}
 });
 try{let t=localStorage.getItem(LS+"-tab");if(t==="diet")t="data";if(t){const b=document.querySelector('[data-tab="'+t+'"]');if(b)b.click()}}catch(e){}
@@ -1595,7 +1622,7 @@ function pack(){
       p.ex.map(e=>{const a=doc.sets&&doc.sets[e.id];return a?a.map(x=>x.d?(+x.v||0):-(+x.v||0)-1):0})].concat(doc.xs&&doc.xs.length?[doc.xs]:[])});
   const M=Object.values(state.metrics).filter(m=>m.date).sort((x,y)=>x.date<y.date?-1:1).map(m=>{
     const r=[m.date.replace(/-/g,"").slice(2)].concat(MK.map(k=>m[k]??null));while(r.length>1&&r[r.length-1]==null)r.pop();return r});
-  const ds = window.dietState || {};
+  const ds = dietState;
   /* 带上高驰授权：换手机恢复进度后不用重新授权 */
   let tk = null;
   try{ tk = JSON.parse(localStorage.getItem("tracktor-coros-token") || "null"); }catch(e){}
@@ -1676,13 +1703,13 @@ document.getElementById("bkYes").addEventListener("click",async()=>{
   if(!pendingImport)return;
   state.sessions=pendingImport.sessions;state.metrics=pendingImport.metrics;if(pendingImport.settings){state.settings=pendingImport.settings;saveSettings()}
   if(pendingImport.extras)moveDatedExtras(pendingImport.extras);
-  if(pendingImport.diet && window.dietState){
-    if(pendingImport.diet.days){ pruneOldDietDays(pendingImport.diet.days); window.dietState.days = pendingImport.diet.days; }
-    if(pendingImport.diet.coros) window.dietState.coros = pendingImport.diet.coros;
-    if(pendingImport.diet.weights) window.dietState.weights = pendingImport.diet.weights;
-    window.dietState.open = latestDietOpenSet(window.dietState.days);
-    if(typeof window.saveDietLocal==="function") window.saveDietLocal();
-    if(typeof window.renderDietAll==="function") window.renderDietAll();
+  if(pendingImport.diet){
+    if(pendingImport.diet.days){ pruneOldDietDays(pendingImport.diet.days); dietState.days = pendingImport.diet.days; }
+    if(pendingImport.diet.coros) dietState.coros = pendingImport.diet.coros;
+    if(pendingImport.diet.weights) dietState.weights = pendingImport.diet.weights;
+    dietState.open = latestDietOpenSet(dietState.days);
+    saveDietLocal();
+    renderDietAll();
   }
   /* 这台设备已连接时保留现有授权，备份里的可能已经过期 */
   if(pendingImport.tk && !readCorosToken()){
@@ -1691,7 +1718,7 @@ document.getElementById("bkYes").addEventListener("click",async()=>{
   }
   pendingImport=null;document.getElementById("bkConfirm").hidden=true;document.getElementById("bkPasteWrap").hidden=true;document.getElementById("bkPaste").value="";
   lsSave();
-  open.clear();renderAll();toast(T("训练与饮食进度已导入","Progress imported"));
+  openDays.clear();renderAll();toast(T("训练与饮食进度已导入","Progress imported"));
 });
 lsLoad(); renderAll();
 if(!lsOk)toast(T("这个浏览器不允许保存数据，请用 Chrome 打开，或常保存进度文件","This browser can't save data — open in Chrome, or save a progress file often"));
@@ -1798,9 +1825,7 @@ document.getElementById("syncBtn").addEventListener("click",async()=>{
   syncing=true;syncUI();
   try{
     const r=await mcp.callTool("COROS","querySleepOverview",{startDate:ymdOffset(-59),endDate:ymdOffset(0)});
-    let text=typeof r.payload==="string"?r.payload:"";
-    if(!text&&r.content)text=r.content.filter(b=>b.type==="text").map(b=>b.text).join("\n");
-    if(!text&&r.payload)text=JSON.stringify(r.payload);
+    const text=toText(r);
     const rows=parseSleep(text);
     let msg="";
     if(!rows.length){msg=T("COROS 返回了数据，但没有读到睡眠评分（开头：","COROS replied but no sleep scores were found (starts: ")+text.slice(0,120)+T("）。",").");}
@@ -1825,16 +1850,14 @@ document.getElementById("syncBtn").addEventListener("click",async()=>{
     }catch(de){}
     try{
       const u=await mcp.callTool("COROS","queryUserInfo",{});
-      let ut=typeof u.payload==="string"?u.payload:"";
-      if(!ut&&u.content)ut=u.content.filter(b=>b.type==="text").map(b=>b.text).join("\n");
-      if(!ut&&u.payload)ut=JSON.stringify(u.payload);
+      const ut=toText(u);
       const hm=/Height:\s*([\d.]+)\s*cm/i.exec(ut);
       if(hm){const hv=+hm[1];state.settings.hC=hv;if(state.settings.hSrc!=="manual")state.settings.h=hv;saveSettings()}
       /* birthday and sex only fill empty fields, so anything the user typed stays */
       const bm=/Birthday:\s*(\d{4}-\d{2}-\d{2})/i.exec(ut), gm=/Gender:\s*(male|female)/i.exec(ut);
-      if(bm&&!state.settings.b)state.settings.b=bm[1];
+      if(bm&&!state.settings.b)state.settings.b=bm[1].slice(0,7);
       if(gm&&!state.settings.sex)state.settings.sex=gm[1].toLowerCase()==="female"?"f":"m";
-      if(bm||gm){saveSettings();if(window.renderDietAll)renderDietAll()}
+      if(bm||gm){saveSettings();renderDietAll()}
       const wm=/Weight:\s*([\d.]+)\s*kg/i.exec(ut);
       if(wm){
         const w=+(+wm[1]).toFixed(1), td=today();
@@ -1889,10 +1912,10 @@ function corosLogout(wipe){
       if(Object.keys(m).every(k=>k==="date"||m[k]==null))delete state.metrics[d];
     }
     const st=state.settings; st.hC=null; if(st.hSrc!=="manual")st.h=null;
-    if(window.dietState){ window.dietState.coros={}; if(window.saveDietLocal)window.saveDietLocal(); }
+    dietState.coros={}; saveDietLocal();
     /* next login backfills history again */
     ["-hrvbf","-sleepbf","-rhrbf2","-lastsync"].forEach(k=>{try{localStorage.removeItem(LS+k)}catch(e){}});
-    lsSave(); renderAll(); if(window.renderDietAll)renderDietAll();
+    lsSave(); renderAll(); renderDietAll();
   }
   mcp=null; mcpReady=false; syncUI();
   toast(wipe?T("已登出高驰，同步的数据已清除","Logged out of COROS; synced data deleted"):T("已登出高驰，数据都保留","Logged out of COROS; all data kept"));
@@ -2210,10 +2233,10 @@ function showWelcome(){
       <button type="button" data-close class="iconbtn" aria-label="${T("关闭","Close")}">${CLOSE_ICON}</button>
     </div>
     <div style="overflow:auto;display:grid;gap:12px">
-      <p class="sub" style="margin:0">${T("填几项，热量和目标进度才算得准。可以留空，以后在「数据 › 目标」里改。","Fill in a few things so calories and goal progress are accurate. Anything can stay blank; change it later under Data › Goals.")}</p>
+      <p class="sub" style="margin:0">${T("填几项，热量和目标进度才算得准。可以留空，以后在「数据 › 个人资料」和「目标」里改。","Fill in a few things so calories and goal progress are accurate. Anything can stay blank; change it later under Data › Profile and Goals.")}</p>
       <div class="mode-tabs" id="wSex" role="group" aria-label="${T("性别","Sex")}"><button type="button" data-v="m" style="font-size:22px;padding:4px" aria-label="${T("男","Male")}">♂</button><button type="button" data-v="f" style="font-size:22px;padding:4px" aria-label="${T("女","Female")}">♀</button></div>
       <div class="fgrid">
-        ${fld("wB","生日","Birthday",'type="date"')}
+        ${fld("wB","出生年月","Birth month",'type="month"')}
         ${fld("wH","身高（cm）","Height (cm)",'type="number" inputmode="decimal" step="0.5"')}
         ${fld("wW0","现在体重（kg）","Weight now (kg)",'type="number" inputmode="decimal" step="0.1"')}
         ${fld("wP","目标引体（个）","Pull-up goal (reps)",'type="number" inputmode="numeric" step="1" min="1"')}
@@ -2237,12 +2260,12 @@ function showWelcome(){
   const save = ()=>{
     const st = state.settings, num = id=>{ const v = numOrNull(q(id).value); return v!=null && v>0 ? v : null; };
     if(sex) st.sex = sex;
-    if(/^\d{4}-\d{2}-\d{2}$/.test(q("wB").value)) st.b = q("wB").value;
+    if(/^\d{4}-\d{2}$/.test(q("wB").value)) st.b = q("wB").value;
     const h = num("wH"); if(h!=null && h>=100 && h<=230){ st.h = h; st.hSrc = "manual"; }
     const p = num("wP"), w = num("wW"), z = num("wZ");
     if(p!=null) st.p = Math.round(p); if(w!=null) st.w = w; if(z!=null) st.z = z;
     const w0 = num("wW0"); if(w0!=null) saveMetric(today(), {weight: +w0.toFixed(1)});
-    lsSave(); renderAll(); if(window.renderDietAll) renderDietAll();
+    lsSave(); renderAll(); renderDietAll();
   };
   const close = ()=>mask.remove();
   q("wGo").addEventListener("click", ()=>{ save(); close(); });
@@ -2352,7 +2375,6 @@ function showWelcome(){
   document.getElementById("langBtn").addEventListener("click",()=>setTimeout(paint,0));
 })();
 loadTrainData();
-})();
 
 /* =========================================================================
    DIET LEDGER MODULE (饮食账本) - Integrated into 推拉机 track-TOR
@@ -2366,14 +2388,6 @@ function latestDietOpenSet(days){
   const ks = Object.keys(days||{}).sort();
   return new Set(ks.length ? [ks[ks.length-1]] : []);
 }
-const dietState = window.dietState = {
-  days: {},
-  coros: {},
-  weights: {},
-  range: 14,
-  gw: 7,
-  open: new Set()
-};
 
 /* used only until the user fills in their own profile or weight */
 const AGE_DEFAULT = 30, W_DEFAULT = 65, ACT_FACTOR = 0.5, TEF = 0.09, TEF_DEFAULT = 1850;
@@ -2404,12 +2418,13 @@ function intakeOf(date){
   return d.items && d.items.length ? dietTotals(d).kcal : null;
 }
 
-function profile(){ const st = window.state || (typeof state!=="undefined" ? state : null); return (st && st.settings) || {}; }
+function profile(){ return state.settings || {}; }
 function ageAtDate(date){
   const b = profile().b;
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(b||"")) return AGE_DEFAULT;
-  const [by,bm,bd] = b.split("-").map(Number), [y,m,d] = date.split("-").map(Number);
-  return y - by - ((m<bm || (m===bm && d<bd)) ? 1 : 0);
+  /* birth month only (YYYY-MM); older saves may carry a full date, whose day is ignored */
+  if(!/^\d{4}-\d{2}/.test(b||"")) return AGE_DEFAULT;
+  const [by,bm] = b.split("-").map(Number), [y,m] = date.split("-").map(Number);
+  return y - by - (m<bm ? 1 : 0);
 }
 
 function weightAtDate(date){
@@ -2439,7 +2454,7 @@ function burnOfDate(date){
 }
 
 function dietRangeDates(){
-  const end = window.today(), out = [];
+  const end = today(), out = [];
   for(let i=dietState.range-1; i>=0; i--) out.push(ymdAdd(end, -i));
   return out;
 }
@@ -2481,7 +2496,7 @@ function renderDietStats(){
 function renderDietChart(){
   renderDietGap();
   const dates = dietRangeDates();
-  const W=340,H=190,L=34,R=16,T=10,B=22;
+  const W=340,H=190,L=34,R=16,TP=10,B=22;
   /* 只画有饮食记录的日子，没记账的日子不单独画消耗 */
   const pts = dates.map(d=>{ const a = intakeOf(d); return { d, a, b: a===null ? null : burnOfDate(d) }; });
   const vals = pts.flatMap(p=>[p.a, p.b]).filter(v=>v!==null);
@@ -2491,7 +2506,7 @@ function renderDietChart(){
     hi = Math.max(hi, Math.ceil(Math.max(...vals)/200)*200);
   }
   const step = (W-L-R) / Math.max(1, dates.length-1);
-  const x = i => L + i*step, y = v => T + (hi-v)/(hi-lo)*(H-T-B);
+  const x = i => L + i*step, y = v => TP + (hi-v)/(hi-lo)*(H-TP-B);
   let g = "";
   for(let v=lo; v<=hi; v += (hi-lo>1600 ? 400 : 200)){
     g += `<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${L-4}" y="${y(v)+4}" text-anchor="end">${v}</text>`;
@@ -2524,11 +2539,11 @@ function renderDietChart(){
   g += `<path d="${line("b")}" fill="none" stroke="var(--burn)" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>`;
   g += `<path d="${line("a")}" fill="none" stroke="var(--intake)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
   g += dotsFor("b", "var(--burn)") + dotsFor("a", "var(--intake)");
-  g += `<line id="dxh" x1="0" x2="0" y1="${T}" y2="${H-B}" stroke="var(--ink)" stroke-opacity=".35" stroke-width="1" visibility="hidden"/>`;
+  g += `<line id="dxh" x1="0" x2="0" y1="${TP}" y2="${H-B}" stroke="var(--ink)" stroke-opacity=".35" stroke-width="1" visibility="hidden"/>`;
   
   const box = document.getElementById("dietChart");
   if(!box) return;
-  box.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${window.T("摄入与估算总消耗","Intake vs estimated total burn")}">${g}</svg>`;
+  box.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${T("摄入与估算总消耗","Intake vs estimated total burn")}">${g}</svg>`;
   const svg = box.querySelector("svg"), tip = document.getElementById("dietTip"), xh = svg.querySelector("#dxh");
   const pick = e => {
     const r = svg.getBoundingClientRect();
@@ -2537,7 +2552,7 @@ function renderDietChart(){
     const p = pts[i];
     xh.setAttribute("x1", x(i)); xh.setAttribute("x2", x(i)); xh.setAttribute("visibility", "visible");
     const gap = (p.a!==null && p.b!==null) ? p.b - p.a : null;
-    tip.innerHTML = `${dotDateStr(p.d).slice(5)}　${window.T("摄入","In")} <b>${f0Dec(p.a)}</b>　${window.T("消耗","Burn")} <b>${f0Dec(p.b)}</b>　${window.T("基代","BMR")} <b>${f0Dec(bmrOfDate(p.d))}</b>` + (gap===null ? "" : `　${gap>=0 ? window.T("缺口","Deficit") : window.T("盈余","Surplus")} <b>${f0Dec(Math.abs(gap))}</b>`);
+    tip.innerHTML = `${dotDateStr(p.d).slice(5)}　${T("摄入","In")} <b>${f0Dec(p.a)}</b>　${T("消耗","Burn")} <b>${f0Dec(p.b)}</b>　${T("基代","BMR")} <b>${f0Dec(bmrOfDate(p.d))}</b>` + (gap===null ? "" : `　${gap>=0 ? T("缺口","Deficit") : T("盈余","Surplus")} <b>${f0Dec(Math.abs(gap))}</b>`);
     tip.hidden = false;
     const bbox = box.getBoundingClientRect();
     const px = r.left - bbox.left + x(i)/W * r.width;
@@ -2549,24 +2564,24 @@ function renderDietChart(){
 }
 
 function renderDietGap(){
-  const t = window.today();
+  const t = today();
   const gchips = document.getElementById("dietGchips");
   if(!gchips) return;
   gchips.innerHTML = [3,7,14,30].map(n=>{
     const m = dietMovingSum(t,n) || dietMovingSum(ymdAdd(t, -1), n);
-    return `<button type="button" class="gchip" data-dw="${n}" aria-pressed="${n===dietState.gw}"><span>${window.T("近","Last")} ${n} ${window.T("天","d")}</span>${m ? `<b class="${m.s>=0 ? "g" : "r"}">${m.s>=0 ? "" : "−"}${Math.abs(Math.round(m.s))}</b>` : `<b>–</b>`}</button>`;
+    return `<button type="button" class="gchip" data-dw="${n}" aria-pressed="${n===dietState.gw}"><span>${T("近","Last")} ${n} ${T("天","d")}</span>${m ? `<b class="${m.s>=0 ? "g" : "r"}">${m.s>=0 ? "" : "−"}${Math.abs(Math.round(m.s))}</b>` : `<b>–</b>`}</button>`;
   }).join("");
   document.querySelectorAll("#dietGapBox .seg button").forEach(x=>x.setAttribute("aria-pressed", String(+x.dataset.dw===dietState.gw)));
   
   const dates = dietRangeDates(), N = dietState.gw;
-  const W=340,H=170,L=40,R=16,T=10,B=22;
+  const W=340,H=170,L=40,R=16,TP=10,B=22;
   const pts = dates.map(d=>({ d, g:dietGapOf(d), m:dietMovingSum(d,N) }));
   const vals = pts.flatMap(p=>[p.g, p.m ? p.m.s : null]).filter(v=>v!==null);
   let lo = Math.min(-200, ...vals), hi = Math.max(200, ...vals);
   const span = hi - lo, stepV = span>3000 ? 1000 : (span>1200 ? 500 : (span>600 ? 200 : 100));
   lo = Math.floor(lo/stepV)*stepV; hi = Math.ceil(hi/stepV)*stepV;
   const step = (W-L-R) / Math.max(1, dates.length-1);
-  const x = i => L + i*step, y = v => T + (hi-v)/(hi-lo)*(H-T-B);
+  const x = i => L + i*step, y = v => TP + (hi-v)/(hi-lo)*(H-TP-B);
   let g = "";
   for(let v=lo; v<=hi; v+=stepV){
     g += `<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="${v===0 ? 1.6 : 1}"${v===0 ? ' stroke-opacity="1"' : ''}/><text x="${L-4}" y="${y(v)+4}" text-anchor="end">${v}</text>`;
@@ -2589,11 +2604,11 @@ function renderDietGap(){
   });
   g += `<path d="${d}" fill="none" stroke="var(--intake)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
   g += pts.map((p,i)=>p.m ? `<circle cx="${x(i)}" cy="${y(p.m.s)}" r="${dates.length>30 ? 1.8 : 2.6}" fill="var(--intake)"/>` : "").join("");
-  g += `<line id="dgxh" x1="0" x2="0" y1="${T}" y2="${H-B}" stroke="var(--ink)" stroke-opacity=".35" stroke-width="1" visibility="hidden"/>`;
+  g += `<line id="dgxh" x1="0" x2="0" y1="${TP}" y2="${H-B}" stroke="var(--ink)" stroke-opacity=".35" stroke-width="1" visibility="hidden"/>`;
   
   const gbox = document.getElementById("dietGchart");
   if(!gbox) return;
-  gbox.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${window.T("每日缺口与","Daily deficit & ")} ${N} ${window.T("天滚动累计","-day rolling total")}">${g}</svg>`;
+  gbox.innerHTML = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${T("每日缺口与","Daily deficit & ")} ${N} ${T("天滚动累计","-day rolling total")}">${g}</svg>`;
   const svg = gbox.querySelector("svg"), tip = document.getElementById("dietGtip"), xh = svg.querySelector("#dgxh");
   const pick = e => {
     const r = svg.getBoundingClientRect();
@@ -2601,8 +2616,8 @@ function renderDietGap(){
     const i = Math.max(0, Math.min(dates.length-1, Math.round((sx-L)/step)));
     const p = pts[i];
     xh.setAttribute("x1", x(i)); xh.setAttribute("x2", x(i)); xh.setAttribute("visibility", "visible");
-    const gapTxt = v => (v>=0 ? window.T("缺口","Deficit")+" " : window.T("盈余","Surplus")+" ") + Math.abs(Math.round(v));
-    tip.innerHTML = `${dotDateStr(p.d).slice(5)}　${window.T("当日","Today")} <b>${p.g===null ? "–" : gapTxt(p.g)}</b>　${window.T("近","Last")}${N}${window.T("天","d")} <b>${p.m ? gapTxt(p.m.s) : "–"}</b>${p.m ? `　${window.T("约","≈")} ${ (Math.abs(p.m.s)/7700).toFixed(2) }kg` : ""}`;
+    const gapTxt = v => (v>=0 ? T("缺口","Deficit")+" " : T("盈余","Surplus")+" ") + Math.abs(Math.round(v));
+    tip.innerHTML = `${dotDateStr(p.d).slice(5)}　${T("当日","Today")} <b>${p.g===null ? "–" : gapTxt(p.g)}</b>　${T("近","Last")}${N}${T("天","d")} <b>${p.m ? gapTxt(p.m.s) : "–"}</b>${p.m ? `　${T("约","≈")} ${ (Math.abs(p.m.s)/7700).toFixed(2) }kg` : ""}`;
     tip.hidden = false;
     const bbox = gbox.getBoundingClientRect();
     const px = r.left - bbox.left + x(i)/W * r.width;
@@ -2656,13 +2671,13 @@ function renderDietDays(){
   }).join("");
 }
 
-window.renderDietAll = function renderDietAll(){
+function renderDietAll(){
   renderDietStats();
   renderDietChart();
   renderDietDays();
 }
 
-window.saveDietLocal = function saveDietLocal(){
+function saveDietLocal(){
   try{
     localStorage.setItem("tracktor-diet-v1", JSON.stringify({
       days: dietState.days,
@@ -2705,7 +2720,7 @@ function openDietEntryModal(initDate){
 
   const TOTAL_NAME = () => T("当日合计（手动录入）","Daily total (manual)");
   const emptyTotal = () => ({ kcal:"", p:"", f:"", c:"", veg:"" });
-  let curDate = initDate || window.today();
+  let curDate = initDate || today();
   let moreOpen = false;
   let mode, total, formState;
 
@@ -2877,11 +2892,11 @@ function openDietEntryModal(initDate){
     }
     if(formState.kg !== null){
       dietState.weights[curDate] = { kg: formState.kg, source: "manual", syncedAt: new Date().toISOString() };
-      if(typeof window.saveMetric === "function") window.saveMetric(curDate, { weight: formState.kg });
+      saveMetric(curDate, { weight: formState.kg });
     }
     saveDietLocal();
     renderDietAll();
-    if(typeof window.renderAll === "function") window.renderAll();
+    renderAll();
   }
 
   /* 蛋白、脂肪、碳水都填了才有估算值，按 4/9/4 算；0 也算填了 */
@@ -2910,7 +2925,7 @@ function openDietEntryModal(initDate){
     m.querySelector("[data-close]").addEventListener("click", ()=>m.remove());
     m.querySelector("#fdDate").addEventListener("change", e=>{
       syncFormFromDOM();
-      curDate = e.target.value || window.today();
+      curDate = e.target.value || today();
       loadDay(curDate);
       renderModal();
     });
