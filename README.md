@@ -30,14 +30,15 @@
 | 模块 | 干什么的 |
 |---|---|
 | 🏋️ 推拉训练 | 上身力量训练记录，分「推 / 拉」两组，解锁制进阶 |
+| 💪 每日加练 | 不管今天是推日还是拉日，都能加练引体或自定义项目，也能补记之前的日子 |
 | 🎆 烟花 + 🔊 音效 | 每完成一组就放烟花，把记录变成游戏 |
 | 📈 趋势图表 | 引体、体重、腰围、睡眠、HRV、静息心率的 MA7 移动平均曲线 |
 | ⌚ 高驰 COROS 同步 | 一键授权，自动拉取体重、腰围、睡眠、HRV、静息心率 |
-| 🥗 饮食热量账本 | 记蛋白质 / 脂肪 / 碳水 / 蔬菜，自动算 kcal |
+| 🥗 饮食账本 | 手动记录每一项食物，热量可由蛋白质 / 脂肪 / 碳水自动算，图表看缺口 |
 | 📐 身体指标 | 腰高比等量化指标，看着数字往好方向走 |
 | 📲 PWA 离线可用 | 装到手机主屏，没网也能记 |
 | 🌗 深浅主题 / ⛶ 全屏 | 白天晚上都能用，全屏沉浸 |
-| 💾 微信备份 | 一键把进度文本复制到「文件传输助手」，换个设备也能恢复 |
+| 💾 进度文件备份 | 把饮食和训练进度存成 txt 文件放在手机里，换个设备选这个文件就能恢复 |
 
 ---
 
@@ -119,7 +120,7 @@ Track-TOR/
 
 ## 版本
 
-当前版本：**v1.01a**（alpha）
+当前版本：**v1.02a**（alpha）
 
 产品已剥离 agent 依赖、可独立运作与同步，从操作层面已是面向大众的产品；但尚未打包成独立 app，故处于 alpha 阶段。
 
@@ -165,14 +166,15 @@ This app exists to fix exactly that:
 | Module | What it does |
 |---|---|
 | 🏋️ Push/Pull training | Upper-body strength logging, split into Push / Pull, unlock-based progression |
+| 💪 Daily extra practice | Add pull-ups or any custom exercise on any day, push or pull, and backfill past days |
 | 🎆 Fireworks + 🔊 Sound | Every set → fireworks, turning logging into a game |
 | 📈 Trend charts | MA7 moving averages for pull-ups, weight, waist, sleep, HRV, resting HR |
 | ⌚ COROS sync | One-tap OAuth; auto-pulls weight, waist, sleep, HRV, resting HR |
-| 🥗 Diet calorie ledger | Log protein / fat / carbs / veggies, auto-calculates kcal |
+| 🥗 Diet ledger | Log each food by hand, kcal can be calculated from protein / fat / carbs, charts show your calorie gap |
 | 📐 Body metrics | Waist-to-height ratio and other quantifiable numbers |
 | 📲 PWA offline | Install to home screen, works offline |
 | 🌗 Light/dark theme / ⛶ Fullscreen | Comfortable day or night, immersive fullscreen |
-| 💾 WeChat backup | One-tap copy progress text to WeChat "File Transfer" for recovery |
+| 💾 Progress file backup | Save diet and training progress as a txt file on your phone, then pick that file to restore on any device |
 
 ---
 
@@ -253,7 +255,7 @@ Track-TOR/
 
 ## Version
 
-Current: **v1.01a** (alpha)
+Current: **v1.02a** (alpha)
 
 The product has dropped its agent dependency and works & syncs independently — operationally it's already a consumer product; it just isn't packaged as a standalone app yet, hence alpha.
 

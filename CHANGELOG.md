@@ -7,6 +7,28 @@
 
 ---
 
+## [v1.02a] — 2026-11-02
+
+### 变更 / Changed
+- 🍽️ **饮食页换成饮食账本的版式**：不再顶着目标进度卡，默认只展开最新一天，配色和字号与账本一致，图表默认看 14 天。
+  The diet page now uses the ledger layout: no goal card on top, only the latest day expanded, ledger colours and type, and 14-day charts by default.
+- 💾 **备份改成 txt 文件**：点一下存成 `推拉机进度-日期-时间.txt`，恢复时选这个文件。文件含饮食和训练数据，不再包含高驰令牌。旧版进度文本仍可粘贴导入。
+  Backups are now a txt file holding diet and training data, without the COROS token. Old progress text can still be pasted in.
+- 📖 **点击音效改成轻轻的翻书声**。
+  The tap sound is now a soft page turn.
+
+### 新增 / Added
+- 💪 **每日加练**：训练页顶部新增加练卡片，不管当天是推日还是拉日都能练，默认引体向上，也能加自定义项目、补记之前的日子。每天最好的一组引体计入引体趋势和目标，不影响推拉训练进度，并随进度文件备份。
+  Daily extra practice: a card at the top of the training page works on any day, push or pull. It defaults to pull-ups, takes custom exercises, and can backfill past days. Each day's best pull-up set counts toward the pull-up trend and goal. Program progress isn't affected, and extras are included in the progress file.
+- ✍️ **手动记录**：一项一项加食物，加完立即保存；热量留空时按 4/9/4 由营养素算。体重、消耗和备注收进选填区。
+  Manual logging: add foods one at a time, each saved right away. Blank kcal is calculated from macros at 4/9/4. Weight, burn and note move to an optional section.
+
+### 移除 / Removed
+- 🧹 删除 2026-10-24 之前不连续的饮食记录，图表也不再单独画没记账日子的消耗。
+  Removes the patchy diet logs before 2026-10-24, and charts no longer draw burn for days with no food log.
+
+---
+
 ## [v1.01a] — 2026-11-02
 
 ### 修复 / Fixed
