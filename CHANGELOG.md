@@ -17,6 +17,8 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
   The header tagline is back to the full meaning of TOR.
 - 📄 **README 去掉改代码的说明**。
   Removes the code setup instructions from the README.
+- ⚖️ **许可证改为保留所有权利**：不再以 MIT 授权。此前已按 MIT 发布的版本仍适用 MIT。
+  The license is now all rights reserved instead of MIT. Versions already published under MIT stay under MIT.
 
 ---
 
