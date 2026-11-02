@@ -6,6 +6,24 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 
 ---
 
+## [v1.07a] — 2026-11-02
+
+### 变更 / Changed
+- 🍽️ **饮食记录更简单**：主界面只填总热量和蛋白质、脂肪、碳水、蔬菜，只有总热量必填，数字可以直接从别的 App 或 AI 抄过来。想逐项记就进「当日明细」。磁盘图标保存并收起面板。
+  Simpler diet logging: enter total calories plus protein, fat, carbs, and veg. Only calories are required. Use Day details to log item by item. The disk icon saves and closes.
+- 📊 **目标进度常驻**：数据页的饮食和图表两个 tab 都显示目标进度，切换时不再跳动。
+  Goals stay visible on both data tabs, so switching no longer makes the page jump.
+
+### 修复 / Fixed
+- 弹窗关闭图标对正圆心，输入框的焦点边框不再被裁掉。
+  The close icon is centred in its circle, and input focus borders are no longer cut off.
+
+### 移除 / Removed
+- 删除每日饮食的分享图片功能。
+  Removes the daily diet share image.
+
+---
+
 ## [v1.06a] — 2026-11-02
 
 ### 变更 / Changed

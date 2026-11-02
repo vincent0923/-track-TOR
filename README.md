@@ -27,7 +27,7 @@
 | 🎆 爽感反馈 | 每完成一组放烟花，还有音效，整天练完放更大的 |
 | 📈 看得见的进步 | 引体、体重、腰围、睡眠、HRV、静息心率的趋势图，引体、体重、腰围点手写图标就能记录 |
 | ⌚ 连接高驰 | 授权一次，自动续期，同步健康和活动数据 |
-| 🍽️ 饮食账本 | 在数据页手动记录每一项食物，自动算热量缺口和约合多少脂肪 |
+| 🍽️ 饮食账本 | 在数据页填总热量和蛋白质、脂肪、碳水、蔬菜，也能逐项记明细，自动算热量缺口和约合多少脂肪 |
 | 💾 进度文件 | 一键存成 txt 放在手机里，换手机选这个文件就能恢复 |
 | 📲 装到主屏 | 像 App 一样全屏运行，没网也能记 |
 
@@ -50,7 +50,7 @@
 
 产品定位、设计取向和后续计划见 [产品说明](docs/PRODUCT.md)，版本记录见 [更新日志](CHANGELOG.md)。
 
-当前版本 **v1.06a**。Alpha 表示已经在日常使用，还在持续打磨。
+当前版本 **v1.07a**。Alpha 表示已经在日常使用，还在持续打磨。
 
 © 2026 vincent0923，保留所有权利。见 [LICENSE](LICENSE)。
 
@@ -83,7 +83,7 @@ Most people don't need another training plan. They need a reason to keep going. 
 | 🎆 Feel-good rewards | Fireworks and sound for every set, and a bigger show when you finish the day |
 | 📈 Visible progress | Trends for pull-ups, weight, waist, sleep, HRV, and resting heart rate. Tap the pencil to log pull-ups, weight, or waist |
 | ⌚ COROS connection | Authorize once and it renews itself, syncing your health and activity data |
-| 🍽️ Diet ledger | On the data page, log each food by hand and see your calorie gap and the fat it adds up to |
+| 🍽️ Diet ledger | On the data page, enter total calories plus protein, fat, carbs, and veg, or log item by item and see your calorie gap and the fat it adds up to |
 | 💾 Progress file | Save a txt file to your phone, then pick it to restore on a new one |
 | 📲 Home screen install | Runs full screen like an app and works offline |
 
@@ -106,6 +106,6 @@ Most people don't need another training plan. They need a reason to keep going. 
 
 See the [product notes](docs/PRODUCT.md) (in Chinese) for positioning, design principles, and plans, and the [changelog](CHANGELOG.md) for version history.
 
-Current version: **v1.06a**. Alpha means it's in daily use and still being refined.
+Current version: **v1.07a**. Alpha means it's in daily use and still being refined.
 
 © 2026 vincent0923. All rights reserved. See [LICENSE](LICENSE).
