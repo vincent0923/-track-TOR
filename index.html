@@ -840,6 +840,9 @@ function lsLoad(){
   let j=null;
   try{j=JSON.parse(localStorage.getItem(LS)||"null")}catch(e){lsOk=false}
   if(j){state.sessions=j.sessions||{};state.metrics=j.metrics||{};state.settings=Object.assign({},GDEF,j.settings||{});
+    /* a 0 sleep score was saved before the night was scored; drop it so the real score can arrive */
+    let z=0;for(const [d,m] of Object.entries(state.metrics)){if(m.sleep===0){delete m.sleep;delete m.sleepH;z++;if(Object.keys(m).every(k=>k==="date"||m[k]==null))delete state.metrics[d]}}
+    if(z){try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){}}
     if(j.extras&&moveDatedExtras(j.extras)){try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){}}}
 }
 function lsSave(){
@@ -1714,7 +1717,7 @@ function parseSleep(text){
   const out=[];const re=/(20\d{2}-\d{2}-\d{2})(?!\s+\d{1,2}:\d{2})/g;const hits=[];let m;
   while((m=re.exec(text)))hits.push({i:m.index,d:m[1]});
   hits.forEach((h,k)=>{const seg=text.slice(h.i,k+1<hits.length?hits[k+1].i:text.length);
-    const s=/sleep\s*score:\s*(-?\d+)/i.exec(seg);if(!s||+s[1]<0)return;
+    const s=/sleep\s*score:\s*(-?\d+)/i.exec(seg);if(!s||+s[1]<=0)return; /* 0 = not scored yet, -1 = no score */
     const t=/daily\s*sleep:\s*(?:(\d+)h\s*)?(\d+)\s*min/i.exec(seg);
     out.push({date:h.d,sleep:+s[1],sleepH:t?+((+(t[1]||0))+(+t[2])/60).toFixed(2):null})});
   return out;

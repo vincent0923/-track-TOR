@@ -25,6 +25,8 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 ### 修复 / Fixed
 - 新用户第一次打开不再立刻弹出「该备份进度了」，5 天后才提醒。
   New users no longer see "Time to back up" the moment they first open the app; the first reminder comes after 5 days.
+- 😴 当晚还没出分时，高驰返回的 0 分不再被记成睡眠评分。之前存下的 0 分会自动清掉，等真实分数出来再补上。
+  A 0 sleep score, which COROS returns before the night is scored, is no longer saved. Zeros already saved are removed automatically, and the real score fills in once it's ready.
 
 ---
 
