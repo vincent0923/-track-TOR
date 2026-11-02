@@ -1,9 +1,20 @@
 # 更新日志 / Changelog
 
-> 每一次「烟花放得比上次更响」的版本记录。
-> 遵循 [Keep a Changelog](https://keepachangelog.com/) 的精神，但带点脾气。
->
-> Every version where "the fireworks got louder." Follows the spirit of [Keep a Changelog](https://keepachangelog.com/), with attitude.
+每个版本改了什么。格式参考 [Keep a Changelog](https://keepachangelog.com/)。
+
+Everything that changed, version by version. Format based on [Keep a Changelog](https://keepachangelog.com/).
+
+---
+
+## [v1.05a] — 2026-11-02
+
+### 变更 / Changed
+- 🔑 **授权一次，长期有效**：高驰授权到期前自动续期，约半年内打开过一次就不用重新授权。断网或令牌到期时不再显示未连接，令牌被拒绝时先自动续期再试，都失败才请你重新授权。
+  Authorize once and it lasts: COROS authorization renews itself, so opening the app about once every six months is enough. Being offline or having an expired token no longer shows you as disconnected. A rejected token renews and retries, and you're only asked to sign in again if that fails too.
+- 💾 **进度文件带上高驰授权**：换手机恢复后不用重新授权。这台设备已连接时保留现有授权。
+  Progress files include your COROS authorization again, so a new phone needs no new sign-in. A device that's already connected keeps its current authorization.
+- ✍️ **重写 README、页面标语和应用描述**，新增[产品说明](docs/PRODUCT.md)，记录产品定位、设计取向和后续计划。
+  Rewrites the README, app tagline, and description, and adds [product notes](docs/PRODUCT.md) covering positioning, design principles, and plans.
 
 ---
 
@@ -67,30 +78,22 @@
 
 ## [v1.00a] — 2026-11-01
 
-### 里程碑 🎉
-
-产品正式**告别 agent 依赖**，可以独立运作、独立同步了。从操作层面来说，它已经是一个面向大众的产品——只是还没打包成独立 app，所以勇敢地叫自己 **alpha**。
-
-> 从 `v0.83` 一路跳号到 `v1.00a`，不是因为代码翻了一百倍，而是因为它终于**站起来了**（literally，练上身站起来了）。
-
-### 新增 / Added
-- 🧹 **大扫除**：清掉了所有「前任」留下的痕迹——Claude、Gemini、Render 这些字串，以及一堆无关文件（`server.py`、`render.yaml`、后端构建包、小程序、relay……全没了）。
-- 应用现在是**纯前端直连 COROS**，无后端、无第三方 AI 平台依赖。
+### 变更 / Changed
+- 可以独立运行和同步，不再依赖 AI 助手。还没做成独立 App，所以标为 alpha。
+- 改成纯前端直连高驰，移除后端和相关文件。
+- 版本号从 `v0.83` 升到 `v1.00a`。
 
 ### 修复 / Fixed
-- 修好一个隐藏 bug：`callCorosToolAdapter` 原来声明成普通函数却偷偷用了 `await`（这种「伪异步」迟早炸），已改为 `async function`。
-- 修复 GitHub Pages 部署竞态：连续快速 push 会导致后一次部署被前一次「in progress」卡掉，现在知道要排队了。
-
-### 变更 / Changed
-- 版本号 `v0.83` → `v1.00a`。
+- 修复调用高驰的函数缺少 `async` 声明的问题。
+- 连续快速推送会让 GitHub Pages 部署失败，现在改为逐次推送。
 
 ---
 
 ## [v0.83] — 2026-11-01
 
 ### 新增 / Added
-- 🔐 **纯前端 COROS OAuth 自动授权**：点「授权登录高驰账号」→ 弹高驰登录页 → 自动跳回连接。小白零门槛，不用再复制粘贴什么「token」这种天书。
-- ⏰ **3 天备份提醒**：怕你练了三个月忘了备份，它会温柔地戳你一下。
+- 🔐 高驰自动授权：点「授权登录高驰账号」，登录后自动跳回并连接，不用再手动粘贴令牌。
+- ⏰ 每 3 天提醒备份。
 
 ---
 
@@ -112,17 +115,12 @@
 - 🌗 深浅主题 / ⛶ 全屏
 - 💾 微信备份
 
-### 备注 / Note
-- 早期版本曾一度依赖某个 AI 平台（这里不点名了，反正已经分手）。那些痕迹现在都被清干净了。😌
-
 ---
 
 ## 版本命名规则 / Versioning
 
 | 段 | 含义 |
 |---|---|
-| `v1` | 主版本——产品已经能独立运作，是「真东西」了 |
-| `.00` | 还没到正式 1.0，功能仍在打磨 |
-| `a` | **alpha**——还没打包成独立 app，但已经在真实服役 |
-
-> 一句话：**能用，能打，但还没「毕业」。** 等哪天它穿上独立 app 的西装，就把 `a` 去掉，正式 `v1.00`。
+| `v1` | 主版本：产品已经能独立运行 |
+| `.05` | 次版本：每次上线功能或修复时增加 |
+| `a` | alpha：已在日常使用，但还没做成独立 App。做成后去掉 `a` |

@@ -382,7 +382,7 @@ h1 .ver{font-family:var(--f-num);font-size:12px;font-weight:400;color:var(--mute
 <div class="wrap">
   <header class="top">
     <div class="trow">
-      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.04a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
+      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.05a)</span><small class="h1s"><span class="zh">track-TOR · 骑行佬的薄肌上身</span><span class="en">Lean upper body for cyclists</span></small></h1>
       <button id="pwaInstallBtn" type="button" style="display:none;background:var(--cta);border:0;color:#fff;font-weight:700;font-size:12px;padding:5px 11px;border-radius:999px;cursor:pointer;margin-right:6px">📲 <span class="zh">安装 App</span><span class="en">Install</span></button><button id="syncBtn" class="syncbtn off"><span class="zh">连接中</span><span class="en">Connecting</span></button>
     </div>
     <div class="hrow"><p class="sub"><span class="zh">下一次</span><span class="en">Next</span> <b id="stNext" class="num" style="font-size:16px;color:var(--ink)">—</b></p><div class="hbtns">
@@ -507,7 +507,7 @@ h1 .ver{font-family:var(--f-num);font-size:12px;font-weight:400;color:var(--mute
       </div></details>
 
       <details class="fold" id="foldBk"><summary><span class="sumt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 8.5a4 4 0 0 1 .5 7.97"/><path d="M12 12v8M9 15l3-3 3 3"/></svg><span class="zh">备份进度</span><span class="en">Back up progress</span></span></summary><div class="fbody">
-        <p class="note" style="margin:0 0 10px"><span class="zh">把饮食和训练进度存成 txt 文件放在手机里，恢复时选这个文件。</span><span class="en">Save your diet and training progress as a txt file on your phone, then pick that file to restore.</span></p>
+        <p class="note" style="margin:0 0 10px"><span class="zh">把饮食和训练进度存成 txt 文件放在手机里，恢复时选这个文件。文件带着高驰授权，换手机不用重新授权，所以不要发给别人。</span><span class="en">Save your diet and training progress as a txt file on your phone, then pick that file to restore. It includes your COROS authorization, so a new phone needs no new sign-in. Don't send it to other people.</span></p>
         <div class="row">
           <button id="bkSave" class="btn ibtn" style="background:var(--ink);color:var(--bg)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 11l5 5 5-5"/><path d="M4 20h16"/></svg><span class="zh">保存进度文件</span><span class="en">Save progress file</span></button>
           <button id="bkRead" class="btn ghost ibtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 8l5-5 5 5"/><path d="M4 20h16"/></svg><span class="zh">导入进度文件</span><span class="en">Import progress file</span></button>
@@ -1533,7 +1533,10 @@ function pack(){
   const M=Object.values(state.metrics).filter(m=>m.date).sort((x,y)=>x.date<y.date?-1:1).map(m=>{
     const r=[m.date.replace(/-/g,"").slice(2)].concat(MK.map(k=>m[k]??null));while(r.length>1&&r[r.length-1]==null)r.pop();return r});
   const ds = window.dietState || {};
-  return {v:3,s:S,m:M,g:state.settings,d:{days:ds.days||{},coros:ds.coros||{},weights:ds.weights||{}}};
+  /* 带上高驰授权：换手机恢复进度后不用重新授权 */
+  let tk = null;
+  try{ tk = JSON.parse(localStorage.getItem("tracktor-coros-token") || "null"); }catch(e){}
+  return {v:3,s:S,m:M,g:state.settings,d:{days:ds.days||{},coros:ds.coros||{},weights:ds.weights||{}},tk};
 }
 function unpack(j){
   const sessions={},metrics={};const d6=t=>t?"20"+t.slice(0,2)+"-"+t.slice(2,4)+"-"+t.slice(4,6):null;
@@ -1627,7 +1630,8 @@ document.getElementById("bkYes").addEventListener("click",async()=>{
     if(typeof window.saveDietLocal==="function") window.saveDietLocal();
     if(typeof window.renderDietAll==="function") window.renderDietAll();
   }
-  if(pendingImport.tk){
+  /* 这台设备已连接时保留现有授权，备份里的可能已经过期 */
+  if(pendingImport.tk && !readCorosToken()){
     try{ localStorage.setItem("tracktor-coros-token", JSON.stringify(pendingImport.tk)); }catch(e){}
     connectMcp();
   }
@@ -1787,18 +1791,17 @@ document.getElementById("syncBtn").addEventListener("click",async()=>{
     else syncMsg(T("同步失败（"+(c||"未知原因")+"），稍后再试。","Sync failed ("+(c||"unknown")+"), try again later."));
   }finally{syncing=false;syncUI()}
 });
+/* 有令牌就算已连接，不因断网或令牌到期打扰用户；剩余不足 15 天就提前续期，经常打开就一直不用重新授权 */
+const COROS_RENEW_WITHIN = 15*864e2;
 async function connectMcp(){
   const tk = readCorosToken();
-  /* 主动验证 token 有效性（调一次 initialize），而不是盲目标记就绪 */
-  if(tk && tk.access_token && await corosPing(tk)){
-    mcpReady=true;
-    mcp={ callTool: (srv, tool, args) => callCorosDirectBrowser(tool, args) };
-    syncUI();
-    const stEl = document.getElementById("dietSyncStatus");
-    if(stEl) stEl.textContent = T("高驰直连已就绪 · 点击右上角同步","COROS direct link ready · tap Sync at top-right");
-    return;
-  }
-  mcp=null;mcpReady=false;syncUI();
+  if(!tk || !tk.access_token){ mcp=null;mcpReady=false;syncUI();return; }
+  mcpReady=true;
+  mcp={ callTool: (srv, tool, args) => callCorosDirectBrowser(tool, args) };
+  syncUI();
+  const stEl = document.getElementById("dietSyncStatus");
+  if(stEl) stEl.textContent = T("高驰已连接 · 点击右上角同步","COROS connected · tap Sync at top-right");
+  if(!tk.expires_at_epoch || tk.expires_at_epoch - Date.now()/1000 < COROS_RENEW_WITHIN) await refreshCorosToken(tk);
 }
 
 /* 轻量连通性探测：用 token 调一次 initialize，成功返回 true，失败返回 false（不抛错） */
@@ -2003,10 +2006,12 @@ function promptCorosToken(){
     close();
     syncMsg(T("令牌已保存，正在连接高驰…","Token saved, connecting to COROS…"));
     mcp = null; mcpReady = false;
-    await connectMcp();
-    if(mcpReady){
-      syncMsg(T("高驰直连已就绪，点击右上角同步。","COROS direct link ready — tap Sync."));
+    if(await corosPing(tk)){
+      await connectMcp();
+      syncMsg(T("高驰已连接，点击右上角同步。","COROS connected — tap Sync."));
     } else {
+      try{ localStorage.removeItem("tracktor-coros-token"); }catch(e){}
+      syncUI();
       promptCorosToken();
       syncMsg(T("连接失败，请检查令牌是否有效或是否过期。","Connection failed — check that the token is valid and not expired."));
     }
@@ -2943,6 +2948,27 @@ function parseMcpResponseText(ct, raw){
   return JSON.parse(raw);
 }
 
+/* 用 refresh_token 换新令牌。失败时保留现有令牌，下次再试 */
+async function refreshCorosToken(tk){
+  if(!tk || !tk.refresh_token) return false;
+  try{
+    const issuer = (tk.issuer || "https://mcpus.coros.com").replace(/\/+$/, "");
+    const r = await fetch(issuer + "/oauth2/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ grant_type: "refresh_token", client_id: tk.client_id || "", refresh_token: tk.refresh_token }).toString()
+    });
+    if(!r.ok) return false;
+    const j = await r.json();
+    if(!j.access_token) return false;
+    tk.access_token = j.access_token;
+    if(j.refresh_token) tk.refresh_token = j.refresh_token;
+    if(j.expires_in) tk.expires_at_epoch = Math.floor(Date.now()/1000) + Number(j.expires_in);
+    localStorage.setItem("tracktor-coros-token", JSON.stringify(tk));
+    return true;
+  }catch(e){ return false; }
+}
+
 async function callCorosDirectBrowser(toolName, args){
   let tk = null;
   try{ tk = JSON.parse(localStorage.getItem("tracktor-coros-token") || "null"); }catch(e){}
@@ -2950,56 +2976,45 @@ async function callCorosDirectBrowser(toolName, args){
     const err = new Error("needs_reauth"); err.code = "needs_reauth"; throw err;
   }
   const issuer = (tk.issuer || "https://mcpus.coros.com").replace(/\/+$/, "");
-  const nowSec = Math.floor(Date.now() / 1000);
-  if(tk.expires_at_epoch && nowSec >= tk.expires_at_epoch - 60 && tk.refresh_token){
-    const body = new URLSearchParams({
-      grant_type: "refresh_token",
-      client_id: tk.client_id || "",
-      refresh_token: tk.refresh_token
-    });
-    const rResp = await fetch(issuer + "/oauth2/token", {
+  if(tk.expires_at_epoch && Date.now()/1000 >= tk.expires_at_epoch - 60) await refreshCorosToken(tk);
+  const send = async () => {
+    const headers = {
+      "Authorization": (tk.token_type || "Bearer") + " " + tk.access_token,
+      "Content-Type": "application/json",
+      "Accept": "application/json, text/event-stream"
+    };
+    await fetch(issuer + "/mcp", {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: body.toString()
+      headers,
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        method: "initialize",
+        params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "COROS MCP Gateway CLI", version: "1.0.0" } }
+      })
     });
-    if(rResp.ok){
-      const rJson = await rResp.json();
-      tk.access_token = rJson.access_token;
-      if(rJson.refresh_token) tk.refresh_token = rJson.refresh_token;
-      if(rJson.expires_in) tk.expires_at_epoch = nowSec + Number(rJson.expires_in);
-      try{ localStorage.setItem("tracktor-coros-token", JSON.stringify(tk)); }catch(e){}
-    }
-  }
-  const headers = {
-    "Authorization": (tk.token_type || "Bearer") + " " + tk.access_token,
-    "Content-Type": "application/json",
-    "Accept": "application/json, text/event-stream"
+    return fetch(issuer + "/mcp", {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 2,
+        method: "tools/call",
+        params: { name: toolName, arguments: args || {} }
+      })
+    });
   };
-  await fetch(issuer + "/mcp", {
-    method: "POST",
-    headers,
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: 1,
-      method: "initialize",
-      params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "COROS MCP Gateway CLI", version: "1.0.0" } }
-    })
-  });
-  const callResp = await fetch(issuer + "/mcp", {
-    method: "POST",
-    headers,
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: 2,
-      method: "tools/call",
-      params: { name: toolName, arguments: args || {} }
-    })
-  });
+  let callResp = await send();
+  /* 令牌被拒就先自动续期再试一次，续期也失败才需要用户重新授权 */
+  if(callResp.status === 401 && await refreshCorosToken(tk)) callResp = await send();
   const raw = await callResp.text();
+  if(callResp.status === 401){
+    const err = new Error("needs_reauth"); err.code = "needs_reauth"; throw err;
+  }
   const rpc = parseMcpResponseText(callResp.headers.get("content-type") || "", raw);
   if(!callResp.ok || rpc.error || !rpc.result){
     const err = new Error((rpc.error && rpc.error.message) || "mcp call failed");
-    err.code = callResp.status === 401 ? "needs_reauth" : "mcp_error";
+    err.code = "mcp_error";
     throw err;
   }
   return rpc.result;
