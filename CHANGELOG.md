@@ -6,6 +6,16 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 
 ---
 
+## [v1.10a] — 2026-11-03
+
+### 修复 / Fixed
+- 😴 **睡眠评分同步不到**：高驰的回复格式解析得太死，整批睡眠评分都读不出来。现在能正确读取，第一次同步还会补回更早的记录。
+  Sleep scores failed to sync because the COROS reply was parsed too strictly. They now come through, and the first sync also fills in older nights.
+- 多行的同步提示不再被圆形背景裁掉文字。
+  Long sync messages are no longer clipped by the rounded background.
+
+---
+
 ## [v1.09a] — 2026-11-02
 
 ### 变更 / Changed

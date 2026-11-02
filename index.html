@@ -303,7 +303,7 @@ table.log td{font-family:var(--f-num);font-size:17px}
 .guide h3{margin:16px 0 6px;font-size:16px}
 .guide ul{margin:0;padding-left:18px}
 .guide li{margin:4px 0}
-.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;max-width:calc(100% - 32px);z-index:20}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:16px;font-size:14px;width:max-content;max-width:calc(100% - 32px);z-index:30}
 .empty{color:var(--muted);font-size:13px;padding:24px 0;text-align:center}
 .hbtns{display:flex;gap:8px;align-items:center}
 /* one design language for small tool buttons: round, thin ring, faint fill (same as the privacy eye and the panel save button) */
@@ -390,7 +390,7 @@ h1 .ver{font-family:var(--f-num);font-size:12px;font-weight:400;color:var(--mute
 <div class="wrap">
   <header class="top">
     <div class="trow">
-      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.09a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
+      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.10a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
       <button id="pwaInstallBtn" type="button" style="display:none;background:var(--cta);border:0;color:#fff;font-weight:700;font-size:12px;padding:5px 11px;border-radius:999px;cursor:pointer;margin-right:6px">📲 <span class="zh">安装 App</span><span class="en">Install</span></button><button id="syncBtn" class="syncbtn off"><span class="zh">连接中</span><span class="en">Connecting</span></button>
     </div>
     <div class="hrow"><p class="sub"><span class="zh">下一次</span><span class="en">Next</span> <b id="stNext" class="num" style="font-size:16px;color:var(--ink)">—</b></p><div class="hbtns">
@@ -1680,8 +1680,13 @@ let msgT;
 function syncMsg(t){const el=document.getElementById("toast");el.textContent=t;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,5000)}
 function ymdOffset(days){const d=new Date();d.setDate(d.getDate()+days);return d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())}
 function parseSleep(text){
-  const out=[];const re=/(\d{4}-\d{2}-\d{2})\s*\n\s*Sleep Score:\s*(-?\d+)\s*\n\s*Daily Sleep:\s*(?:(\d+)h\s*)?(\d+)\s*min/g;let m;
-  while((m=re.exec(text))){const score=+m[2];if(score<0)continue;out.push({date:m[1],sleep:score,sleepH:+((+(m[3]||0))+(+m[4])/60).toFixed(2)})}
+  /* tolerant like HRV: replies may arrive JSON-encoded with literal "\n", so don't rely on line breaks. A date followed by a time belongs to a sleep window, not a record header */
+  const out=[];const re=/(20\d{2}-\d{2}-\d{2})(?!\s+\d{1,2}:\d{2})/g;const hits=[];let m;
+  while((m=re.exec(text)))hits.push({i:m.index,d:m[1]});
+  hits.forEach((h,k)=>{const seg=text.slice(h.i,k+1<hits.length?hits[k+1].i:text.length);
+    const s=/sleep\s*score:\s*(-?\d+)/i.exec(seg);if(!s||+s[1]<0)return;
+    const t=/daily\s*sleep:\s*(?:(\d+)h\s*)?(\d+)\s*min/i.exec(seg);
+    out.push({date:h.d,sleep:+s[1],sleepH:t?+((+(t[1]||0))+(+t[2])/60).toFixed(2):null})});
   return out;
 }
 /* HRV replies are parsed tolerantly: dated text lines or JSON */
@@ -1765,7 +1770,7 @@ document.getElementById("syncBtn").addEventListener("click",async()=>{
     if(!text&&r.payload)text=JSON.stringify(r.payload);
     const rows=parseSleep(text);
     let msg="";
-    if(!rows.length){msg=T("COROS 返回了数据，但没有读到睡眠评分。","COROS replied but no sleep scores were found.");}
+    if(!rows.length){msg=T("COROS 返回了数据，但没有读到睡眠评分（开头：","COROS replied but no sleep scores were found (starts: ")+text.slice(0,120)+T("）。",").");}
     else{
       for(const x of rows){await saveMetric(x.date,{sleep:x.sleep,sleepH:x.sleepH})}
       const sbf=await backfill("-sleepbf",series("sleep")[0],sleepRange,x=>saveMetric(x.date,{sleep:x.sleep,sleepH:x.sleepH}),x=>state.metrics[x.date]&&state.metrics[x.date].sleep!=null,T("睡眠","sleep"));
