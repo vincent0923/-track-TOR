@@ -6,6 +6,14 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 
 ---
 
+## [v1.09a] — 2026-11-02
+
+### 变更 / Changed
+- 🧮 **估算不再覆盖已填的总热量**：总热量留空时，计算器按钮照常填入估算值；已有数字时只显示“估算 1592，差额 +252”。差额超过 100 kcal 时，提醒检查有无酒精、酱料等卡路里估算。
+  The calculator no longer overwrites a total you've entered. It fills in the estimate only when the field is blank; otherwise it shows the estimate and the difference, and flags differences over 100 kcal so you can check for alcohol, sauces, and the like.
+
+---
+
 ## [v1.08a] — 2026-11-02
 
 ### 新增 / Added

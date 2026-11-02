@@ -50,7 +50,7 @@
 
 产品定位、设计取向和后续计划见 [产品说明](docs/PRODUCT.md)，版本记录见 [更新日志](CHANGELOG.md)。
 
-当前版本 **v1.08a**。Alpha 表示已经在日常使用，还在持续打磨。
+当前版本 **v1.09a**。Alpha 表示已经在日常使用，还在持续打磨。
 
 © 2026 vincent0923，保留所有权利。见 [LICENSE](LICENSE)。
 
@@ -106,6 +106,6 @@ Most people don't need another training plan. They need a reason to keep going. 
 
 See the [product notes](docs/PRODUCT.md) (in Chinese) for positioning, design principles, and plans, and the [changelog](CHANGELOG.md) for version history.
 
-Current version: **v1.08a**. Alpha means it's in daily use and still being refined.
+Current version: **v1.09a**. Alpha means it's in daily use and still being refined.
 
 © 2026 vincent0923. All rights reserved. See [LICENSE](LICENSE).

@@ -74,6 +74,8 @@
 .calc-btn{flex:none;width:52px;height:40px;display:grid;place-items:center;padding:0;border:1px solid var(--cta);border-radius:8px;background:var(--cta);color:#fff;cursor:pointer}
 .calc-btn:disabled{border-color:var(--line);background:var(--sunk);color:var(--muted);cursor:default}
 .calc-btn svg{width:19px;height:19px;display:block}
+.calc-msg{margin:8px 0 0;font-size:12px;line-height:1.5;color:var(--muted)}
+.calc-msg.warn{color:var(--cta);font-weight:600}
 .btn.recsave{display:inline-grid;place-items:center;width:52px;height:44px;padding:0;background:var(--cta);color:#fff}
 .recsave svg{width:21px;height:21px;display:block}
 .xblock{margin-top:16px;padding-top:4px;border-top:2px dashed var(--line)}
@@ -388,7 +390,7 @@ h1 .ver{font-family:var(--f-num);font-size:12px;font-weight:400;color:var(--mute
 <div class="wrap">
   <header class="top">
     <div class="trow">
-      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.08a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
+      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.09a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
       <button id="pwaInstallBtn" type="button" style="display:none;background:var(--cta);border:0;color:#fff;font-weight:700;font-size:12px;padding:5px 11px;border-radius:999px;cursor:pointer;margin-right:6px">📲 <span class="zh">安装 App</span><span class="en">Install</span></button><button id="syncBtn" class="syncbtn off"><span class="zh">连接中</span><span class="en">Connecting</span></button>
     </div>
     <div class="hrow"><p class="sub"><span class="zh">下一次</span><span class="en">Next</span> <b id="stNext" class="num" style="font-size:16px;color:var(--ink)">—</b></p><div class="hbtns">
@@ -2636,6 +2638,7 @@ async function loadDietData(){
 }
 
 
+const CALC_WARN_DIFF = 100;
 function openDietEntryModal(initDate){
   const m = document.createElement("div");
   m.className = "mask";
@@ -2710,6 +2713,7 @@ function openDietEntryModal(initDate){
               ${numInp("tdKcal", T("总热量 kcal","Total kcal"), total.kcal, 1)}
               <button class="calc-btn" type="button" id="tdCalc" aria-label="${T("按蛋白、脂肪、碳水估算总热量","Estimate calories from protein, fat and carbs")}" title="${T("按蛋白、脂肪、碳水估算总热量","Estimate calories from protein, fat and carbs")}"${macroKcal(total)===null ? " disabled" : ""}>${CALC_ICON}</button>
             </div>
+            <p class="calc-msg" id="tdCalcMsg" aria-live="polite" hidden></p>
             <div class="total-grid">
               ${numInp("tdP", T("蛋白 g","Protein g"), total.p, 0.1)}
               ${numInp("tdF", T("脂肪 g","Fat g"), total.f, 0.1)}
@@ -2861,17 +2865,31 @@ function openDietEntryModal(initDate){
     });
     const calcBtn = m.querySelector("#tdCalc");
     if(calcBtn){
-      m.querySelectorAll("#tdP,#tdF,#tdC").forEach(inp=>{
+      const calcMsg = m.querySelector("#tdCalcMsg");
+      m.querySelectorAll("#tdKcal,#tdP,#tdF,#tdC").forEach(inp=>{
         inp.addEventListener("input", ()=>{
           syncFormFromDOM();
           calcBtn.disabled = macroKcal(total) === null;
+          calcMsg.hidden = true;
         });
       });
+      /* 总热量留空才填入估算值；已有数字不覆盖，只显示差额（已填 − 估算） */
       calcBtn.addEventListener("click", ()=>{
         syncFormFromDOM();
-        m.querySelector("#tdKcal").value = macroKcal(total);
-        syncFormFromDOM();
-        m.querySelector("#dburnPreview").innerHTML = burnPreviewHtml();
+        const est = macroKcal(total), entered = numVal(total.kcal);
+        if(entered === null){
+          m.querySelector("#tdKcal").value = est;
+          syncFormFromDOM();
+          m.querySelector("#dburnPreview").innerHTML = burnPreviewHtml();
+          return;
+        }
+        const diff = Math.round(entered - est);
+        const signed = diff > 0 ? "+" + diff : String(diff);
+        const big = Math.abs(diff) > CALC_WARN_DIFF;
+        calcMsg.textContent = T("估算 "+est+"，差额 "+signed, "Estimate "+est+", difference "+signed)
+          + (big ? T("，请检查有无酒精/酱料等卡路里估算", ". Check for calories from alcohol, sauces, etc.") : "");
+        calcMsg.classList.toggle("warn", big);
+        calcMsg.hidden = false;
       });
     }
     const addRowBtn = m.querySelector("#daddItemRowBtn");
