@@ -12,8 +12,6 @@
 ### 修复 / Fixed
 - 🔒 **新用户不再收到开发者本人的数据**：网页不再加载 `diet-data.json` 和 `train-data.json`，两个文件也已移出仓库。
   New users no longer receive the developer's personal data: the page stops loading these two files, and they are removed from the repo.
-- 🧹 **清理已写入的旧数据**：如果浏览器里还留着这批数据，打开时会询问是否清除。只匹配内容完全一致的记录，用户自己记录、同步或改过的数据不会被删。
-  If that data is still in a browser, the page asks whether to remove it. Only exact matches are affected, so anything logged, synced or edited by the user stays.
 
 ### 新增 / Added
 - 🌏 **高驰账号区域选择**：授权时可选中国大陆、欧洲、美国及其他地区，不再固定走美国区；默认值按已存令牌和时区判断。

@@ -2083,7 +2083,6 @@ function maybeRemindBackup(){
     if(!backupRemindDue()) return;
     /* 延迟到页面渲染稳定后弹提醒 */
     setTimeout(()=>{
-      if(document.getElementById("seedClean")) return;   /* 让旧数据清理提示先处理，下次打开再提醒 */
       const mask = document.createElement("div");
       mask.className = "mask";
       mask.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="${T("备份提醒","Backup reminder")}" style="max-width:480px">
@@ -2529,57 +2528,8 @@ async function loadDietData(){
   dietState.weights = localWeights;
   dietState.open = new Set(Object.keys(dietState.days));
   renderDietAll();
-  maybePromptDietSeedCleanup();
 }
 
-/* ---------- 清理早期版本写入的开发者数据：只存日期和指纹，不存数据本身，内容一致才算命中 ---------- */
-const DIET_SEED_KEEP_K = "tracktor-diet-seed-keep";
-const DIET_SEED_FP = {
-  days: "2026-10-15=1k4tuzh 2026-10-16=j7g40p 2026-10-17=6cfhjq 2026-10-19=1r8mjen 2026-10-20=qy6999 2026-10-22=1wywa1r 2026-10-24=1qis29c 2026-10-25=lq5wf4 2026-10-26=18dlpha 2026-10-27=12cks3 2026-10-28=1wqj8ud 2026-10-29=1633u59 2026-10-30=1fdaeqt",
-  coros: "2026-09-03=zxn1e4 2026-09-04=bcgp0z 2026-09-05=1xts3z8 2026-09-06=rv1e7d 2026-09-07=umttif 2026-09-08=1qgj9yw 2026-09-09=1sidkj 2026-09-10=1u2as17 2026-09-11=uywjl 2026-09-12=ljbks8 2026-09-13=385szb 2026-09-14=69p6ex 2026-09-15=n93rlg 2026-09-16=1bja7qf 2026-09-17=10gucw4 2026-09-18=19ath6o 2026-09-19=l3o0te 2026-09-20=1rdneff 2026-09-21=1yh0v94 2026-09-22=1hhljbg 2026-09-23=1l6swsu 2026-09-24=rmc18j 2026-09-25=1m4cbc2 2026-09-26=1idvth6 2026-09-27=xwirid 2026-09-28=128e4hy 2026-09-29=sc1vmi 2026-09-30=sn1p2y 2026-10-01=1q5xksk 2026-10-02=iu2kh9 2026-10-03=1gi0obl 2026-10-04=1hk5v8b 2026-10-05=1kogqv 2026-10-06=qj2221 2026-10-07=17my7qp 2026-10-08=1nlxnhw 2026-10-09=1ht3ag0 2026-10-10=108yac3 2026-10-11=urxu1z 2026-10-12=gt1crm 2026-10-13=g05zln 2026-10-14=1swretl 2026-10-15=ma2xh0 2026-10-16=13vb1ge 2026-10-17=ufrtvm 2026-10-18=1nipbj5 2026-10-19=pwln06 2026-10-20=avswd8 2026-10-21=1oekqcx 2026-10-22=11jsvpb 2026-10-23=1ibwam0 2026-10-24=1fk6fds 2026-10-25=127alpf 2026-10-26=5igmzz 2026-10-27=10ggvh1 2026-10-28=bwikyb 2026-10-29=12u9jxs 2026-10-30=1rnq4p 2026-10-31=15cjp51",
-  weights: "2026-10-30=wkfzym"
-};
-function _fnv36(s){ let h=0x811c9dc5; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,0x01000193); } return (h>>>0).toString(36); }
-function findDietSeedEntries(){
-  const hits = [];
-  Object.keys(DIET_SEED_FP).forEach(sec=>{
-    DIET_SEED_FP[sec].split(" ").forEach(item=>{
-      const [date, fp] = item.split("=");
-      const v = dietState[sec] && dietState[sec][date];
-      if(v && _fnv36(JSON.stringify(v)) === fp) hits.push([sec, date]);
-    });
-  });
-  return hits;
-}
-function maybePromptDietSeedCleanup(){
-  try{ if(localStorage.getItem(DIET_SEED_KEEP_K)) return; }catch(e){ return; }
-  const hits = findDietSeedEntries();
-  if(!hits.length) return;
-  const dates = hits.map(h=>h[1]).sort();
-  const mask = document.createElement("div");
-  mask.className = "mask";
-  mask.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="${T("清理旧数据","Clean up old data")}" style="max-width:480px">
-    <b style="font-size:16px">${T("发现不属于你的旧数据","Found data that isn't yours")}</b>
-    <p class="sub" style="margin:8px 0 12px">${T(
-      "早期版本把开发者本人的 "+hits.length+" 条饮食和活动记录（"+dates[0]+" 至 "+dates[dates.length-1]+"）写进了这个浏览器。建议清除，你自己记录和同步的数据不受影响。",
-      "An early version copied "+hits.length+" of the developer's own diet and activity records ("+dates[0]+" to "+dates[dates.length-1]+") into this browser. We suggest removing them. Data you logged or synced yourself isn't affected."
-    )}</p>
-    <button id="seedClean" type="button" class="btn" style="width:100%;background:var(--cta);font-size:15px;padding:12px">${T("清除这些数据","Remove this data")}</button>
-    <button id="seedKeep" type="button" class="btn ghost" style="width:100%;margin-top:8px">${T("这就是我的数据，保留","This is my data, keep it")}</button>
-  </div>`;
-  document.body.appendChild(mask);
-  mask.querySelector("#seedClean").addEventListener("click", ()=>{
-    hits.forEach(([sec, date])=>{ delete dietState[sec][date]; dietState.open.delete(date); });
-    saveDietLocal();
-    renderDietAll();
-    mask.remove();
-    toast(T("已清除","Removed"));
-  });
-  mask.querySelector("#seedKeep").addEventListener("click", ()=>{
-    try{ localStorage.setItem(DIET_SEED_KEEP_K, "1"); }catch(e){}
-    mask.remove();
-  });
-}
 
 function openDietEntryModal(initDate){
   const targetDate = initDate || (window.today ? window.today() : "2026-11-01");
