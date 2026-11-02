@@ -55,7 +55,7 @@
 
 直接打开 👉 **https://vincent0923.github.io/Track-TOR/**
 
-1. 右上角「**连接高驰**」→「**授权登录高驰账号**」→ 走一遍 COROS 登录授权
+1. 右上角「**连接高驰**」→ 选择账号所在区域（中国大陆 / 欧洲 / 美国及其他地区）→「**授权登录高驰账号**」→ 走一遍 COROS 登录授权
 2. 点「**同步**」，拉取你的体重 / 腰围 / 睡眠 / HRV / 静息心率
 3. 开始记训练，看着烟花噼里啪啦，图表往上走
 
@@ -101,8 +101,6 @@ Track-TOR/
 ├── manifest.json              # PWA 清单
 ├── sw.js                      # Service Worker（离线缓存）
 ├── icon-192.png / icon-512.png / icon.svg   # 图标
-├── diet-data.json             # 饮食热量账本数据
-├── train-data.json            # 训练与身体指标数据
 ├── CHANGELOG.md               # 更新日志
 └── .gitignore
 ```
@@ -121,7 +119,7 @@ Track-TOR/
 
 ## 版本
 
-当前版本：**v1.00a**（alpha）
+当前版本：**v1.01a**（alpha）
 
 产品已剥离 agent 依赖、可独立运作与同步，从操作层面已是面向大众的产品；但尚未打包成独立 app，故处于 alpha 阶段。
 
@@ -192,7 +190,7 @@ This app exists to fix exactly that:
 
 Just open 👉 **https://vincent0923.github.io/Track-TOR/**
 
-1. Tap **连接高驰** (top-right) → **授权登录高驰账号** → go through COROS login/authorization
+1. Tap **Connect COROS** (top-right) → choose your account region (Mainland China / Europe / US & other regions) → **Authorize COROS account** → go through COROS login/authorization
 2. Tap **同步** to pull your weight / waist / sleep / HRV / resting HR
 3. Start logging workouts and watch the fireworks go off while the chart climbs
 
@@ -237,8 +235,6 @@ Track-TOR/
 ├── manifest.json              # PWA manifest
 ├── sw.js                      # Service Worker (offline cache)
 ├── icon-192.png / icon-512.png / icon.svg   # Icons
-├── diet-data.json             # Diet calorie ledger data
-├── train-data.json            # Training & body metric data
 ├── CHANGELOG.md               # Changelog
 └── .gitignore
 ```
@@ -257,7 +253,7 @@ Track-TOR/
 
 ## Version
 
-Current: **v1.00a** (alpha)
+Current: **v1.01a** (alpha)
 
 The product has dropped its agent dependency and works & syncs independently — operationally it's already a consumer product; it just isn't packaged as a standalone app yet, hence alpha.
 

@@ -341,7 +341,7 @@ h1 .ver{font-family:var(--f-num);font-size:12px;font-weight:400;color:var(--mute
 <div class="wrap">
   <header class="top">
     <div class="trow">
-      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.00a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
+      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.01a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
       <button id="pwaInstallBtn" type="button" style="display:none;background:var(--cta);border:0;color:#fff;font-weight:700;font-size:12px;padding:5px 11px;border-radius:999px;cursor:pointer;margin-right:6px">📲 <span class="zh">安装 App</span><span class="en">Install</span></button><button id="syncBtn" class="syncbtn off"><span class="zh">连接中</span><span class="en">Connecting</span></button>
     </div>
     <div class="hrow"><p class="sub"><span class="zh">下一次</span><span class="en">Next</span> <b id="stNext" class="num" style="font-size:16px;color:var(--ink)">—</b></p><div class="hbtns">
@@ -785,22 +785,6 @@ function lsSave(){
 
 window.loadTrainData = async function loadTrainData(){
   lsLoad();
-  const localSessions = clone(state.sessions || {});
-  const localMetrics = clone(state.metrics || {});
-  for(const url of ["/api/train", "./train-data.json"]){
-    try{
-      const r = await fetch(url, { signal: AbortSignal.timeout(2500) });
-      if(r.ok){
-        const data = await r.json();
-        state.sessions = Object.assign({}, data.sessions || {}, localSessions);
-        state.metrics = Object.assign({}, data.metrics || {}, localMetrics);
-        if(data.settings) state.settings = Object.assign({}, GDEF, data.settings, state.settings || {});
-        try{ localStorage.setItem(LS, JSON.stringify(state)); }catch(e){}
-        renderAll();
-        return;
-      }
-    }catch(e){}
-  }
   renderAll();
 }
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
@@ -1786,7 +1770,23 @@ function readCorosToken(){
 }
 
 /* --- 纯前端 PKCE 授权流程 --- */
-const COROS_ISSUER = "https://mcpus.coros.com";
+const COROS_REGIONS = { cn:"https://mcpcn.coros.com", eu:"https://mcpeu.coros.com", us:"https://mcpus.coros.com" };
+const COROS_REGION_K = "tracktor-coros-region";
+/* 优先用已选区域，其次已存令牌的区域，最后按时区猜一个默认值 */
+function corosRegion(){
+  let saved = null;
+  try{ saved = localStorage.getItem(COROS_REGION_K); }catch(e){}
+  if(COROS_REGIONS[saved]) return saved;
+  const tk = readCorosToken();
+  const fromToken = tk && Object.keys(COROS_REGIONS).find(k=>COROS_REGIONS[k]===tk.issuer);
+  if(fromToken) return fromToken;
+  let tz = "";
+  try{ tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; }catch(e){}
+  if(tz==="Asia/Shanghai"||tz==="Asia/Urumqi") return "cn";
+  if(tz.startsWith("Europe/")) return "eu";
+  return "us";
+}
+function corosIssuer(){ return COROS_REGIONS[corosRegion()]; }
 const COROS_REDIRECT = "https://vincent0923.github.io/Track-TOR/";
 const COROS_SCOPE = "openid offline_access mcp.tools";
 
@@ -1806,7 +1806,7 @@ async function _corosPost(url, body, headers){
 
 /* 动态注册公开客户端（无 secret） */
 async function corosRegisterClient(){
-  const j = await _corosPost(COROS_ISSUER + "/connect/register", {
+  const j = await _corosPost(corosIssuer() + "/connect/register", {
     client_name: "Track-TOR Web",
     redirect_uris: [COROS_REDIRECT],
     grant_types: ["authorization_code","refresh_token"],
@@ -1820,12 +1820,12 @@ async function corosRegisterClient(){
 
 /* 创建 CLI 登录会话 */
 async function corosCreateSession(clientId){
-  return await _corosPost(COROS_ISSUER + "/api/v1/cli/login-sessions", { clientId });
+  return await _corosPost(corosIssuer() + "/api/v1/cli/login-sessions", { clientId });
 }
 
 /* 轮询 claim 会话状态，返回 {status, loginTicket?, ...} */
 async function corosClaim(sessionId, pollToken){
-  const r = await fetch(COROS_ISSUER + "/api/v1/cli/login-sessions/" + encodeURIComponent(sessionId) + "/claim", {
+  const r = await fetch(corosIssuer() + "/api/v1/cli/login-sessions/" + encodeURIComponent(sessionId) + "/claim", {
     method:"POST",
     headers:{ "Content-Type":"application/json", "X-Poll-Token": pollToken }
   });
@@ -1836,7 +1836,7 @@ async function corosClaim(sessionId, pollToken){
 }
 
 /* 用授权码换 token（PKCE） */
-async function corosExchangeCode(clientId, code, verifier){
+async function corosExchangeCode(issuer, clientId, code, verifier){
   const body = new URLSearchParams({
     grant_type: "authorization_code",
     client_id: clientId,
@@ -1844,7 +1844,7 @@ async function corosExchangeCode(clientId, code, verifier){
     redirect_uri: COROS_REDIRECT,
     code_verifier: verifier
   });
-  const r = await fetch(COROS_ISSUER + "/oauth2/token", {
+  const r = await fetch(issuer + "/oauth2/token", {
     method:"POST",
     headers:{ "Content-Type":"application/x-www-form-urlencoded" },
     body: body.toString()
@@ -1870,6 +1870,13 @@ function promptCorosToken(){
     )}</p>
 
     <div id="corosAuthBox">
+      <div class="field" style="margin-bottom:10px"><label for="corosRegionSel">${T("高驰账号所在区域","COROS account region")}</label>
+        <select id="corosRegionSel" style="width:100%;font:inherit;font-size:16px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:var(--sunk);color:var(--ink)">
+          <option value="cn">${T("中国大陆","Mainland China")}</option>
+          <option value="eu">${T("欧洲","Europe")}</option>
+          <option value="us">${T("美国及其他地区","US & other regions")}</option>
+        </select>
+      </div>
       <button id="corosAuthBtn" type="button" class="btn" style="width:100%;background:var(--push);font-size:15px;padding:12px">${T("授权登录高驰账号","Authorize COROS account")}</button>
       <p class="note" id="corosAuthMsg" style="margin:10px 0 0;min-height:16px"></p>
     </div>
@@ -1890,6 +1897,10 @@ function promptCorosToken(){
   document.body.appendChild(mask);
   const inp = mask.querySelector("#corosTokenInp");
   if(cur){ try{ inp.value = JSON.stringify(cur, null, 2); }catch(e){} }
+  const regionSel = mask.querySelector("#corosRegionSel");
+  regionSel.value = corosRegion();
+  regionSel.addEventListener("change", ()=>{ try{ localStorage.setItem(COROS_REGION_K, regionSel.value); }catch(e){} });
+  const regionIssuer = ()=>COROS_REGIONS[regionSel.value];
   const close = ()=>{ mask.remove(); };
   mask.querySelector("[data-close]").addEventListener("click", close);
   mask.addEventListener("click", e=>{ if(e.target===mask) close(); });
@@ -1916,14 +1927,14 @@ function promptCorosToken(){
     try{ tk = JSON.parse(raw); }catch(e){}
     if(!tk){
       if(/^[A-Za-z0-9._~\-]{40,}$/.test(raw)){
-        tk = { access_token: raw, token_type: "Bearer", issuer: COROS_ISSUER };
+        tk = { access_token: raw, token_type: "Bearer", issuer: regionIssuer() };
       } else {
         syncMsg(T("令牌格式无法识别，请粘贴完整的 JSON 或 access_token。","Token format not recognised — paste the full JSON or a raw access_token."));
         return;
       }
     }
     if(!tk.access_token){ syncMsg(T("令牌缺少 access_token 字段","Token is missing access_token")); return; }
-    if(!tk.issuer){ tk.issuer = COROS_ISSUER; }
+    if(!tk.issuer){ tk.issuer = regionIssuer(); }
     try{ localStorage.setItem("tracktor-coros-token", JSON.stringify(tk)); }catch(e){
       syncMsg(T("无法保存到本地存储","Could not save to local storage")); return;
     }
@@ -1944,9 +1955,13 @@ function promptCorosToken(){
     const btn = mask.querySelector("#corosAuthBtn");
     const msgEl = mask.querySelector("#corosAuthMsg");
     btn.disabled = true;
+    regionSel.disabled = true;
     btn.textContent = T("正在准备登录…","Preparing login…");
     msgEl.textContent = "";
     try{
+      /* 整个授权过程固定用这个区域 */
+      try{ localStorage.setItem(COROS_REGION_K, regionSel.value); }catch(e){}
+      const issuer = regionIssuer();
       /* 1. 注册 client + 生成 PKCE */
       const verifier = _pkceVerifier();
       const clientId = await corosRegisterClient();
@@ -1983,22 +1998,23 @@ function promptCorosToken(){
       /* 4. 拿 loginTicket 访问 authorize_url 换 code：直接让用户跳转（会回到本页带 code） */
       const challenge = await _pkceChallenge(verifier);
       const state = _pkceVerifier();
-      const authUrl = COROS_ISSUER + "/oauth2/authorize?" + new URLSearchParams({
+      const authUrl = issuer + "/oauth2/authorize?" + new URLSearchParams({
         response_type: "code",
         client_id: clientId,
         redirect_uri: COROS_REDIRECT,
         scope: COROS_SCOPE,
         code_challenge: challenge,
         code_challenge_method: "S256",
-        resource: COROS_ISSUER + "/mcp",
+        resource: issuer + "/mcp",
         state: state,
         login_ticket: ticket
       }).toString();
-      sessionStorage.setItem("tracktor-coros-pending", JSON.stringify({ clientId, verifier, state, ts: Date.now() }));
+      sessionStorage.setItem("tracktor-coros-pending", JSON.stringify({ issuer, clientId, verifier, state, ts: Date.now() }));
       window.location.href = authUrl;
 
     }catch(e){
       btn.disabled = false;
+      regionSel.disabled = false;
       btn.textContent = T("授权登录高驰账号","Authorize COROS account");
       msgEl.textContent = T("授权失败：","Authorization failed: ") + (e.message || e);
       syncMsg(T("授权失败，请重试或改用「手动粘贴」。","Authorization failed — retry or paste token manually."));
@@ -2020,7 +2036,8 @@ async function handleCorosCallback(){
     if(pend.state && st && st !== pend.state) return false;
     /* 换 token */
     syncMsg(T("授权成功，正在获取令牌…","Authorized — fetching token…"));
-    const tkResp = await corosExchangeCode(pend.clientId, code, pend.verifier);
+    const issuer = pend.issuer || corosIssuer();
+    const tkResp = await corosExchangeCode(issuer, pend.clientId, code, pend.verifier);
     const tk = {
       access_token: tkResp.access_token,
       refresh_token: tkResp.refresh_token,
@@ -2029,7 +2046,7 @@ async function handleCorosCallback(){
       obtained_at_epoch: Math.floor(Date.now()/1000),
       expires_at_epoch: Math.floor(Date.now()/1000) + (tkResp.expires_in||3600),
       client_id: pend.clientId,
-      issuer: COROS_ISSUER
+      issuer
     };
     if(!tk.access_token || !tk.refresh_token) throw new Error("token response missing fields");
     localStorage.setItem("tracktor-coros-token", JSON.stringify(tk));
@@ -2066,6 +2083,7 @@ function maybeRemindBackup(){
     if(!backupRemindDue()) return;
     /* 延迟到页面渲染稳定后弹提醒 */
     setTimeout(()=>{
+      if(document.getElementById("seedClean")) return;   /* 让旧数据清理提示先处理，下次打开再提醒 */
       const mask = document.createElement("div");
       mask.className = "mask";
       mask.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="${T("备份提醒","Backup reminder")}" style="max-width:480px">
@@ -2506,26 +2524,61 @@ async function loadDietData(){
       if(j.weights) localWeights = j.weights;
     }
   }catch(e){}
-  for(const url of ["/api/diet", "./diet-data.json"]){
-    try{
-      const r = await fetch(url, { signal: AbortSignal.timeout(2500) });
-      if(r.ok){
-        const data = await r.json();
-        dietState.days = Object.assign({}, data.days || {}, localDays);
-        dietState.coros = Object.assign({}, data.coros || {}, localCoros);
-        dietState.weights = Object.assign({}, data.weights || {}, localWeights);
-        dietState.open = new Set(Object.keys(dietState.days));
-        saveDietLocal();
-        renderDietAll();
-        return;
-      }
-    }catch(e){}
-  }
   dietState.days = localDays;
   dietState.coros = localCoros;
   dietState.weights = localWeights;
   dietState.open = new Set(Object.keys(dietState.days));
   renderDietAll();
+  maybePromptDietSeedCleanup();
+}
+
+/* ---------- 清理早期版本写入的开发者数据：只存日期和指纹，不存数据本身，内容一致才算命中 ---------- */
+const DIET_SEED_KEEP_K = "tracktor-diet-seed-keep";
+const DIET_SEED_FP = {
+  days: "2026-10-15=1k4tuzh 2026-10-16=j7g40p 2026-10-17=6cfhjq 2026-10-19=1r8mjen 2026-10-20=qy6999 2026-10-22=1wywa1r 2026-10-24=1qis29c 2026-10-25=lq5wf4 2026-10-26=18dlpha 2026-10-27=12cks3 2026-10-28=1wqj8ud 2026-10-29=1633u59 2026-10-30=1fdaeqt",
+  coros: "2026-09-03=zxn1e4 2026-09-04=bcgp0z 2026-09-05=1xts3z8 2026-09-06=rv1e7d 2026-09-07=umttif 2026-09-08=1qgj9yw 2026-09-09=1sidkj 2026-09-10=1u2as17 2026-09-11=uywjl 2026-09-12=ljbks8 2026-09-13=385szb 2026-09-14=69p6ex 2026-09-15=n93rlg 2026-09-16=1bja7qf 2026-09-17=10gucw4 2026-09-18=19ath6o 2026-09-19=l3o0te 2026-09-20=1rdneff 2026-09-21=1yh0v94 2026-09-22=1hhljbg 2026-09-23=1l6swsu 2026-09-24=rmc18j 2026-09-25=1m4cbc2 2026-09-26=1idvth6 2026-09-27=xwirid 2026-09-28=128e4hy 2026-09-29=sc1vmi 2026-09-30=sn1p2y 2026-10-01=1q5xksk 2026-10-02=iu2kh9 2026-10-03=1gi0obl 2026-10-04=1hk5v8b 2026-10-05=1kogqv 2026-10-06=qj2221 2026-10-07=17my7qp 2026-10-08=1nlxnhw 2026-10-09=1ht3ag0 2026-10-10=108yac3 2026-10-11=urxu1z 2026-10-12=gt1crm 2026-10-13=g05zln 2026-10-14=1swretl 2026-10-15=ma2xh0 2026-10-16=13vb1ge 2026-10-17=ufrtvm 2026-10-18=1nipbj5 2026-10-19=pwln06 2026-10-20=avswd8 2026-10-21=1oekqcx 2026-10-22=11jsvpb 2026-10-23=1ibwam0 2026-10-24=1fk6fds 2026-10-25=127alpf 2026-10-26=5igmzz 2026-10-27=10ggvh1 2026-10-28=bwikyb 2026-10-29=12u9jxs 2026-10-30=1rnq4p 2026-10-31=15cjp51",
+  weights: "2026-10-30=wkfzym"
+};
+function _fnv36(s){ let h=0x811c9dc5; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,0x01000193); } return (h>>>0).toString(36); }
+function findDietSeedEntries(){
+  const hits = [];
+  Object.keys(DIET_SEED_FP).forEach(sec=>{
+    DIET_SEED_FP[sec].split(" ").forEach(item=>{
+      const [date, fp] = item.split("=");
+      const v = dietState[sec] && dietState[sec][date];
+      if(v && _fnv36(JSON.stringify(v)) === fp) hits.push([sec, date]);
+    });
+  });
+  return hits;
+}
+function maybePromptDietSeedCleanup(){
+  try{ if(localStorage.getItem(DIET_SEED_KEEP_K)) return; }catch(e){ return; }
+  const hits = findDietSeedEntries();
+  if(!hits.length) return;
+  const dates = hits.map(h=>h[1]).sort();
+  const mask = document.createElement("div");
+  mask.className = "mask";
+  mask.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="${T("清理旧数据","Clean up old data")}" style="max-width:480px">
+    <b style="font-size:16px">${T("发现不属于你的旧数据","Found data that isn't yours")}</b>
+    <p class="sub" style="margin:8px 0 12px">${T(
+      "早期版本把开发者本人的 "+hits.length+" 条饮食和活动记录（"+dates[0]+" 至 "+dates[dates.length-1]+"）写进了这个浏览器。建议清除，你自己记录和同步的数据不受影响。",
+      "An early version copied "+hits.length+" of the developer's own diet and activity records ("+dates[0]+" to "+dates[dates.length-1]+") into this browser. We suggest removing them. Data you logged or synced yourself isn't affected."
+    )}</p>
+    <button id="seedClean" type="button" class="btn" style="width:100%;background:var(--cta);font-size:15px;padding:12px">${T("清除这些数据","Remove this data")}</button>
+    <button id="seedKeep" type="button" class="btn ghost" style="width:100%;margin-top:8px">${T("这就是我的数据，保留","This is my data, keep it")}</button>
+  </div>`;
+  document.body.appendChild(mask);
+  mask.querySelector("#seedClean").addEventListener("click", ()=>{
+    hits.forEach(([sec, date])=>{ delete dietState[sec][date]; dietState.open.delete(date); });
+    saveDietLocal();
+    renderDietAll();
+    mask.remove();
+    toast(T("已清除","Removed"));
+  });
+  mask.querySelector("#seedKeep").addEventListener("click", ()=>{
+    try{ localStorage.setItem(DIET_SEED_KEEP_K, "1"); }catch(e){}
+    mask.remove();
+  });
 }
 
 function openDietEntryModal(initDate){
