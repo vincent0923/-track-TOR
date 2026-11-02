@@ -2146,7 +2146,7 @@ function promptCorosToken(){
       /* 2. 打开登录链接 */
       btn.textContent = T("请在新窗口登录高驰…","Log in to COROS in the new window…");
       msgEl.textContent = T("新窗口已打开，请登录并授权。完成后会自动连接。","A new window opened — log in and authorize. It will auto-connect.");
-      window.open(loginUrl, "_blank");
+      const loginWin = window.open(loginUrl, "_blank");
 
       /* 3. 轮询 claim，直到 authorized */
       let ticket = null;
@@ -2161,6 +2161,8 @@ function promptCorosToken(){
         if(st && st !== "pending") throw new Error("session status: " + st);
       }
       if(!ticket) throw new Error("authorization timeout");
+      /* 高驰登录页不会自己跳回来；授权成功后替用户关掉它 */
+      try{ if(loginWin && !loginWin.closed) loginWin.close(); }catch(e){}
 
       /* 4. 拿 loginTicket 访问 authorize_url 换 code：直接让用户跳转（会回到本页带 code） */
       const challenge = await _pkceChallenge(verifier);
@@ -2196,6 +2198,14 @@ async function handleCorosCallback(){
   try{
     const q = new URLSearchParams(window.location.search);
     const code = q.get("code");
+    /* 高驰拒绝授权时带 error 回来，以前会被静默忽略 */
+    const err = q.get("error");
+    if(!code && err && sessionStorage.getItem("tracktor-coros-pending")){
+      sessionStorage.removeItem("tracktor-coros-pending");
+      if(window.history && window.history.replaceState) window.history.replaceState({}, "", window.location.pathname);
+      syncMsg(T("高驰授权没有完成：","COROS authorization didn't finish: ") + (q.get("error_description") || err) + T("。可以换个区域再试。",". Try another region."));
+      return false;
+    }
     if(!code) return false;
     const st = q.get("state");
     const pend = JSON.parse(sessionStorage.getItem("tracktor-coros-pending") || "null");

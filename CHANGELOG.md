@@ -21,6 +21,8 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
   Basal metabolic rate now uses your own sex, birthday, and height instead of built-in defaults.
 - 高驰授权失败时提示换个区域再试。
   A failed COROS authorization now suggests trying another region.
+- 高驰授权成功后自动关掉登录页，不用自己关。高驰拒绝授权时也会提示原因，不再没有反应。
+  The COROS login page now closes itself after you authorize, and a refused authorization shows the reason instead of doing nothing.
 
 ### 修复 / Fixed
 - 新用户第一次打开不再立刻弹出「该备份进度了」，5 天后才提醒。
