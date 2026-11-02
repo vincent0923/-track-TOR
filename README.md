@@ -30,7 +30,7 @@
 | 模块 | 干什么的 |
 |---|---|
 | 🏋️ 推拉训练 | 上身力量训练记录，分「推 / 拉」两组，解锁制进阶 |
-| 💪 每日加练 | 不管今天是推日还是拉日，都能加练引体或自定义项目，也能补记之前的日子 |
+| 💪 每日加练 | 每个训练日的面板里都能加练，默认引体向上，也能加自定义项目，一天的练习都记在一起 |
 | 🎆 烟花 + 🔊 音效 | 每完成一组就放烟花，把记录变成游戏 |
 | 📈 趋势图表 | 引体、体重、腰围、睡眠、HRV、静息心率的 MA7 移动平均曲线 |
 | ⌚ 高驰 COROS 同步 | 一键授权，自动拉取体重、腰围、睡眠、HRV、静息心率 |
@@ -120,7 +120,7 @@ Track-TOR/
 
 ## 版本
 
-当前版本：**v1.02a**（alpha）
+当前版本：**v1.03a**（alpha）
 
 产品已剥离 agent 依赖、可独立运作与同步，从操作层面已是面向大众的产品；但尚未打包成独立 app，故处于 alpha 阶段。
 
@@ -166,7 +166,7 @@ This app exists to fix exactly that:
 | Module | What it does |
 |---|---|
 | 🏋️ Push/Pull training | Upper-body strength logging, split into Push / Pull, unlock-based progression |
-| 💪 Daily extra practice | Add pull-ups or any custom exercise on any day, push or pull, and backfill past days |
+| 💪 Extra practice | Every session panel has an extra practice section, pull-ups by default or any custom exercise, so a day's work stays together |
 | 🎆 Fireworks + 🔊 Sound | Every set → fireworks, turning logging into a game |
 | 📈 Trend charts | MA7 moving averages for pull-ups, weight, waist, sleep, HRV, resting HR |
 | ⌚ COROS sync | One-tap OAuth; auto-pulls weight, waist, sleep, HRV, resting HR |
@@ -255,7 +255,7 @@ Track-TOR/
 
 ## Version
 
-Current: **v1.02a** (alpha)
+Current: **v1.03a** (alpha)
 
 The product has dropped its agent dependency and works & syncs independently — operationally it's already a consumer product; it just isn't packaged as a standalone app yet, hence alpha.
 
