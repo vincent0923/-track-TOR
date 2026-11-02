@@ -6,6 +6,20 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 
 ---
 
+## [v1.06a] — 2026-11-02
+
+### 变更 / Changed
+- 🧭 **导航更简洁**：数据和备份只留图标。饮食页搬进数据页，数据页分饮食和图表两个 tab。
+  Simpler navigation: Data and Backup are icons only. Diet moves into the data page, which now has Diet and Charts tabs.
+- ✏️ **图表上直接记录**：引体、体重和腰围的图表各有一个手写图标，点开填数字，日期默认当天，也可改，按磁盘图标保存并关闭。删除原来的手动记录面板。
+  Log right from the chart: pull-ups, weight, and waist each have a pencil icon. Enter a number, keep today or pick another date, then tap the disk icon to save and close. The old manual record panel is gone.
+- 🏷️ **标题下方改回 TOR 全称**：躯干优化记录 / Torso Optimisation Record。
+  The header tagline is back to the full meaning of TOR.
+- 📄 **README 去掉改代码的说明**。
+  Removes the code setup instructions from the README.
+
+---
+
 ## [v1.05a] — 2026-11-02
 
 ### 变更 / Changed

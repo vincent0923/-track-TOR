@@ -25,9 +25,9 @@
 | 🏋️ 推拉训练 | 20 天推拉计划，共 40 次训练，从基础动作逐级解锁到标准引体 |
 | 💪 随时加练 | 每个训练日都能加练，默认引体向上，也能加自定义项目 |
 | 🎆 爽感反馈 | 每完成一组放烟花，还有音效，整天练完放更大的 |
-| 📈 看得见的进步 | 引体、体重、腰围、睡眠、HRV、静息心率的趋势图 |
+| 📈 看得见的进步 | 引体、体重、腰围、睡眠、HRV、静息心率的趋势图，引体、体重、腰围点手写图标就能记录 |
 | ⌚ 连接高驰 | 授权一次，自动续期，同步健康和活动数据 |
-| 🍽️ 饮食账本 | 手动记录每一项食物，自动算热量缺口和约合多少脂肪 |
+| 🍽️ 饮食账本 | 在数据页手动记录每一项食物，自动算热量缺口和约合多少脂肪 |
 | 💾 进度文件 | 一键存成 txt 放在手机里，换手机选这个文件就能恢复 |
 | 📲 装到主屏 | 像 App 一样全屏运行，没网也能记 |
 
@@ -43,24 +43,14 @@
 
 - 所有记录都存在你手机的浏览器里，没有账号，也没有我们的服务器。
 - 高驰由你的浏览器直接连接，不经过第三方。
-- 浏览器偶尔会清空本地数据，记得定期在「备份」里保存进度文件。
+- 浏览器偶尔会清空本地数据，记得定期点备份图标保存进度文件。
 - 进度文件带着你的高驰授权，换手机恢复后不用重新授权，所以不要把它发给别人。
 
-## 想改代码
-
-没有构建步骤，也没有依赖，所有逻辑都在 `index.html`。
-
-```bash
-git clone https://github.com/vincent0923/Track-TOR.git
-cd Track-TOR
-python3 -m http.server 8080
-```
-
-然后打开 http://localhost:8080/ 。推送到 `main` 后，GitHub Pages 会自动上线。
+## 更多
 
 产品定位、设计取向和后续计划见 [产品说明](docs/PRODUCT.md)，版本记录见 [更新日志](CHANGELOG.md)。
 
-当前版本 **v1.05a**。Alpha 表示已经在日常使用，但还没有做成独立 App，给别人用之前还要补上新用户引导。
+当前版本 **v1.06a**。Alpha 表示已经在日常使用，但还没有做成独立 App，给别人用之前还要补上新用户引导。
 
 MIT License，见 [LICENSE](LICENSE)。
 
@@ -70,9 +60,9 @@ MIT License，见 [LICENSE](LICENSE)。
 
 # track-TOR
 
-**The feel-good workout log that gets cyclists a lean, defined upper body.**
+**The feel-good workout log that builds upper-body muscle for cyclists.**
 
-Cycling takes care of your legs and lungs. track-TOR takes care of the rest. Every set you finish sets off fireworks, so logging a workout feels like clearing a game level.
+Cycling already keeps you lean and takes care of your legs and lungs. track-TOR builds the upper body it leaves behind. Every set you finish sets off fireworks, so logging a workout feels like clearing a game level.
 
 👉 **Open it now: https://vincent0923.github.io/Track-TOR/**
 
@@ -91,9 +81,9 @@ Most people don't need another training plan. They need a reason to keep going. 
 | 🏋️ Push and pull training | A 20-day program with 40 sessions, unlocking step by step from the basics to strict pull-ups |
 | 💪 Extra practice | Add extra sets to any session, pull-ups by default or any exercise you like |
 | 🎆 Feel-good rewards | Fireworks and sound for every set, and a bigger show when you finish the day |
-| 📈 Visible progress | Trends for pull-ups, weight, waist, sleep, HRV, and resting heart rate |
+| 📈 Visible progress | Trends for pull-ups, weight, waist, sleep, HRV, and resting heart rate. Tap the pencil to log pull-ups, weight, or waist |
 | ⌚ COROS connection | Authorize once and it renews itself, syncing your health and activity data |
-| 🍽️ Diet ledger | Log each food by hand and see your calorie gap and the fat it adds up to |
+| 🍽️ Diet ledger | On the data page, log each food by hand and see your calorie gap and the fat it adds up to |
 | 💾 Progress file | Save a txt file to your phone, then pick it to restore on a new one |
 | 📲 Home screen install | Runs full screen like an app and works offline |
 
@@ -109,23 +99,13 @@ Most people don't need another training plan. They need a reason to keep going. 
 
 - Everything stays in your phone's browser. There are no accounts and no servers of ours.
 - Your browser connects to COROS directly, with no third party in between.
-- Browsers sometimes clear local data, so save a progress file now and then under **Backup**.
+- Browsers sometimes clear local data, so tap the backup icon now and then to save a progress file.
 - The progress file includes your COROS authorization, so restoring on a new phone needs no new sign-in. Don't send it to other people.
 
-## Working on the code
-
-There's no build step and no dependencies. All the logic is in `index.html`.
-
-```bash
-git clone https://github.com/vincent0923/Track-TOR.git
-cd Track-TOR
-python3 -m http.server 8080
-```
-
-Then open http://localhost:8080/. Pushing to `main` deploys through GitHub Pages.
+## More
 
 See the [product notes](docs/PRODUCT.md) (in Chinese) for positioning, design principles, and plans, and the [changelog](CHANGELOG.md) for version history.
 
-Current version: **v1.05a**. Alpha means it's in daily use but isn't a standalone app yet, and it still needs onboarding before other people use it.
+Current version: **v1.06a**. Alpha means it's in daily use but isn't a standalone app yet, and it still needs onboarding before other people use it.
 
 MIT License. See [LICENSE](LICENSE).
