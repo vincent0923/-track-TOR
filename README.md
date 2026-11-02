@@ -98,7 +98,6 @@ python3 -m http.server 8080
 ```
 Track-TOR/
 ├── index.html                 # 主应用（单文件，所有逻辑都在这里）
-├── 推拉机 track-TOR.html      # 同内容的主页面副本
 ├── manifest.json              # PWA 清单
 ├── sw.js                      # Service Worker（离线缓存）
 ├── icon-192.png / icon-512.png / icon.svg   # 图标
@@ -233,7 +232,6 @@ Pure frontend — no build step, no dependencies. Edit `index.html`, refresh, do
 ```
 Track-TOR/
 ├── index.html                 # Main app (single file, all logic lives here)
-├── 推拉机 track-TOR.html      # Identical main-page copy
 ├── manifest.json              # PWA manifest
 ├── sw.js                      # Service Worker (offline cache)
 ├── icon-192.png / icon-512.png / icon.svg   # Icons

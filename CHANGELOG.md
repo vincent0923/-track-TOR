@@ -13,6 +13,10 @@
 - 💪 **加练搬进每个训练日的面板**：去掉单独的加练卡片，一天的练习都记在当天面板里，默认引体向上，也能加自定义项目。已完成的训练日也能直接加，不用先点「修改记录」。v1.02a 记下的加练会自动搬到对应的训练日。
   Extra practice moves into each session panel. The separate card is gone, so a day's work stays together. It defaults to pull-ups and takes custom exercises. Finished days accept extras without unlocking first. Extras logged in v1.02a move to the matching session automatically.
 
+### 移除 / Removed
+- 🧹 删除重复的主页面副本 `推拉机 track-TOR.html`，主页面只留 `index.html`，并精简 `.gitignore`。
+  Removes the duplicate `推拉机 track-TOR.html`, keeps `index.html` as the only main page, and trims `.gitignore`.
+
 ---
 
 ## [v1.02a] — 2026-11-02

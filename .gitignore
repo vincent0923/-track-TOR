@@ -1,19 +1,8 @@
 .DS_Store
-.workbuddy/
-.wbapp*
-*.backup.html
-*.textClipping
-__pycache__/
-*.pyc
-*.tmp
 
-# 敏感凭证：绝不能提交到公开仓库
+# 敏感凭证和个人数据：不进公开仓库
 coros-token.json
 *.token.json
 .coros-mcp-state/
-手机端首次导入口令*.txt
-一键同步到GitHub.command
-
-# 个人数据：不进公开仓库
 diet-data.json
 train-data.json
