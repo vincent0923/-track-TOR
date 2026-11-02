@@ -6,6 +6,14 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 
 ---
 
+## [v1.14a] — 2026-11-03
+
+### 新增 / Added
+- ☁ **读取网上的饮食账本**：饮食页「+ 记录饮食」旁边的云朵按钮，填一次账本网址，以后每次打开推拉机都自动读取每日饮食。账本里有的日期以账本为准，在推拉机里改过的那天保留你的版本。来自账本的日子在日期旁标一个 ☁。
+  Read an online diet ledger: tap the cloud button next to "Log food", enter the ledger link once, and track-TOR reads your daily food every time it opens. The ledger wins for its dates, except days you edited in the app. Days from the ledger show a ☁ next to the date.
+
+---
+
 ## [v1.13a] — 2026-11-03
 
 ### 变更 / Changed

@@ -95,6 +95,9 @@
 #pane-diet .diet-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
 #pane-diet .diet-head h2{margin:0;font-size:24px;font-weight:700;letter-spacing:.02em}
 #pane-diet .diet-head .sub{margin:2px 0 0;font-size:12px;color:var(--muted)}
+#pane-diet .diet-acts{display:flex;gap:8px;align-items:center}
+#dietFeedBtn.on{color:var(--burn);border-color:var(--burn)}
+.dfeed{color:var(--muted);font-size:13px;vertical-align:middle;margin-left:4px}
 #pane-diet .diet-add{background:var(--burn);color:#fff;font-size:13px;font-weight:600;padding:7px 12px;white-space:nowrap}
 #pane-diet .diet-stats{margin:0}
 #pane-diet .stat{padding:10px 12px;border-radius:12px;min-width:0}

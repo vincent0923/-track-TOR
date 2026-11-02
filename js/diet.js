@@ -280,7 +280,7 @@ function renderDietDays(){
     if(wKg!==null) metaTags.push(`${T("体重","Weight")} ${f1Dec(wKg)} kg`);
     const metaLine = metaTags.length ? `<p class="note"${dietState.open.has(k)?"":" hidden"} style="padding-top:6px;padding-bottom:${d.note?2:10}px">${metaTags.join(" · ")}</p>` : "";
     return `<article class="diet-day">
-      <div class="dhead"><h3><button class="dtoggle" type="button" data-dtoggle="${k}" aria-expanded="${dietState.open.has(k)}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>${dotDateStr(k)}</button></h3>
+      <div class="dhead"><h3><button class="dtoggle" type="button" data-dtoggle="${k}" aria-expanded="${dietState.open.has(k)}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>${dotDateStr(k)}</button>${d.src==="feed" ? `<span class="dfeed" title="${T("来自饮食账本","From the diet ledger")}">☁</span>` : ""}</h3>
         <div class="pills"><span class="pill">${T("摄入","In")} <b>${f0Dec(intake)}</b></span><span class="pill">${T("消耗","Burn")} <b>${f0Dec(b)}</b></span>${gap===null ? "" : `<span class="pill ${gap>=0 ? "g" : "r"}">${gap>=0 ? T("缺口","Deficit") : T("盈余","Surplus")} <b>${f0Dec(Math.abs(gap))}</b></span>`}
         <button class="chedit" type="button" data-dedit="${k}" aria-label="${T("编辑","Edit")}" title="${T("编辑","Edit")}">${PENCIL_ICON}</button></div></div>
       <div class="tbl"${dietState.open.has(k) ? "" : " hidden"}><table><thead><tr><th>${T("食物","Food")}</th><th>${T("蛋白质","Protein")}<small>g</small></th><th>${T("脂肪","Fat")}<small>g</small></th><th>${T("碳水","Carbs")}<small>g</small></th><th>${T("热量","kcal")}<small>kcal</small></th><th>${T("蔬菜","Veg")}<small>g</small></th></tr></thead>
@@ -297,11 +297,84 @@ function renderDietAll(){
   renderDietDays();
 }
 
-/* the newest logged day starts expanded */
+/* the newest logged day starts expanded; then fetch the online ledger, if one is set */
 function initDiet(){
   dietState.open = latestDietOpenSet(state.diet);
   renderDietAll();
+  paintFeedBtn();
+  pullDietFeed(true);
 }
+
+/* ---------- online diet ledger ----------
+   A diet.json in the "tracktor-diet" format (see the diet-ledger repo) hosted anywhere that allows
+   cross-site reads, e.g. GitHub Pages. Its days replace the local copy, except days saved in the app (own). */
+const FEED_LAST_K = LS + "-dietfeed-last";
+function feedJsonUrl(u){
+  u = String(u||"").trim(); if(!u) return "";
+  if(!/^https?:\/\//i.test(u)) u = "https://" + u;
+  return /\.json(\?|$)/i.test(u) ? u : u.replace(/\/?$/, "/") + "diet.json";
+}
+function paintFeedBtn(){ const b = document.getElementById("dietFeedBtn"); if(b) b.classList.toggle("on", !!state.settings.dietFeed); }
+function mergeDietFeed(j){
+  if(!j || j.format!=="tracktor-diet" || !j.days || typeof j.days!=="object") throw new Error("format");
+  let added = 0, kept = 0;
+  const num = v => { const n = +v; return isFinite(n) ? n : 0; };
+  for(const [date, day] of Object.entries(j.days)){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(date) || !day || !Array.isArray(day.items)) continue;
+    const local = state.diet[date];
+    if(local && local.own){ kept++; continue; }
+    const doc = { items: day.items.map(i=>({ name: String(i.name||""), p: num(i.p), f: num(i.f), c: num(i.c), veg: num(i.veg), kcal: num(i.kcal) })), src: "feed" };
+    if(day.note) doc.note = String(day.note);
+    if(local && numVal(local.expendOverride) !== null) doc.expendOverride = local.expendOverride;
+    state.diet[date] = doc; added++;
+  }
+  return { added, kept };
+}
+async function pullDietFeed(quiet){
+  const url = feedJsonUrl(state.settings.dietFeed);
+  if(!url) return null;
+  try{
+    const r = await fetch(url, { cache: "no-store" });
+    if(!r.ok) throw new Error("HTTP " + r.status);
+    const res = mergeDietFeed(await r.json());
+    lsSave(); dietState.open = latestDietOpenSet(state.diet); renderDietAll(); renderAll();
+    const d = new Date();
+    try{ localStorage.setItem(FEED_LAST_K, today() + " " + pad(d.getHours()) + ":" + pad(d.getMinutes()) + " · " + res.added); }catch(e){}
+    if(!quiet) toast(T("已读取 " + res.added + " 天饮食" + (res.kept ? "，" + res.kept + " 天保留你在推拉机里改的" : ""), "Loaded " + res.added + " days" + (res.kept ? ", kept " + res.kept + " days you edited here" : "")));
+    return res;
+  }catch(e){
+    if(!quiet) toast(T("读取饮食账本失败：", "Couldn't read the diet ledger: ") + (e.message==="format" ? T("不是饮食账本格式", "not a diet ledger file") : (e.message || e)));
+    return null;
+  }
+}
+function openDietFeedSheet(){
+  const m = document.createElement("div");
+  m.className = "mask";
+  let last = ""; try{ last = localStorage.getItem(FEED_LAST_K) || ""; }catch(e){}
+  m.innerHTML = `<div class="sheet" role="dialog" aria-label="${T("饮食账本","Diet ledger")}" style="max-width:480px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <b style="font-size:16px">☁ ${T("饮食账本","Diet ledger")}</b>
+      <button type="button" data-close class="iconbtn" aria-label="${T("关闭","Close")}">${CLOSE_ICON}</button>
+    </div>
+    <div style="display:grid;gap:10px">
+      <p class="sub" style="margin:0">${T("填你的饮食账本网址，打开推拉机时自动读取每日饮食。在推拉机里改过的那天不会被覆盖。","Enter your diet ledger link. track-TOR reads your daily food from it each time it opens. Days you edited here are kept.")}</p>
+      <div class="field"><label for="dfUrl">${T("网址","Link")}</label><input id="dfUrl" type="url" inputmode="url" placeholder="https://…github.io/diet-ledger/" value="${escHtml(state.settings.dietFeed||"")}"></div>
+      ${last ? `<p class="note" style="margin:0">${T("上次读取：","Last read: ")}${escHtml(last.split(" · ")[0])} · ${escHtml(last.split(" · ")[1]||"0")} ${T("天","days")}</p>` : ""}
+    </div>
+    <div class="row" style="justify-content:flex-end"><button type="button" class="btn" id="dfGo" style="background:var(--burn);color:#fff">${T("保存并读取","Save & load")}</button></div>
+  </div>`;
+  document.body.appendChild(m);
+  const close = ()=>m.remove();
+  m.querySelector("[data-close]").addEventListener("click", close);
+  m.addEventListener("click", e=>{ if(e.target===m) close(); });
+  m.querySelector("#dfGo").addEventListener("click", async ()=>{
+    const v = m.querySelector("#dfUrl").value.trim();
+    state.settings.dietFeed = v || null; lsSave(); paintFeedBtn();
+    close();
+    if(v) await pullDietFeed(false); else toast(T("已关闭饮食账本","Diet ledger turned off"));
+  });
+}
+document.getElementById("dietFeedBtn").addEventListener("click", openDietFeedSheet);
 
 
 const CALC_WARN_DIFF = 100;
@@ -472,6 +545,7 @@ function openDietEntryModal(initDate){
       const dayDoc = { items: formState.items };
       if(formState.note) dayDoc.note = formState.note;
       if(formState.expendOverride !== null) dayDoc.expendOverride = formState.expendOverride;
+      dayDoc.own = 1;                    /* saved in the app: the online ledger no longer overwrites this day */
       state.diet[curDate] = dayDoc;
       dietState.open.add(curDate);
     } else {
