@@ -26,15 +26,6 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
   const url = new URL(e.request.url);
-  // Don't cache API calls
-  if (url.pathname.startsWith("/api/")) {
-    e.respondWith(
-      fetch(e.request).catch(() => new Response(JSON.stringify({ offline: true }), {
-        headers: { "Content-Type": "application/json" }
-      }))
-    );
-    return;
-  }
   // Network first for HTML navigation to ensure latest version is loaded
   if (e.request.mode === "navigate" || url.pathname.endsWith(".html") || url.pathname === "/") {
     e.respondWith(

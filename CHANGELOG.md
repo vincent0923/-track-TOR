@@ -7,6 +7,18 @@
 
 ---
 
+## [v1.04a] — 2026-11-02
+
+### 移除 / Removed
+- 🧹 **清掉后端时代的代码**：网页不再请求 `/api/*` 和 `coros-token.json`，保存时也不再把数据发给任何地方；同时删掉云端数据库逻辑和没用到的样式。
+  Removes backend-era code: no more requests to `/api/*` or `coros-token.json`, and saving no longer sends data anywhere. Cloud database logic and unused styles are gone too.
+
+### 修复 / Fixed
+- ❤️ **静息心率同步**：高驰这个接口只接受 `days` 参数，之前传的是起止日期，现在按天数请求。
+  Resting heart rate sync: this COROS tool only takes `days`, but the page was sending a date range. It now asks by number of days.
+
+---
+
 ## [v1.03a] — 2026-11-02
 
 ### 变更 / Changed

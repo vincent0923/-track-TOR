@@ -119,7 +119,7 @@ Track-TOR/
 
 ## 版本
 
-当前版本：**v1.03a**（alpha）
+当前版本：**v1.04a**（alpha）
 
 产品已剥离 agent 依赖、可独立运作与同步，从操作层面已是面向大众的产品；但尚未打包成独立 app，故处于 alpha 阶段。
 
@@ -253,7 +253,7 @@ Track-TOR/
 
 ## Version
 
-Current: **v1.03a** (alpha)
+Current: **v1.04a** (alpha)
 
 The product has dropped its agent dependency and works & syncs independently — operationally it's already a consumer product; it just isn't packaged as a standalone app yet, hence alpha.
 
