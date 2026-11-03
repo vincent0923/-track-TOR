@@ -15,8 +15,10 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
   The bookkeeping prompts are about half as long: formatting is left to track-TOR, so the prompt only says what to record. Column names are now in Chinese.
 - 🔗 粘贴分享按钮复制来的整段文字（比如「【腾讯文档】饮食记录 https://…」）也行，推拉机只取里面的网址。
   Pasting the whole text a share button copies (like "【腾讯文档】饮食记录 https://…") works too; only the link is kept.
-- 📋 **prompt 不再带任何链接，默认你还没有表格**：两个版本都是固定文字，屏幕上看到的就是复制出来的内容。第一次发给 AI 时，它会先建好「饮食记录」表格、写上列名、设成知道链接的人可查看，再把链接发给你；已经有这个表格就直接用。以前复制时会悄悄带上输入框里的链接，可能是之前用过的旧链接，还可能把腾讯文档链接放进 Google 版。Google 版的准备步骤也改成由 AI 建表。
-  The prompts no longer carry any link and assume you don't have a sheet yet. Both are fixed text, so what you see is what you copy. On first use the AI creates a 饮食记录 sheet with the column names, shares it as view-only by link and sends you the link; if the sheet exists it just uses it. Before, copying quietly added the link from the box, which could be an old one or a Tencent link in the Google version. The Google instructions now also let the AI set up the sheet.
+- 📋 **prompt 更短，不带链接**：两个版本都缩到几行固定文字，屏幕上看到的就是复制出来的内容，输入框里填什么都不会出现在 prompt 里。默认你还没有表格：第一次让 AI 建好「饮食记录」、写上列名、设成知道链接的人可查看并发回链接，已经有就直接用。只记吃了什么，不再要求 AI 额外汇报总计。准备步骤也缩成三步。
+  Shorter, link-free prompts: both are a few lines of fixed text, and what you see is what you copy; nothing from the link box appears in them. They assume you have no sheet yet: on first use the AI creates 饮食记录 with the column names, shares it view-only by link and sends the link back. The AI only records what you ate, with no extra totals. The setup is down to three steps.
+- ⓘ 按钮改成椭圆：左边 i，右边 + 表示可以展开，展开后变成 − 表示可以收起。
+  The ⓘ button is now a pill: i on the left, + on the right to open, − to close.
 
 ---
 

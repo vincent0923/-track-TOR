@@ -52,7 +52,7 @@
       </div>
 
       <section class="dsrc" aria-label="数据源 / Data source">
-        <div class="dsrc-h"><h3><span class="zh">数据源</span><span class="en">Data source</span></h3><button type="button" class="dsrc-i" id="dsrcInfoBtn" aria-expanded="false" aria-controls="dsrcInfo" aria-label="说明 / How it works">i</button></div>
+        <div class="dsrc-h"><h3><span class="zh">数据源</span><span class="en">Data source</span></h3><button type="button" class="dsrc-i" id="dsrcInfoBtn" aria-expanded="false" aria-controls="dsrcInfo" aria-label="说明 / How it works"><span class="dsrc-i-l">i</span><span class="dsrc-i-r" aria-hidden="true">+</span></button></div>
         <div class="dsrc-row"><input id="dsrcUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="粘贴表格的分享链接"><button type="button" class="btn" id="dsrcPull"><span class="zh">拉取</span><span class="en">Pull</span></button></div>
         <p class="dsrc-hint"><span class="zh">不要告诉别人这个 URL 哦，不然别人会知道你每天吃什么</span><span class="en">Keep this URL to yourself, or others can see what you eat every day</span></p>
         <p class="dsrc-status" id="dsrcStatus" aria-live="polite"></p>
@@ -64,50 +64,34 @@
           <div data-verpane="g">
           <h4><span class="zh">用 AI 记账</span><span class="en">Bookkeeping with an AI</span></h4>
           <ol>
-            <li><span class="zh">找一个能连接 Google 表格的 AI，在它的设置里连上你的 Google 账号</span><span class="en">Pick an AI that can connect to Google Sheets and link your Google account in its settings</span></li>
-            <li><span class="zh">复制下面的 prompt 发给它，它会建好「饮食记录」表格并把链接发给你</span><span class="en">Copy the prompt below and send it; it sets up a sheet called 饮食记录 and sends you the link</span></li>
-            <li><span class="zh">把链接粘贴到上面的输入框，点「拉取」</span><span class="en">Paste the link into the box above and tap Pull</span></li>
-            <li><span class="zh">以后每天把吃了什么告诉它，它会直接写进表格</span><span class="en">Each day, tell it what you ate; it writes it into the sheet</span></li>
+            <li><span class="zh">让能连接 Google 表格的 AI 连上你的账号</span><span class="en">Connect an AI to your Google account</span></li>
+            <li><span class="zh">把下面的 prompt 发给它，它会发回表格链接</span><span class="en">Send it the prompt below; it sends back a sheet link</span></li>
+            <li><span class="zh">链接粘到上面，点「拉取」</span><span class="en">Paste the link above and tap Pull</span></li>
           </ol>
-          <div class="dsrc-code"><button type="button" class="dsrc-copy" data-copy="g"><span class="zh">复制</span><span class="en">Copy</span></button><pre id="dsrcPromptG">我用 Google 表格记饮食，请帮我记账。
+          <div class="dsrc-code"><button type="button" class="dsrc-copy" data-copy="g"><span class="zh">复制</span><span class="en">Copy</span></button><pre id="dsrcPromptG">帮我用 Google 表格记饮食。
 
-第一次：如果我的 Google 云端硬盘里还没有「饮食记录」这个表格，先帮我新建一个，第一行写上 7 个列名（见下面），共享设成「知道链接的任何人」可查看，然后把链接发给我。设不了共享就告诉我，我自己改。已经有这个表格就直接用。
+第一次：新建表格「饮食记录」，第一行写：日期｜食物｜蛋白质｜脂肪｜碳水｜蔬菜｜热量。共享设成「知道链接的任何人可查看」，把链接发给我。已经有就直接用。
 
-我会告诉你每天吃了什么，文字、食物照片或营养成分表照片都行。
-请估算每样食物的蛋白质、脂肪、碳水、蔬菜克数和热量，写进「饮食记录」末尾，一样食物一行。
-
-表格的 7 列：日期｜食物｜蛋白质｜脂肪｜碳水｜蔬菜｜热量
-- 食物写上份量，有油或酱料就注明
-- 蛋白质、脂肪、碳水、蔬菜按克，热量按千卡，没有就填 0
-- 写之前看看表格最后几行，别重复记
-
-写不进表格的话，就按这 7 列列给我，我自己贴进去。
-
-每次记完，告诉我两个总计：已经吃掉的，以及加上计划中还没吃的。</pre></div>
+之后我告诉你吃了什么（文字或照片），你估算后写进表格，一样食物一行：
+- 食物写上份量
+- 蛋白质、脂肪、碳水、蔬菜填克数，热量填千卡，没有填 0
+- 别重复记</pre></div>
           </div>
           <div data-verpane="t" hidden>
           <h4><span class="zh">用 WorkBuddy 记账</span><span class="en">Bookkeeping with WorkBuddy</span></h4>
           <ol>
-            <li><span class="zh">在腾讯 WorkBuddy 里连接你的腾讯文档</span><span class="en">In Tencent WorkBuddy, connect your Tencent Docs</span></li>
-            <li><span class="zh">复制下面的 prompt 发给 WorkBuddy，它会建好「饮食记录」表格并把链接发给你</span><span class="en">Copy the prompt below and send it to WorkBuddy; it sets up a sheet called 饮食记录 and sends you the link</span></li>
-            <li><span class="zh">把 WorkBuddy 发来的表格链接粘贴到上面的输入框，点「拉取」</span><span class="en">Paste the sheet link WorkBuddy sends you into the box above and tap Pull</span></li>
-            <li><span class="zh">以后每天把吃了什么告诉 WorkBuddy，它会直接写进表格</span><span class="en">Each day, tell WorkBuddy what you ate; it writes it into the sheet</span></li>
+            <li><span class="zh">在 WorkBuddy 里连上腾讯文档</span><span class="en">Connect Tencent Docs in WorkBuddy</span></li>
+            <li><span class="zh">把下面的 prompt 发给它，它会发回表格链接</span><span class="en">Send it the prompt below; it sends back a sheet link</span></li>
+            <li><span class="zh">链接粘到上面，点「拉取」</span><span class="en">Paste the link above and tap Pull</span></li>
           </ol>
-          <div class="dsrc-code"><button type="button" class="dsrc-copy" data-copy="t"><span class="zh">复制</span><span class="en">Copy</span></button><pre id="dsrcPromptT">我用腾讯文档的在线表格记饮食，请帮我记账。
+          <div class="dsrc-code"><button type="button" class="dsrc-copy" data-copy="t"><span class="zh">复制</span><span class="en">Copy</span></button><pre id="dsrcPromptT">帮我用腾讯文档记饮食。
 
-第一次：如果我的腾讯文档里还没有「饮食记录」这个在线表格，先帮我新建一个，第一行写上 7 个列名（见下面），分享权限设成「所有人可查看」，然后把链接发给我。设不了权限就告诉我，我自己改。已经有这个表格就直接用。
+第一次：新建在线表格「饮食记录」，第一行写：日期｜食物｜蛋白质｜脂肪｜碳水｜蔬菜｜热量。分享设成「所有人可查看」，把链接发给我。已经有就直接用。
 
-我会告诉你每天吃了什么，文字、食物照片或营养成分表照片都行。
-请估算每样食物的蛋白质、脂肪、碳水、蔬菜克数和热量，写进「饮食记录」末尾，一样食物一行。
-
-表格的 7 列：日期｜食物｜蛋白质｜脂肪｜碳水｜蔬菜｜热量
-- 食物写上份量，有油或酱料就注明
-- 蛋白质、脂肪、碳水、蔬菜按克，热量按千卡，没有就填 0
-- 写之前看看表格最后几行，别重复记
-
-写不进表格的话，就按这 7 列列给我，我自己贴进去。
-
-每次记完，告诉我两个总计：已经吃掉的，以及加上计划中还没吃的。</pre></div>
+之后我告诉你吃了什么（文字或照片），你估算后写进表格，一样食物一行：
+- 食物写上份量
+- 蛋白质、脂肪、碳水、蔬菜填克数，热量填千卡，没有填 0
+- 别重复记</pre></div>
           </div>
         </div>
       </section>

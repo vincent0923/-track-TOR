@@ -322,7 +322,10 @@ function copyText(t){
 (function initSheetSource(){
   const inp = document.getElementById("dsrcUrl"), info = document.getElementById("dsrcInfo"), ib = document.getElementById("dsrcInfoBtn");
   try{ inp.value = localStorage.getItem(SHEET_URL_K) || ""; }catch(e){}
-  ib.addEventListener("click", ()=>{ info.hidden = !info.hidden; ib.setAttribute("aria-expanded", String(!info.hidden)); });
+  ib.addEventListener("click", ()=>{
+    info.hidden = !info.hidden; ib.setAttribute("aria-expanded", String(!info.hidden));
+    ib.querySelector(".dsrc-i-r").textContent = info.hidden ? "+" : "−";     /* + opens, − closes */
+  });
   document.getElementById("dsrcPull").addEventListener("click", pullSheet);
   inp.addEventListener("keydown", e=>{ if(e.key === "Enter") pullSheet(); });
   inp.addEventListener("change", ()=>{ inp.value = extractUrl(inp.value); });

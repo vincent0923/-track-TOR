@@ -99,8 +99,12 @@
 .dsrc{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
 .dsrc-h{display:flex;align-items:center;gap:8px}
 .dsrc-h h3{margin:0;font-size:15px;font-weight:700}
-.dsrc-i{width:22px;height:22px;border-radius:50%;border:1px solid var(--line);background:var(--sunk);color:var(--muted);font:italic 700 13px/1 Georgia,serif;padding:0;cursor:pointer;display:grid;place-items:center}
+.dsrc-i{display:inline-flex;align-items:stretch;height:24px;border:1px solid var(--line);border-radius:999px;background:var(--sunk);color:var(--muted);padding:0;cursor:pointer;overflow:hidden;font:700 13px/1 var(--f-body)}
+.dsrc-i>span{display:grid;place-items:center;min-width:22px;padding:0 6px}
+.dsrc-i-l{font:italic 700 13px/1 Georgia,serif;border-right:1px solid var(--line)}
+.dsrc-i-r{font-size:15px}
 .dsrc-i[aria-expanded="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.dsrc-i[aria-expanded="true"] .dsrc-i-l{border-right-color:color-mix(in srgb,var(--bg) 35%,transparent)}
 .dsrc-info{margin-top:10px;padding:10px 12px;background:var(--sunk);border-radius:10px;font-size:13px}
 .dsrc-info h4{margin:4px 0 6px;font-size:13px}
 .dsrc-info ol{margin:0 0 10px;padding-left:20px}
