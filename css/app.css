@@ -472,3 +472,13 @@ nav.tabs .t-me svg{width:24px;height:24px}
 
 /* the Diet tab shows the background table pull as a fill in the accent colour */
 body .subtabs button[data-prog][data-prog]{background-image:linear-gradient(90deg,color-mix(in srgb,var(--burn) 35%,transparent) var(--p),transparent var(--p))}
+
+/* Profile › Sound effects */
+#sfxPanel{display:grid;gap:12px}
+.sfxg h4{margin:0 0 4px;font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.04em}
+.sfxr{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:6px 8px;border-radius:8px}
+.sfxr span{min-width:0;font-size:14px}
+.sfxr.changed{background:color-mix(in srgb,var(--cta) 14%,transparent)}
+.sfxr select{font:inherit;font-size:14px;padding:5px 6px;border:1px solid var(--line);border-radius:8px;background:var(--sunk);color:var(--ink);max-width:120px}
+.sfxp{width:32px;height:32px;display:grid;place-items:center;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--cta);padding:0;cursor:pointer}
+.sfxp svg{width:13px;height:13px}

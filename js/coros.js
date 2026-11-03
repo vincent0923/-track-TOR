@@ -191,9 +191,10 @@ async function doSync(){
       const r = await pullSheet({ silent:true });
       msg += r.ok ? T("；饮食 "+r.rows+" 条 / "+r.days+" 天", "; diet "+r.rows+" rows / "+r.days+" days") : T("；饮食表读取失败", "; diet table couldn't be read");
     }
-    lsSave();renderAll();syncMsg(msg);
+    lsSave();renderAll();syncMsg(msg);sfx("syncok");
     try{const d=new Date();localStorage.setItem(SYNC_K,today()+" "+pad(d.getHours())+":"+pad(d.getMinutes()))}catch(e){}
   }catch(e){
+    sfx("syncfail");
     const c=e&&e.code;
     if(c==="needs_reauth"){
       /* 令牌失效或还没连接：打开连接弹窗重新授权 */

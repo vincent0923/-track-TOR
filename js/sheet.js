@@ -335,6 +335,7 @@ function copyText(t){
   const pullAll = async ()=>{
     const r = await pullSheet({ silent:true });
     const cal = mcp ? await syncCalories() : "";
+    sfx(r.ok ? "syncok" : "syncfail");
     if(r.ok) toast(r.note + cal);
     else if(cal) toast(cal.replace(/^[；;]\s*/, ""));
   };

@@ -177,10 +177,10 @@ function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t
   }
   /* filtered noise burst, shaped like a page being turned */
   let noiseBuf=null;
-  function noiseHit(len,f1,f2,vol,q,type,peak){
+  function noiseHit(len,f1,f2,vol,q,type,peak,at){
     const c=ac();if(!c)return;
     if(!noiseBuf){noiseBuf=c.createBuffer(1,c.sampleRate,c.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}
-    const t0=c.currentTime, src=c.createBufferSource(), bp=c.createBiquadFilter(), g=c.createGain();
+    const t0=c.currentTime+(at||0), src=c.createBufferSource(), bp=c.createBiquadFilter(), g=c.createGain();
     src.buffer=noiseBuf;bp.type=type;bp.Q.value=q;
     bp.frequency.setValueAtTime(f1,t0);bp.frequency.exponentialRampToValueAtTime(f2,t0+len);
     g.gain.setValueAtTime(0.0001,t0);g.gain.exponentialRampToValueAtTime(vol,t0+len*peak);g.gain.exponentialRampToValueAtTime(0.0001,t0+len);
@@ -195,27 +195,80 @@ function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t
     untick:()=>tone(440,0,0.09,"sine",0.12,330),
     exDone:()=>{[523,659,784,1047].forEach((f,i)=>tone(f,i*0.07,0.22,"triangle",0.17))},
     finish:()=>{[523,659,784].forEach((f,i)=>tone(f,i*0.1,0.18,"triangle",0.2));
-      [1047,1319,1568].forEach(f=>tone(f,0.32,0.7,"triangle",0.12));tone(262,0.32,0.7,"sine",0.18)}
+      [1047,1319,1568].forEach(f=>tone(f,0.32,0.7,"triangle",0.12));tone(262,0.32,0.7,"sine",0.18)},
+    boom:()=>{tone(110,0,0.35,"sine",0.22,40);tone(1600,0.03,0.4,"triangle",0.03,700)},
+    bigboom:()=>{tone(70,0,0.8,"sine",0.32,28);tone(140,0,0.5,"triangle",0.12,50);[0.18,0.3,0.45,0.6].forEach((t,i)=>tone(2200-i*250,t,0.25,"triangle",0.025,900))},
+    swoosh:()=>noiseHit(0.22,600,3200,0.22,1.2,"bandpass",0.5),
+    pop:()=>tone(420,0,0.07,"sine",0.25,900),
+    click:()=>{tone(2200,0,0.012,"square",0.06);tone(900,0.012,0.02,"triangle",0.08)},
+    chime:()=>{tone(988,0,0.25,"sine",0.14);tone(1319,0.09,0.35,"sine",0.12)},
+    buzz:()=>{tone(180,0,0.12,"square",0.06);tone(150,0.13,0.16,"square",0.06)},
+    trash:()=>{[0,.06,.13,.19].forEach(t=>noiseHit(0.07,1800,900,0.22,1.5,"bandpass",0.3,t));tone(150,0.24,0.12,"sine",0.2,70)},
+    poof:()=>{noiseHit(0.28,3000,300,0.28,0.8,"lowpass",0.15);tone(300,0,0.18,"sine",0.12,90)},
+    sword:()=>{noiseHit(0.16,1200,7000,0.35,2.5,"bandpass",0.6);tone(2637,0.13,0.5,"sine",0.06);tone(3951,0.13,0.4,"sine",0.035);tone(5274,0.14,0.25,"sine",0.02)},
+    unsheathe:()=>{noiseHit(0.35,2000,9000,0.18,6,"bandpass",0.85);tone(3136,0.33,0.6,"triangle",0.05)},
+    punch:()=>{tone(160,0,0.18,"sine",0.4,45);noiseHit(0.06,900,300,0.3,0.8,"lowpass",0.1)},
+    charge:()=>{tone(220,0,0.45,"sawtooth",0.05,1760);tone(440,0,0.45,"sine",0.08,3520)},
+    coin:()=>{tone(988,0,0.07,"square",0.07);tone(1319,0.07,0.32,"square",0.07)},
+    levelup:()=>{[523,659,784,1047,1319,1568].forEach((f,i)=>tone(f,i*0.05,0.16,"square",0.05))},
+    fanfare:()=>{[[392,0,.1],[392,.12,.1],[392,.24,.1],[523,.36,.5]].forEach(([f,t,l])=>{tone(f,t,l,"sawtooth",0.06);tone(f*2,t,l,"triangle",0.05)})},
+    musicbox:()=>{[1047,1175,1319,1568,1760].forEach((f,i)=>tone(f,i*0.11,0.5,"sine",0.1))},
+    sparkle:()=>{[2093,2637,3136,2349,2794,3520].forEach((f,i)=>tone(f,i*0.045,0.2,"sine",0.05))},
+    sad:()=>{[392,370,349].forEach((f,i)=>tone(f,i*0.22,0.22,"triangle",0.12));tone(330,0.66,0.5,"triangle",0.12,300)},
+    none:()=>{}
   };
-  S.boom=()=>{tone(110,0,0.35,"sine",0.22,40);tone(1600,0.03,0.4,"triangle",0.03,700)};
-  S.bigboom=()=>{tone(70,0,0.8,"sine",0.32,28);tone(140,0,0.5,"triangle",0.12,50);[0.18,0.3,0.45,0.6].forEach((t,i)=>tone(2200-i*250,t,0.25,"triangle",0.025,900))};
-  function play(k){if(on&&S[k])try{S[k]()}catch(e){}}
-  document.addEventListener("fwburst",e=>play(e.detail&&e.detail.big?"bigboom":"boom"));
-  btn.addEventListener("click",()=>{on=!on;try{localStorage.setItem(LS+"-sound",on?"on":"off")}catch(e){}paint();if(on)play("tick")});
+  /* sound names, in the order the picker lists them */
+  const SN={tap:["翻页声","Page flip"],key:["键盘滴","Key tick"],inc:["上扬","Rise"],dec:["下沉","Drop"],tick:["叮咚","Ding-dong"],untick:["泄气","Deflate"],
+    exDone:["四连音","Four notes"],finish:["通关","Level clear"],boom:["烟花","Firework"],bigboom:["大烟花","Big firework"],swoosh:["嗖","Swoosh"],pop:["啵","Pop"],
+    click:["咔哒","Click"],chime:["完成铃","Chime"],buzz:["嗡","Buzz"],
+    trash:["揉纸丢掉","Crumple"],poof:["噗","Poof"],sword:["剑气","Sword slash"],unsheathe:["拔剑","Unsheathe"],punch:["重拳","Punch"],charge:["蓄力","Power up"],coin:["金币","Coin"],levelup:["升级","Level up"],fanfare:["号角","Fanfare"],musicbox:["八音盒","Music box"],sparkle:["星光","Sparkle"],sad:["失落","Wah-wah"],none:["无声","Silent"]};
+  /* every kind of tap that makes a sound, its default sound, grouped as the settings panel shows them */
+  const SFX=[
+    [["训练","Training"],[["set","打勾完成一组","Tick a set","tick"],["exdone","一个动作的组全部完成","Last set of an exercise","exDone"],["untick","取消打勾","Untick a set","untick"],
+      ["inc","次数 +","Reps +","inc"],["dec","次数 −","Reps −","dec"],["xtick","加练打勾","Tick an extra set","tick"],["xuntick","加练取消打勾","Untick an extra set","untick"],
+      ["finish","完成今天的训练","Finish the day","finish"],["fw","烟花","Firework","boom"],["bigfw","大烟花","Big firework","bigboom"]]],
+    [["切换和展开","Switch and fold"],[["tab1","切换一级标签","Main tabs","tap"],["tab2","切换图表里的页","Chart views","tap"],["fold","展开或折起面板","Fold or unfold","tap"],
+      ["range","切换时间范围","Time range","tap"],["gap","点缺口卡片换天数","Gap tile period","tap"]]],
+    [["记录","Logging"],[["open","打开记录窗口","Open a log window","tap"],["type","打字或输入数字","Typing","key"],["save","保存","Save","tap"],["close","取消或关闭窗口","Close","tap"],["del","删除","Delete","tap"]]],
+    [["同步","Sync"],[["sync","开始同步或拉取","Start sync or pull","tap"],["syncok","同步完成","Sync done","none"],["syncfail","同步失败","Sync failed","none"]]],
+    [["其他","Other"],[["sndon","打开声音","Sound on","tick"],["header","顶部小按钮","Top buttons","tap"],["other","其他按钮","Other buttons","tap"]]]
+  ];
+  const SDEF={};SFX.forEach(g=>g[1].forEach(r=>{SDEF[r[0]]=r[3]}));
+  const pickOf=id=>{const m=state.settings&&state.settings.sfx;const k=m&&m[id];return S[k]?k:SDEF[id]};
+  function playRaw(k){if(on&&S[k])try{S[k]()}catch(e){}}
+  function play(id){playRaw(pickOf(id))}
+  window.sfx=play;
+  document.addEventListener("fwburst",e=>play(e.detail&&e.detail.big?"bigfw":"fw"));
+  btn.addEventListener("click",()=>{on=!on;try{localStorage.setItem(LS+"-sound",on?"on":"off")}catch(e){}paint();if(on)play("sndon")});
+  /* which kind of tap an element is */
+  function kindOf(el){
+    if(el.closest("nav.tabs"))return "tab1";
+    if(el.closest(".subtabs"))return "tab2";
+    if(el.matches("summary"))return "fold";
+    if(el.id==="dietGapTile")return "gap";
+    if(el.matches("#syncBtn,#dsrcPull,#dietSyncBtn"))return "sync";
+    if(el.matches("[data-recsave],[data-dsave]"))return "save";
+    if(el.matches("[data-close]"))return "close";
+    if(el.matches("[data-del],[data-ddel],#ddelDayBtn,[data-act=rm],[data-xa=rmset]"))return "del";
+    if(el.matches(".chedit,#dietAddBtn,[data-dedit],[data-rec]"))return "open";
+    if(el.closest(".seg,.maseg,.rgseg"))return "range";
+    if(el.closest(".hbtns"))return "header";
+    return "other";
+  }
   document.addEventListener("click",e=>{
     if(!on)return;
     const el=e.target.closest("button,summary,[data-act],[data-toggle]");
-    if(!el||el===btn)return;
+    if(!el||el===btn||el.closest("#sfxPanel"))return;
     const act=el.dataset&&el.dataset.act;
     const xa=el.dataset&&el.dataset.xa;
-    if(xa==="tick")return play(el.closest(".set").classList.contains("ticked")?"untick":"tick");
+    if(xa==="tick")return play(el.closest(".set").classList.contains("ticked")?"xuntick":"xtick");
     if(xa==="inc"||xa==="dec")return play(xa);
     if(act==="tick"){
       const row=el.closest(".set"),box=row&&row.closest(".ex");
       setTimeout(()=>{
         if(!row.classList.contains("ticked")){play("untick");return}
         const all=box?[...box.querySelectorAll(".set")]:[];
-        play(all.length&&all.every(r=>r.classList.contains("ticked"))?"exDone":"tick");
+        play(all.length&&all.every(r=>r.classList.contains("ticked"))?"exdone":"set");
       },0);
       return;
     }
@@ -223,12 +276,36 @@ function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t
     if(act==="dec")return play("dec");
     if(act==="finish")return play("finish");
     if(el.matches("input,textarea,select"))return;
-    play("tap");
+    play(kindOf(el));
   });
+  /* Profile › Sound effects: pick a sound for each kind of tap; Reset goes back to the defaults */
+  const PLAY_I='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>';
+  function renderSfx(){
+    const box=document.getElementById("sfxPanel");if(!box)return;
+    const opts=Object.keys(S).map(k=>'<option value="'+k+'">'+T(SN[k][0],SN[k][1])+'</option>').join("");
+    box.innerHTML=SFX.map(([g,rows])=>'<div class="sfxg"><h4>'+T(g[0],g[1])+'</h4>'+rows.map(([id,zh,en])=>
+      '<div class="sfxr'+(pickOf(id)!==SDEF[id]?' changed':'')+'" data-sfx="'+id+'"><span>'+T(zh,en)+'</span><select aria-label="'+T(zh,en)+'">'+opts+'</select>'
+      +'<button type="button" class="sfxp" aria-label="'+T("试听","Play")+'">'+PLAY_I+'</button></div>').join("")+'</div>').join("");
+    box.querySelectorAll("[data-sfx]").forEach(r=>{r.querySelector("select").value=pickOf(r.dataset.sfx)});
+  }
+  window.renderSfx=renderSfx;
+  document.addEventListener("change",e=>{
+    const r=e.target.closest("#sfxPanel [data-sfx]");if(!r)return;
+    const id=r.dataset.sfx,k=e.target.value,m=Object.assign({},state.settings.sfx||{});
+    if(k===SDEF[id])delete m[id];else m[id]=k;
+    state.settings.sfx=m;saveSettings();r.classList.toggle("changed",k!==SDEF[id]);
+    const was=on;on=true;playRaw(k);on=was;
+  });
+  document.addEventListener("click",e=>{
+    const p=e.target.closest("#sfxPanel .sfxp");
+    if(p){const was=on;on=true;playRaw(p.parentNode.querySelector("select").value);on=was;return}
+    if(e.target.closest("#sfxReset")){delete state.settings.sfx;saveSettings();renderSfx();toast(T("音效已恢复默认","Sounds back to default"))}
+  });
+  const fold=document.getElementById("foldSound");if(fold)fold.addEventListener("toggle",()=>{if(fold.open)renderSfx()});
   let last=0;
   document.addEventListener("input",e=>{
     if(!on||!e.target.matches("input:not([type=date]):not([type=checkbox]),textarea"))return;
-    const n=performance.now();if(n-last<35)return;last=n;play("key");
+    const n=performance.now();if(n-last<35)return;last=n;play("type");
   });
 })();
 
