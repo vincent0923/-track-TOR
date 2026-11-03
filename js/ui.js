@@ -9,7 +9,7 @@ function setDataSub(sub){
   dataSub=sub;
   document.querySelectorAll(".subtabs button").forEach(x=>x.setAttribute("aria-selected",x.dataset.sub===sub));
   SUBS.forEach(k=>{document.getElementById("pane-"+k).hidden=k!==sub});
-  if(sub==="diet")renderDietAll();else renderData();
+  if(sub==="diet"){renderDietAll();dietTabPull()}else renderData();
   try{localStorage.setItem(LS+"-sub",sub)}catch(e){}
 }
 function setTab(tab){

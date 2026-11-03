@@ -454,16 +454,14 @@ html[data-lang="en"] .dsrc-row .btn{min-width:106px}
 .dadd.on{background:var(--burn);color:#fff;border-color:var(--burn)}
 .dsrc{display:grid;gap:8px}
 .dsub{border:1px solid var(--line);border-radius:10px;background:var(--sunk)}
-.dsub>summary,.dsub-btn{display:flex;align-items:center;gap:8px;padding:10px 12px;font:inherit;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer;list-style:none}
+.dsub>summary{display:flex;align-items:center;gap:8px;padding:10px 12px;font:inherit;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer;list-style:none}
 .dsub>summary::-webkit-details-marker{display:none}
-.dsub>summary svg,.dsub-btn svg{width:18px;height:18px;color:var(--burn);flex:none}
+.dsub>summary svg{width:18px;height:18px;color:var(--burn);flex:none}
 .dsub>summary::after{content:"";margin-left:auto;width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .15s}
 .dsub[open]>summary::after{transform:rotate(-135deg)}
 .dsub[open]>summary{border-bottom:1px solid var(--line)}
 .dsub>.dsrc-row,.dsub>p,.dsub>.dinfo-row,.dsub>.dsrc-info{margin-left:12px;margin-right:12px}
 .dsub>.dsrc-info{margin-bottom:12px}
-.dsub-btn{width:100%;text-align:left}
-.dsub-go{margin-left:auto;color:var(--muted);font-size:18px;line-height:1}
 .dsrc .dinfo-row{display:flex;margin-top:8px;margin-bottom:10px}
 
 /* level 1 Profile tab and level 2 icon tabs */
@@ -474,3 +472,6 @@ nav.tabs .t-me svg{width:24px;height:24px}
 .subtabs button svg{width:22px;height:22px}
 #pane-me{display:grid;gap:12px;padding-top:8px}
 #pane-health,#pane-strength{display:grid;gap:12px;padding-top:8px}
+
+/* the Diet tab shows the background table pull as a fill in the accent colour */
+body .subtabs button[data-prog][data-prog]{background-image:linear-gradient(90deg,color-mix(in srgb,var(--burn) 35%,transparent) var(--p),transparent var(--p))}

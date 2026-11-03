@@ -6,6 +6,16 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 
 ---
 
+## [v1.22a] — 2026-11-03
+
+### 变更 / Changed
+- 🔄 **饮食同步不用再找**：存了表格链接的话，每次打开「饮食」页都会在后台拉取一次，进度动画直接显示在「饮食」标签上（半分钟内重复点不会重复拉）。
+  Diet syncs without digging: with a sheet link saved, opening the Diet view pulls it in the background, with the progress fill on the Diet tab itself (tapping again within half a minute doesn't pull twice).
+- 「每日记录」旁现在有两个图标：添加图标直接打开手动记录窗口；新的同步图标一按就拉取，同时打开「线上数据」面板。折起面板就关上。
+  Two icons sit beside Daily logs: the add icon opens the manual food log straight away, and the new sync icon pulls at once and opens the Online table panel. Fold the panel to close it.
+
+---
+
 ## [v1.21a] — 2026-11-03
 
 ### 变更 / Changed

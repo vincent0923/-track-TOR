@@ -249,7 +249,7 @@ function renderDietAll(){
 /* the newest logged day starts expanded */
 function initDiet(){
   dietState.open = latestDietOpenSet(state.diet);
-  if(!activeDietDayKeys().length){ setDietSrc(true); document.getElementById("dsrcOnline").open = true; }
+  if(!activeDietDayKeys().length) setDietSrc(true);
   renderDietAll();
 }
 
@@ -686,10 +686,12 @@ document.addEventListener("click", e=>{
   if(ed){ openDietEntryModal(ed.dataset.dedit); return; }
 });
 
-/* the icon next to "Daily logs" opens the data source panel: online table, or a log by hand */
+/* next to "Daily logs": the add icon logs food by hand; the sync icon pulls the online table and
+   opens its panel (folding the panel closes it again) */
 function setDietSrc(open){
-  const p = document.getElementById("dietSrc"), b = document.getElementById("dietAddBtn");
+  const p = document.getElementById("dietSrc"), b = document.getElementById("dietSyncBtn");
   p.hidden = !open; b.setAttribute("aria-expanded", String(open)); b.classList.toggle("on", open);
+  if(open) document.getElementById("dsrcOnline").open = true;
 }
-document.getElementById("dietAddBtn").addEventListener("click", ()=>setDietSrc(document.getElementById("dietSrc").hidden));
-document.getElementById("dsrcManual").addEventListener("click", ()=>openDietEntryModal());
+document.getElementById("dietAddBtn").addEventListener("click", ()=>openDietEntryModal());
+document.getElementById("dsrcOnline").addEventListener("toggle", e=>{ if(!e.target.open) setDietSrc(false); });

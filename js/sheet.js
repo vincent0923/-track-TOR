@@ -340,6 +340,13 @@ function copyText(t){
   };
   const pull = ()=>{ if(!pullBtn.disabled) withProgress(pullBtn, pullAll); };
   pullBtn.addEventListener("click", pull);
+  /* the sync icon beside "Daily logs": open the panel and pull (with no link yet, only open it) */
+  const syncBtn = document.getElementById("dietSyncBtn");
+  syncBtn.addEventListener("click", ()=>{
+    setDietSrc(true);
+    if(!inp.value.trim()){ inp.focus(); return; }
+    if(!pullBtn.disabled && !syncBtn.dataset.prog) withProgress(syncBtn, pullAll);
+  });
   inp.addEventListener("keydown", e=>{ if(e.key === "Enter") pull(); });
   inp.addEventListener("change", ()=>{ inp.value = extractUrl(inp.value); });
   /* paste button: every tap replaces the box with what's on the clipboard (only the link, if there is more text) */
@@ -391,6 +398,21 @@ async function autoPullSheet(){
   if(now - tried < SHEET_AUTO_MS) return;
   try{ localStorage.setItem(SHEET_TRY_K, String(now)); }catch(e){}
   const inp = document.getElementById("dsrcUrl"); if(inp && !inp.value.trim()) inp.value = saved;
+  if(document.getElementById("dsrcPull").disabled) return;
   await pullSheet({ silent:true });
+}
+/* opening the Diet view pulls the table in the background whenever a link is saved; the fill
+   animation runs on the Diet tab button. Repeated taps within half a minute don't pull again. */
+const SHEET_TAB_MS = 30e3;
+function dietTabPull(){
+  let saved = ""; try{ saved = localStorage.getItem(SHEET_URL_K) || ""; }catch(e){}
+  saved = extractUrl(saved);
+  if(!/^(https?:\/\/)?[^\s\/]+\.[^\s\/]+/i.test(saved) || navigator.onLine === false) return;
+  const tab = document.querySelector('.subtabs [data-sub="diet"]'), pullBtn = document.getElementById("dsrcPull");
+  if(!tab || tab.dataset.prog || pullBtn.disabled) return;
+  let st = {}; try{ st = JSON.parse(localStorage.getItem(SHEET_STATUS_K) || "{}") || {}; }catch(e){}
+  if(st.ok && st.ts && Date.now() - st.ts < SHEET_TAB_MS) return;
+  const inp = document.getElementById("dsrcUrl"); if(!inp.value.trim()) inp.value = saved;
+  withProgress(tab, ()=>pullSheet({ silent:true }));
 }
 document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState === "visible") autoPullSheet(); });
