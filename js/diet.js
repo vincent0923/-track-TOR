@@ -7,7 +7,17 @@ function latestDietOpenSet(days){
 }
 
 /* used only until the user fills in their own profile or weight */
-const AGE_DEFAULT = 30, W_DEFAULT = 65, ACT_FACTOR = 0.5, TEF = 0.09, TEF_DEFAULT = 1850;
+const AGE_DEFAULT = 30, W_DEFAULT = 65, TEF = 0.09, TEF_DEFAULT = 1850;
+/* watch calories: everyday movement counts in full, logged workouts at 0.7 (watches tend to overestimate them),
+   rides measured by a power meter at 0.9. A day whose workouts are unknown counts at 0.7 throughout. */
+const EX_FACTOR = 0.7, POWER_FACTOR = 0.9;
+function watchBurn(date, act){
+  if(act === null) return null;
+  const m = state.metrics[date];
+  if(!m || m.ex == null) return act * EX_FACTOR;
+  const ex = Math.min(+m.ex || 0, act), exP = Math.min(+m.exP || 0, ex);
+  return (act - ex) + (ex - exP) * EX_FACTOR + exP * POWER_FACTOR;
+}
 
 function numVal(v){ return (v===null||v===undefined||v===""||isNaN(+v)) ? null : +v; }
 function f1Dec(v){ return v===null ? "–" : (Math.round(v*10)/10).toFixed(1).replace("-","−"); }
@@ -70,7 +80,7 @@ function burnOfDate(date){
   const act = activeOf(date);
   if(act === null) return null;
   const intake = intakeOf(date);
-  return bmrOfDate(date) + act * ACT_FACTOR + TEF * (intake===null ? TEF_DEFAULT : intake);
+  return bmrOfDate(date) + watchBurn(date, act) + TEF * (intake===null ? TEF_DEFAULT : intake);
 }
 
 function dietRangeDates(){
@@ -285,7 +295,7 @@ function openDietEntryModal(initDate){
     const intake = mode === "total" ? numVal(total.kcal) : dietTotals({ items: formState.items }).kcal;
     const estBurn = formState.expendOverride !== null
       ? Math.round(formState.expendOverride)
-      : (formState.active !== null ? Math.round(bmr + formState.active*ACT_FACTOR + TEF*(intake || TEF_DEFAULT)) : null);
+      : (formState.active !== null ? Math.round(bmr + watchBurn(curDate, formState.active) + TEF*(intake || TEF_DEFAULT)) : null);
     return `${T("基代","BMR")} <b>${bmr}</b> kcal · ${T("预计总消耗","Est. total burn")}：<b>${estBurn!==null ? estBurn+" kcal" : T("待输入活动消耗或总消耗","enter activity or total burn")}</b>`;
   }
 

@@ -194,7 +194,7 @@ const hM=()=>(+state.settings.h||H_FALLBACK)/100;
 const bmi=w=>w/hM()/hM();
 const IC={
   pullups:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h18"/><path d="M8 4v4l2.5 3M16 4v4l-2.5 3"/><circle cx="12" cy="9.5" r="1.8"/><path d="M12 11.5v5M12 16.5l-2 4M12 16.5l2 4"/></svg>',
-  waist:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="12" rx="9" ry="4.5"/><path d="M12 16.5v4M9 16.2v2M15 16.2v2"/></svg>',
+  waist:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 2.5c.9 2.6 1.3 5 1.4 7.5M17.5 2.5c-.9 2.6-1.3 5-1.4 7.5M7.9 15c0 2.3-.4 4.3-1.4 6.5M16.1 15c0 2.3.4 4.3 1.4 6.5"/><path d="M3 10.6l18-.6v4.6l-18 .6z"/><path d="M6 10.5v2M9 10.4v2.4M12 10.3v2M15 10.2v2.4M18 10.1v2" stroke-width="1.3"/></svg>',
   fat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.2 1-3.8 2.3-5 .2 1.6.9 2.6 2 3-.4-3 .3-5.6.7-8z"/></svg>',
   weight:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 9a5 5 0 0 1 8 0"/><path d="M12 9.5l1.5-2"/></svg>'
 };

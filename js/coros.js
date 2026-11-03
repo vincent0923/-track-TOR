@@ -94,13 +94,50 @@ async function syncHrv(){
     return T("；HRV "+rows.length+" 晚，最近 "+md(l.date)+"："+l.hrv+" ms","; HRV "+rows.length+" nights, latest "+md(l.date)+": "+l.hrv+" ms")+back;
   }catch(e){return T("；HRV 读取失败（"+((e&&e.code)||"未知原因")+"）","; HRV read failed ("+((e&&e.code)||"unknown")+")")}
 }
-/* the last 60 days of watch calories and steps, which the diet page turns into burn; "" when nothing came */
+/* workout list → [{date, kcal, sport, id}] */
+function parseSportRecords(text){
+  const out = [];
+  for(const blk of String(text).split(/\n(?=\s*\d+\.\s)/)){
+    const d = /—\s*(\d{4}-\d{2}-\d{2})/.exec(blk), k = /Calories:\s*([\d,]+)\s*kcal/i.exec(blk), t = /SportType:\s*(\d+)/i.exec(blk), id = /LabelId:\s*(\d+)/i.exec(blk);
+    if(d && k) out.push({ date: d[1], kcal: +k[1].replace(/,/g,""), sport: t ? +t[1] : 0, id: id ? id[1] : "" });
+  }
+  return out;
+}
+const BIKE_TYPES = [200,201,202,203,204,205,299], PM_K = LS + "-pm";
+/* does this ride have power data (a power meter)? asked once per ride, then remembered */
+async function rideHasPower(r){
+  let pm = {}; try{ pm = JSON.parse(localStorage.getItem(PM_K) || "{}") || {}; }catch(e){}
+  if(r.id && r.id in pm) return pm[r.id] === 1;
+  let yes = false;
+  try{ const m = /Average Power:\s*(\d+(?:\.\d+)?)\s*W/i.exec(toText(await mcp.callTool("COROS","getActivityDetail",{ labelId: r.id, sportType: r.sport }))); yes = !!(m && +m[1] > 0); }
+  catch(e){ return false; }                  /* unknown: counted like any workout, and asked again next time */
+  if(r.id){ pm[r.id] = yes ? 1 : 0; try{ localStorage.setItem(PM_K, JSON.stringify(pm)); }catch(e){} }
+  return yes;
+}
+/* the last 60 days of watch calories and steps, plus how much of each day was logged workouts (ex) and
+   rides with a power meter (exP), which the diet page turns into burn; "" when nothing came */
 async function syncCalories(){
   try{
     const rows = parseDailyHealthText(toText(await mcp.callTool("COROS","queryDailyHealthData",{days:60})));
-    let dc = 0;
-    for(const [date, v] of Object.entries(rows)){ saveMetric(date, { active: v.active, steps: v.steps }); dc++; }
-    if(dc>0){ renderDietAll(); return T("；已同步 "+dc+" 天活动热量", "; synced "+dc+" days of activity calories"); }
+    const dates = Object.keys(rows);
+    if(!dates.length) return "";
+    let split = null;                         /* null = workouts couldn't be read; those days keep their old split */
+    try{
+      const recs = parseSportRecords(toText(await mcp.callTool("COROS","querySportRecords",{ startDate: ymdOffset(-59), endDate: ymdOffset(0), limit: 500 })));
+      split = {};
+      for(const r of recs){
+        const s = split[r.date] || (split[r.date] = { ex:0, exP:0 });
+        s.ex += r.kcal;
+        if(BIKE_TYPES.includes(r.sport) && await rideHasPower(r)) s.exP += r.kcal;
+      }
+    }catch(e){}
+    for(const date of dates){
+      const v = rows[date], patch = { active: v.active, steps: v.steps };
+      if(split){ const s = split[date] || { ex:0, exP:0 }; patch.ex = s.ex; patch.exP = s.exP; }
+      saveMetric(date, patch);
+    }
+    renderDietAll();
+    return T("；已同步 "+dates.length+" 天活动热量", "; synced "+dates.length+" days of activity calories");
   }catch(e){}
   return "";
 }
@@ -190,7 +227,7 @@ function coOutStep(n){
 function corosLogout(wipe){
   try{ localStorage.removeItem("tracktor-coros-token"); sessionStorage.removeItem("tracktor-coros-pending"); }catch(e){}
   if(wipe){
-    const SYNCED=["weightC","sleep","sleepH","hrv","rhr","active","steps"];
+    const SYNCED=["weightC","sleep","sleepH","hrv","rhr","active","steps","ex","exP"];
     for(const [d,m] of Object.entries(state.metrics)){
       SYNCED.forEach(k=>delete m[k]);
       if(Object.keys(m).every(k=>k==="date"||m[k]==null))delete state.metrics[d];

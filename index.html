@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
-<link rel="stylesheet" href="css/app.css?v=150d9e6b">
+<link rel="stylesheet" href="css/app.css?v=38a4add9">
 <title>推拉机 track-TOR</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#16212B">
@@ -115,7 +115,7 @@
         </div>
         <div id="dietChart"></div>
         <div class="tip" id="dietTip" hidden></div>
-        <div class="dfoot" id="dietFormula" hidden><span class="zh">基础代谢按 Mifflin 公式计算。总消耗 = 基础代谢 + 手表活动热量 × 0.5 + 摄入 × 9%（消化耗能），或直接采用手动填写的当日总消耗。当天的活动热量要到晚上才完整。</span><span class="en">BMR uses the Mifflin formula. Burn = BMR + watch active kcal × 0.5 + intake × 9% (digestion), or the total you enter by hand. Today's activity isn't complete until evening.</span> <span class="zh">热量缺口 = 估算总消耗 − 摄入，约 7700 kcal 折合 1 kg 脂肪。只统计已经过完的日子，今天不算；统计的天数里只要有一天没记账或缺消耗数据，就显示 –。</span><span class="en">Gap = estimated burn − intake; about 7700 kcal makes 1 kg of fat. Only finished days count, never today; if any day in the period has no log or no burn data, it shows –.</span></div>
+        <div class="dfoot" id="dietFormula" hidden><span class="zh">基础代谢按 Mifflin 公式计算。总消耗 = 基础代谢 + 手表热量 + 摄入 × 9%（消化耗能），或直接采用手动填写的当日总消耗。手表热量里，日常活动全算；运动记录的部分 × 0.7（手表容易高估），有功率计的骑行 × 0.9。当天的活动热量要到晚上才完整。</span><span class="en">BMR uses the Mifflin formula. Burn = BMR + watch calories + intake × 9% (digestion), or the total you enter by hand. Of the watch calories, everyday movement counts in full; logged workouts count at 0.7 (watches tend to overestimate them), rides with a power meter at 0.9. Today's activity isn't complete until evening.</span> <span class="zh">热量缺口 = 估算总消耗 − 摄入，约 7700 kcal 折合 1 kg 脂肪。只统计已经过完的日子，今天不算；统计的天数里只要有一天没记账或缺消耗数据，就显示 –。</span><span class="en">Gap = estimated burn − intake; about 7700 kcal makes 1 kg of fat. Only finished days count, never today; if any day in the period has no log or no burn data, it shows –.</span></div>
       </div>
 
       <div id="dietDays" aria-label="每日饮食记录"></div>
@@ -140,7 +140,7 @@
       </div></details>
 
       <details class="fold savefold" id="foldGoal"><summary><span class="sumt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4"/><path d="M12 13v4M8.5 20h7M10 17h4v3h-4z"/></svg><span class="zh">目标</span><span class="en">Goals</span></span><span class="saveic" aria-label="保存并收起"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg></span></summary><div class="fbody">
-        <div class="gsec"><div class="gshow-h"><span class="zh">首页显示</span><span class="en">Show on top</span></div><div class="gshow" id="goalShow" role="group" aria-label="首页显示哪些目标 / Goals shown on top"><button type="button" class="gchip2" data-gshow="pullups" aria-pressed="true" style="--g:var(--pull)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h18"/><path d="M8 4v4l2.5 3M16 4v4l-2.5 3"/><circle cx="12" cy="9.5" r="1.8"/><path d="M12 11.5v5M12 16.5l-2 4M12 16.5l2 4"/></svg><span class="zh">引体</span><span class="en">Pull-ups</span></button><button type="button" class="gchip2" data-gshow="waist" aria-pressed="true" style="--g:var(--ok)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="12" rx="9" ry="4.5"/><path d="M12 16.5v4M9 16.2v2M15 16.2v2"/></svg><span class="zh">腰围</span><span class="en">Waist</span></button><button type="button" class="gchip2" data-gshow="weight" aria-pressed="true" style="--g:var(--sleep)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 9a5 5 0 0 1 8 0"/><path d="M12 9.5l1.5-2"/></svg><span class="zh">体重</span><span class="en">Weight</span></button><button type="button" class="gchip2" data-gshow="fat" aria-pressed="true" style="--g:var(--cta)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.2 1-3.8 2.3-5 .2 1.6.9 2.6 2 3-.4-3 .3-5.6.7-8z"/></svg><span class="zh">减脂</span><span class="en">Fat loss</span></button></div></div>
+        <div class="gsec"><div class="gshow-h"><span class="zh">首页显示</span><span class="en">Show on top</span></div><div class="gshow" id="goalShow" role="group" aria-label="首页显示哪些目标 / Goals shown on top"><button type="button" class="gchip2" data-gshow="pullups" aria-pressed="true" style="--g:var(--pull)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h18"/><path d="M8 4v4l2.5 3M16 4v4l-2.5 3"/><circle cx="12" cy="9.5" r="1.8"/><path d="M12 11.5v5M12 16.5l-2 4M12 16.5l2 4"/></svg><span class="zh">引体</span><span class="en">Pull-ups</span></button><button type="button" class="gchip2" data-gshow="waist" aria-pressed="true" style="--g:var(--ok)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 2.5c.9 2.6 1.3 5 1.4 7.5M17.5 2.5c-.9 2.6-1.3 5-1.4 7.5M7.9 15c0 2.3-.4 4.3-1.4 6.5M16.1 15c0 2.3.4 4.3 1.4 6.5"/><path d="M3 10.6l18-.6v4.6l-18 .6z"/><path d="M6 10.5v2M9 10.4v2.4M12 10.3v2M15 10.2v2.4M18 10.1v2" stroke-width="1.3"/></svg><span class="zh">腰围</span><span class="en">Waist</span></button><button type="button" class="gchip2" data-gshow="weight" aria-pressed="true" style="--g:var(--sleep)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 9a5 5 0 0 1 8 0"/><path d="M12 9.5l1.5-2"/></svg><span class="zh">体重</span><span class="en">Weight</span></button><button type="button" class="gchip2" data-gshow="fat" aria-pressed="true" style="--g:var(--cta)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.2 1-3.8 2.3-5 .2 1.6.9 2.6 2 3-.4-3 .3-5.6.7-8z"/></svg><span class="zh">减脂</span><span class="en">Fat loss</span></button></div></div>
         <div class="gsec"><div class="fgrid">
           <div class="field"><label for="gP"><span class="zh">目标引体（个）</span><span class="en">Pull-up goal (reps)</span></label><input id="gP" type="number" inputmode="numeric" step="1" min="1" data-g="p"></div>
           <div class="field"><label for="gF"><span class="zh">目标减脂（kg）</span><span class="en">Fat-loss goal (kg)</span></label><input id="gF" type="number" inputmode="decimal" step="0.1" min="0.1" data-g="fat"></div>
@@ -282,15 +282,15 @@
 <div id="toast" class="toast" hidden></div>
 <button id="toTop" class="totop" type="button" aria-label="返回顶端"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="2.4" rx=".6" fill="currentColor"/><path d="M12 8.2 5.6 14.6h4.1V20h4.6v-5.4h4.1z" fill="currentColor"/></svg></button>
 
-<script src="js/core.js?v=150d9e6b"></script>
-<script src="js/ui.js?v=150d9e6b"></script>
-<script src="js/train.js?v=150d9e6b"></script>
-<script src="js/progress.js?v=150d9e6b"></script>
-<script src="js/backup.js?v=150d9e6b"></script>
-<script src="js/coros.js?v=150d9e6b"></script>
-<script src="js/welcome.js?v=150d9e6b"></script>
-<script src="js/diet.js?v=150d9e6b"></script>
-<script src="js/sheet.js?v=150d9e6b"></script>
-<script src="js/main.js?v=150d9e6b"></script>
+<script src="js/core.js?v=38a4add9"></script>
+<script src="js/ui.js?v=38a4add9"></script>
+<script src="js/train.js?v=38a4add9"></script>
+<script src="js/progress.js?v=38a4add9"></script>
+<script src="js/backup.js?v=38a4add9"></script>
+<script src="js/coros.js?v=38a4add9"></script>
+<script src="js/welcome.js?v=38a4add9"></script>
+<script src="js/diet.js?v=38a4add9"></script>
+<script src="js/sheet.js?v=38a4add9"></script>
+<script src="js/main.js?v=38a4add9"></script>
 
 </body></html>
