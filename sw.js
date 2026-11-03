@@ -41,8 +41,8 @@ self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
   const url = new URL(e.request.url);
   if (url.origin !== self.location.origin) return;   // COROS and other sites go straight to the network
-  // Network first for the page and its code, so an update never mixes new HTML with old scripts;
-  // the cached copy is used only when offline
+  // Network first for the page and its code; the cached copy is used only when offline.
+  // Scripts and styles carry a ?v= stamp from tools/stamp.py, so a new page can't pick up old ones.
   if (e.request.mode === "navigate" || /\.(html|js|css)$/.test(url.pathname) || url.pathname.endsWith("/")) {
     e.respondWith(
       fetch(e.request).then((resp) => {
@@ -51,7 +51,7 @@ self.addEventListener("fetch", (e) => {
           caches.open(CACHE_NAME).then((cache) => cache.put(e.request, copy));
         }
         return resp;
-      }).catch(() => caches.match(e.request).then(cached => cached || (e.request.mode === "navigate" ? caches.match("./index.html") : Response.error())))
+      }).catch(() => caches.match(e.request, { ignoreSearch: false }).then(cached => cached || caches.match(e.request, { ignoreSearch: true })).then(cached => cached || (e.request.mode === "navigate" ? caches.match("./index.html") : Response.error())))
     );
     return;
   }

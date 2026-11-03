@@ -21,6 +21,8 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
   The ⓘ button is now a pill: i on the left, + on the right to open, − to close.
 - 📉 **饮食页两张图合成一张**：去掉了「热量缺口累计」图，只留「摄入与消耗」。标题下面一个小卡片显示「近 7 天热量缺口 1051 kcal（约 136 g 脂肪）」，点一下依次切换 3 / 7 / 14 / 30 天和有记录以来，会记住上次选的。计算公式收进标题旁的「i｜+」按钮，点开才显示。
   The diet page's two charts are now one: the cumulative-gap chart is gone and Intake vs burn stays. A tile under its title shows e.g. "Last 7 days calorie deficit 1051 kcal (about 136 g fat)"; tap it to step through 3 / 7 / 14 / 30 days and since your first log, and it remembers your choice. The formulas sit behind the i | + button next to the title.
+- 🧱 **更新后不再出现新旧混搭**：手机浏览器会把脚本和样式缓存 10 分钟，更新后可能出现新网页配旧脚本，比如缺口卡片是空的、按钮排版错乱。现在脚本和样式的网址带上内容指纹，文件一变网址就变，旧缓存对不上。
+  No more mixed old and new files after an update: the phone's browser may cache scripts and styles for 10 minutes, so a new page could run with old scripts (an empty gap tile, a misplaced button). Scripts and styles now have a content stamp in their URL, so a changed file always has a new address and old cached copies can't be mixed in.
 
 ---
 

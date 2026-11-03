@@ -24,5 +24,6 @@
 - 静态网页，无构建。`index.html` 只放结构，`css/app.css` 放样式，`js/` 按功能分文件，按 `index.html` 里的顺序加载，共享全局作用域；启动步骤都在 `js/main.js`。
 - 数据全部在 `localStorage` 的 `tracktor-data`：`sessions`（训练）、`metrics[日期]`（引体、体重、腰围、睡眠、HRV、静息心率、活动热量、步数等）、`diet[日期]`、`settings`。其他键都以 `tracktor-` 开头。
 - 新增文件要加进 `sw.js` 的缓存列表。
+- 改了 `css/` 或 `js/` 下的任何文件，提交前先运行 `python3 tools/stamp.py`。它给 `index.html` 里的脚本和样式网址加上内容指纹（`?v=…`），这样手机上缓存的旧文件不会和新网页配在一起。不运行的话，更新后可能出现新网页配旧脚本、功能错乱。
 - 备份格式见 `js/backup.js`，新字段只能追加在 `MK` 末尾，旧版进度文件必须仍能导入。
 - 改动后用无头浏览器（Playwright）实际打开页面测试，确认没有报错再提交。
