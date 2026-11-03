@@ -212,8 +212,6 @@ async function connectMcp(){
   mcpReady=true;
   mcp={ callTool: (srv, tool, args) => callCorosDirectBrowser(tool, args) };
   syncUI();
-  const stEl = document.getElementById("dietSyncStatus");
-  if(stEl) stEl.textContent = T("高驰已连接 · 点击右上角同步","COROS connected · tap Sync at top-right");
   if(!tk.expires_at_epoch || tk.expires_at_epoch - Date.now()/1000 < COROS_RENEW_WITHIN) await refreshCorosToken(tk);
 }
 

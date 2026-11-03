@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
-<link rel="stylesheet" href="css/app.css?v=d14ec28c">
+<link rel="stylesheet" href="css/app.css?v=b9d43408">
 <title>推拉机 track-TOR</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#16212B">
@@ -44,12 +44,6 @@
         <button type="button" role="tab" data-sub="strength" aria-selected="false" aria-label="力量 / Strength" title="力量 / Strength"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.409 13.017A5 5 0 0 1 22 15c0 3.866-4 7-9 7-4.077 0-8.153-.82-10.371-2.462-.426-.316-.631-.832-.62-1.362C2.118 12.723 2.627 2 10 2a3 3 0 0 1 3 3 2 2 0 0 1-2 2c-1.105 0-1.64-.444-2-1"/><path d="M15 14a5 5 0 0 0-7.584 2"/><path d="M9.964 6.825C8.019 7.977 9.5 13 8 15"/></svg></button>
       </div>
     <section id="pane-diet" hidden>
-      <div class="diet-head">
-        <div>
-          <h2><span class="zh">饮食账本</span><span class="en">Diet Ledger</span></h2>
-          <p class="sub" id="dietSyncStatus"><span class="zh">消耗数据来自高驰 · 支持手动记录</span><span class="en">Burn from COROS · Manual logging supported</span></p>
-        </div>
-      </div>
 
 
       <div class="chartbox">
@@ -82,7 +76,7 @@
         </ul></div>
       </div>
 
-      <div class="dbar" id="dietBar"><h2><span class="zh">每日记录</span><span class="en">Daily logs</span><button type="button" class="dadd" id="dietAddBtn" aria-label="手动添加饮食记录 / Add a food log by hand" title="手动添加饮食记录 / Add a food log by hand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.5 6.5H3V21h14.5v-7.5"/><path d="M6.5 11h.01M6.5 14.5h.01M6.5 18h.01M9.5 14.5h5M9.5 18h5M9.5 11h2"/><circle cx="18" cy="6.5" r="4.5"/><path d="M18 4.5v4M16 6.5h4"/></svg></button><button type="button" class="dadd" id="dietSyncBtn" aria-expanded="false" aria-controls="dietSrc" aria-label="同步线上饮食数据 / Sync the online food table" title="同步线上饮食数据 / Sync the online food table"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></button></h2><div class="dbar-actions" id="dietBarActs"></div></div>
+      <div class="dbar" id="dietBar"><h2><span class="zh">饮食记录</span><span class="en">Food logs</span><button type="button" class="dadd" id="dietAddBtn" aria-label="手动添加饮食记录 / Add a food log by hand" title="手动添加饮食记录 / Add a food log by hand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.5 6.5H3V21h14.5v-7.5"/><path d="M6.5 11h.01M6.5 14.5h.01M6.5 18h.01M9.5 14.5h5M9.5 18h5M9.5 11h2"/><circle cx="18" cy="6.5" r="4.5"/><path d="M18 4.5v4M16 6.5h4"/></svg></button><button type="button" class="dadd" id="dietSyncBtn" aria-expanded="false" aria-controls="dietSrc" aria-label="同步线上饮食数据 / Sync the online food table" title="同步线上饮食数据 / Sync the online food table"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></button></h2><div class="dbar-actions" id="dietBarActs"></div></div>
       <section class="dsrc" id="dietSrc" aria-label="数据源 / Data source" hidden>
         <details class="dsub" id="dsrcOnline"><summary><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 8.5a4 4 0 0 1 .5 7.97"/><path d="M12 11v9M9 17l3 3 3-3"/></svg><span class="zh">线上数据</span><span class="en">Online table</span></summary>
         <div class="dsrc-row"><div class="dsrc-field"><button type="button" class="dsrc-paste" id="dsrcPaste" aria-label="粘贴 / Paste" title="粘贴 / Paste"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg></button><input id="dsrcUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="粘贴表格的分享链接"></div><button type="button" class="btn" id="dsrcPull"><span class="zh">拉取</span><span class="en">Pull</span></button></div>
@@ -302,15 +296,15 @@
 <div id="toast" class="toast" hidden></div>
 <button id="toTop" class="totop" type="button" aria-label="返回顶端"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="2.4" rx=".6" fill="currentColor"/><path d="M12 8.2 5.6 14.6h4.1V20h4.6v-5.4h4.1z" fill="currentColor"/></svg></button>
 
-<script src="js/core.js?v=d14ec28c"></script>
-<script src="js/ui.js?v=d14ec28c"></script>
-<script src="js/train.js?v=d14ec28c"></script>
-<script src="js/progress.js?v=d14ec28c"></script>
-<script src="js/backup.js?v=d14ec28c"></script>
-<script src="js/coros.js?v=d14ec28c"></script>
-<script src="js/welcome.js?v=d14ec28c"></script>
-<script src="js/diet.js?v=d14ec28c"></script>
-<script src="js/sheet.js?v=d14ec28c"></script>
-<script src="js/main.js?v=d14ec28c"></script>
+<script src="js/core.js?v=b9d43408"></script>
+<script src="js/ui.js?v=b9d43408"></script>
+<script src="js/train.js?v=b9d43408"></script>
+<script src="js/progress.js?v=b9d43408"></script>
+<script src="js/backup.js?v=b9d43408"></script>
+<script src="js/coros.js?v=b9d43408"></script>
+<script src="js/welcome.js?v=b9d43408"></script>
+<script src="js/diet.js?v=b9d43408"></script>
+<script src="js/sheet.js?v=b9d43408"></script>
+<script src="js/main.js?v=b9d43408"></script>
 
 </body></html>

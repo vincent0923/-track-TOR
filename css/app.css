@@ -83,9 +83,6 @@
 .xchips{display:flex;gap:6px;flex-wrap:wrap}
 #pane-diet{--intake:#2C3B44;--burn:#C2662D;--gain:#3E8E63;--loss:#C2453B;--dslate:#2C3B44;--dtotal:#E6E1D6;display:grid;gap:16px;padding-top:8px}
 :root[data-theme="dark"] #pane-diet{--intake:#9DB8C6;--burn:#E58A4F;--gain:#55B884;--loss:#E66A5F;--dslate:#34505E;--dtotal:#2A3234}
-#pane-diet .diet-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
-#pane-diet .diet-head h2{margin:0;font-size:24px;font-weight:700;letter-spacing:.02em}
-#pane-diet .diet-head .sub{margin:2px 0 0;font-size:12px;color:var(--muted)}
 /* diet data source (Google Sheets CSV) */
 .dsrc{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
 .dsrc-h{display:flex;align-items:center;gap:8px}
@@ -447,7 +444,7 @@ html[data-lang="en"] .dsrc-row .btn{min-width:106px}
 .mask .sheet p.recerr{margin:6px 0 0;font-size:13px;color:var(--bad)}
 .btn.recsave:disabled{opacity:.35;cursor:not-allowed}
 
-/* "Daily logs" header: the add icon and the data source panel under it */
+/* "Food logs" header: the add icon and the data source panel under it */
 #dietBar h2{display:flex;align-items:center;gap:8px}
 .dadd{width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--burn);padding:0;cursor:pointer}
 .dadd svg{width:21px;height:21px}

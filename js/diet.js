@@ -211,7 +211,7 @@ function renderDietDays(){
   if(!box) return;
   const keys = activeDietDayKeys();
   if(!keys.length){
-    box.innerHTML = `<div class="empty">${T("还没有饮食记录。","No diet logs yet.")}<br>${T("点「每日记录」旁边的图标，手动添加或从线上表格拉取。","Tap the icon next to Daily logs to add one by hand or pull from an online table.")}</div>`;
+    box.innerHTML = `<div class="empty">${T("还没有饮食记录。","No diet logs yet.")}<br>${T("点「饮食记录」旁边的图标，手动添加或从线上表格同步。","Tap the icons next to Food logs to add one by hand or sync an online table.")}</div>`;
     const acts = document.getElementById("dietBarActs"); if(acts) acts.innerHTML = "";
     return;
   }
@@ -686,7 +686,7 @@ document.addEventListener("click", e=>{
   if(ed){ openDietEntryModal(ed.dataset.dedit); return; }
 });
 
-/* next to "Daily logs": the add icon logs food by hand; the sync icon pulls the online table and
+/* next to "Food logs": the add icon logs food by hand; the sync icon pulls the online table and
    opens its panel (folding the panel closes it again) */
 function setDietSrc(open){
   const p = document.getElementById("dietSrc"), b = document.getElementById("dietSyncBtn");

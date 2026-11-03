@@ -340,7 +340,7 @@ function copyText(t){
   };
   const pull = ()=>{ if(!pullBtn.disabled) withProgress(pullBtn, pullAll); };
   pullBtn.addEventListener("click", pull);
-  /* the sync icon beside "Daily logs": open the panel and pull (with no link yet, only open it) */
+  /* the sync icon beside "Food logs": open the panel and pull (with no link yet, only open it) */
   const syncBtn = document.getElementById("dietSyncBtn");
   syncBtn.addEventListener("click", ()=>{
     setDietSrc(true);
