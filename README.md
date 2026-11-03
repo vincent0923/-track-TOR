@@ -53,7 +53,7 @@
 
 当前版本 **v1.22a**。Alpha 表示已经在日常使用，还在持续打磨。
 
-© 2026 vincent0923，保留所有权利。见 [LICENSE](LICENSE)。数字字体 Barlow Condensed 按 SIL Open Font License 附带，见 [fonts/OFL.txt](fonts/OFL.txt)。部分图标来自 [Lucide](https://lucide.dev)（ISC 许可，见 [docs/LUCIDE-LICENSE.txt](docs/LUCIDE-LICENSE.txt)）。
+© 2026 vincent0923，保留所有权利。见 [LICENSE](LICENSE)。数字字体 Barlow Condensed 按 SIL Open Font License 附带，见 [fonts/OFL.txt](fonts/OFL.txt)。部分图标来自 [Lucide](https://lucide.dev)（ISC 许可，见 [docs/LUCIDE-LICENSE.txt](docs/LUCIDE-LICENSE.txt)）。部分音效用 [ZzFX](https://github.com/KilledByAPixel/ZzFX) 合成（MIT 许可，见 [docs/ZZFX-LICENSE.txt](docs/ZZFX-LICENSE.txt)）。
 
 ---
 
@@ -110,4 +110,4 @@ See the [product notes](docs/PRODUCT.md) (in Chinese) for positioning, design pr
 
 Current version: **v1.22a**. Alpha means it's in daily use and still being refined.
 
-© 2026 vincent0923. All rights reserved. See [LICENSE](LICENSE). The Barlow Condensed number font is included under the SIL Open Font License; see [fonts/OFL.txt](fonts/OFL.txt). Some icons come from [Lucide](https://lucide.dev) (ISC license; see [docs/LUCIDE-LICENSE.txt](docs/LUCIDE-LICENSE.txt)).
+© 2026 vincent0923. All rights reserved. See [LICENSE](LICENSE). The Barlow Condensed number font is included under the SIL Open Font License; see [fonts/OFL.txt](fonts/OFL.txt). Some icons come from [Lucide](https://lucide.dev) (ISC license; see [docs/LUCIDE-LICENSE.txt](docs/LUCIDE-LICENSE.txt)). Some sound effects are synthesised with [ZzFX](https://github.com/KilledByAPixel/ZzFX) (MIT license; see [docs/ZZFX-LICENSE.txt](docs/ZZFX-LICENSE.txt)).

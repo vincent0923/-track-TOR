@@ -9,6 +9,7 @@ const ASSETS = [
   "./icon.svg",
   "./css/app.css",
   "./js/core.js",
+  "./js/zzfx.js",
   "./js/ui.js",
   "./js/train.js",
   "./js/progress.js",

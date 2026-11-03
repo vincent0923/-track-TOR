@@ -233,6 +233,9 @@ function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t
     [["同步","Sync"],[["sync","开始同步或拉取","Start sync or pull","tap"],["syncok","同步完成","Sync done","none"],["syncfail","同步失败","Sync failed","none"]]],
     [["其他","Other"],[["sndon","打开声音","Sound on","tick"],["header","顶部小按钮","Top buttons","tap"],["other","其他按钮","Other buttons","tap"]]]
   ];
+  /* ZzFX sounds join the list (js/zzfx.js); sparse arrays keep their holes as defaults */
+  const ZZK=[];
+  ZZ_SOUNDS.forEach(([k,zh,en,p])=>{ZZK.push(k);SN[k]=[zh,en];S[k]=()=>{const c=ac();if(c)zzPlay(c,k,p)}});
   const SDEF={};SFX.forEach(g=>g[1].forEach(r=>{SDEF[r[0]]=r[3]}));
   const pickOf=id=>{const m=state.settings&&state.settings.sfx;const k=m&&m[id];return S[k]?k:SDEF[id]};
   function playRaw(k){if(on&&S[k])try{S[k]()}catch(e){}}
@@ -282,7 +285,9 @@ function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t
   const PLAY_I='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>';
   function renderSfx(){
     const box=document.getElementById("sfxPanel");if(!box)return;
-    const opts=Object.keys(S).map(k=>'<option value="'+k+'">'+T(SN[k][0],SN[k][1])+'</option>').join("");
+    const opt=k=>'<option value="'+k+'">'+T(SN[k][0],SN[k][1])+'</option>';
+    const opts='<optgroup label="'+T("推拉机","track-TOR")+'">'+Object.keys(S).filter(k=>!ZZK.includes(k)).map(opt).join("")+'</optgroup>'
+      +'<optgroup label="ZzFX">'+ZZK.map(opt).join("")+'</optgroup>';
     box.innerHTML=SFX.map(([g,rows])=>'<div class="sfxg"><h4>'+T(g[0],g[1])+'</h4>'+rows.map(([id,zh,en])=>
       '<div class="sfxr'+(pickOf(id)!==SDEF[id]?' changed':'')+'" data-sfx="'+id+'"><span>'+T(zh,en)+'</span><select aria-label="'+T(zh,en)+'">'+opts+'</select>'
       +'<button type="button" class="sfxp" aria-label="'+T("试听","Play")+'">'+PLAY_I+'</button></div>').join("")+'</div>').join("");

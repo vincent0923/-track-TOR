@@ -14,8 +14,8 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 - 「每日记录」改名「饮食记录」，饮食页顶部的「饮食账本」标题和说明去掉了。「饮食记录」旁现在有两个图标：添加图标直接打开手动记录窗口；新的同步图标一按就拉取，同时打开「线上数据」面板。折起面板就关上。
   "Daily logs" is now "Food logs", and the Diet Ledger heading and note at the top of the Diet view are gone. Two icons sit beside Food logs: the add icon opens the manual food log straight away, and the new sync icon pulls at once and opens the Online table panel. Fold the panel to close it.
 
-- 🔊 **音效自己配**：「资料」里新增「音效」（喇叭图标），给每种点击选声音：打勾、整天练完、烟花、切换标签、展开面板、保存、删除、同步开始/完成/失败等。选的时候就能试听，「恢复默认音效」一键还原。新增十几种声音，包括揉纸、剑气、拔剑、重拳、蓄力、金币、升级、号角、八音盒、星光等短旋律。全部是手机现场合成，不用下载文件。
-  Pick your own sounds: Profile has a new Sound effects panel (speaker icon) to choose a sound for every kind of tap, from ticking a set, finishing the day and fireworks to switching tabs, folding panels, saving, deleting and sync start/done/failed. You hear each one as you choose, and Reset sounds restores the defaults. More than a dozen new sounds, including crumple, sword slash, unsheathe, punch, power-up, coin, level-up, fanfare, music box and sparkle. All are synthesised on the phone, with nothing to download.
+- 🔊 **音效自己配**：「资料」里新增「音效」（喇叭图标），给每种点击选声音：打勾、整天练完、烟花、切换标签、展开面板、保存、删除、同步开始/完成/失败等。选的时候就能试听，「恢复默认音效」一键还原。新增十几种声音，包括揉纸、剑气、拔剑、重拳、蓄力、金币、升级、号角、八音盒、星光等短旋律。另外加入开源的 ZzFX 音效 52 个（拾取、强化、跳跃、射击、短哔、击中、爆炸、音符各 6 个，加 4 个官方示例）。全部是手机现场合成，不用下载文件。
+  Pick your own sounds: Profile has a new Sound effects panel (speaker icon) to choose a sound for every kind of tap, from ticking a set, finishing the day and fireworks to switching tabs, folding panels, saving, deleting and sync start/done/failed. You hear each one as you choose, and Reset sounds restores the defaults. More than a dozen new sounds, including crumple, sword slash, unsheathe, punch, power-up, coin, level-up, fanfare, music box and sparkle. Plus 52 open-source ZzFX sounds (six each of pickup, power-up, jump, shoot, blip, hit, explosion and note, and four official samples). All are synthesised on the phone, with nothing to download.
 
 ---
 
