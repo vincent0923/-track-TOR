@@ -104,13 +104,14 @@
 
       <div class="chartbox">
         <div class="chead">
-          <h3><span class="zh">摄入与消耗</span><span class="en">Intake vs burn</span></h3>
+          <div class="chead-t"><h3><span class="zh">摄入与消耗</span><span class="en">Intake vs burn</span></h3><button type="button" class="dsrc-i" data-itoggle="dietFormula" aria-expanded="false" aria-controls="dietFormula" aria-label="计算方法 / How it is calculated"><span class="dsrc-i-l">i</span><span class="dsrc-i-r" aria-hidden="true">+</span></button></div>
           <div class="seg maseg" role="group" aria-label="时间范围">
             <button type="button" data-dr="14" aria-pressed="true"><span class="zh">14天</span><span class="en">14D</span></button>
             <button type="button" data-dr="30" aria-pressed="false"><span class="zh">30天</span><span class="en">30D</span></button>
             <button type="button" data-dr="60" aria-pressed="false"><span class="zh">60天</span><span class="en">60D</span></button>
           </div>
         </div>
+        <button type="button" class="gtile" id="dietGapTile" aria-label="切换统计天数 / Change period"></button>
         <div class="dlegend">
           <span><i style="background:var(--intake)"></i><span class="zh">摄入</span><span class="en">Intake</span></span>
           <span><i style="background:var(--burn)"></i><span class="zh">估算总消耗</span><span class="en">Est. burn</span></span>
@@ -120,28 +121,7 @@
         </div>
         <div id="dietChart"></div>
         <div class="tip" id="dietTip" hidden></div>
-        <p class="dfoot"><span class="zh">基础代谢按 Mifflin 公式计算。总消耗 = 基础代谢 + 手表活动热量 × 0.5 + 摄入 × 9%（消化耗能），或直接采用手动填写的当日总消耗。当天的活动热量要到晚上才完整。</span><span class="en">BMR uses the Mifflin formula. Burn = BMR + watch active kcal × 0.5 + intake × 9% (digestion), or the total you enter by hand. Today's activity isn't complete until evening.</span></p>
-      </div>
-
-      <div class="chartbox" id="dietGapBox">
-        <div class="chead">
-          <h3><span class="zh">热量缺口累计</span><span class="en">Cumulative gap</span></h3>
-          <div class="seg maseg" role="group" aria-label="累计天数 / Cumulative days">
-            <button type="button" data-dw="3" aria-pressed="false"><span class="zh">3天</span><span class="en">3D</span></button>
-            <button type="button" data-dw="7" aria-pressed="true"><span class="zh">7天</span><span class="en">7D</span></button>
-            <button type="button" data-dw="14" aria-pressed="false"><span class="zh">14天</span><span class="en">14D</span></button>
-            <button type="button" data-dw="30" aria-pressed="false"><span class="zh">30天</span><span class="en">30D</span></button>
-          </div>
-        </div>
-        <div class="gchips" id="dietGchips"></div>
-        <div class="dlegend">
-          <span><i style="background:var(--intake)"></i><span class="zh">滚动累计</span><span class="en">Rolling total</span></span>
-          <span><i style="background:var(--gain);height:8px;opacity:.5"></i><span class="zh">当日缺口</span><span class="en">Daily deficit</span></span>
-          <span><i style="background:var(--loss);height:8px;opacity:.5"></i><span class="zh">当日盈余</span><span class="en">Daily surplus</span></span>
-        </div>
-        <div id="dietGchart"></div>
-        <div class="tip" id="dietGtip" hidden></div>
-        <p class="dfoot"><span class="zh">每个点是截至当天、过去 N 天的缺口之和；正数为缺口，负数为盈余。N 天里只要有一天没记账或缺消耗数据，就不统计，显示 –。约 7700 kcal 折合 1kg 脂肪。</span><span class="en">Each point sums the gap over the past N days; positive is a deficit, negative a surplus. If any of those days has no log or burn data, it shows –. About 7700 kcal ≈ 1 kg of fat.</span></p>
+        <div class="dfoot" id="dietFormula" hidden><span class="zh">基础代谢按 Mifflin 公式计算。总消耗 = 基础代谢 + 手表活动热量 × 0.5 + 摄入 × 9%（消化耗能），或直接采用手动填写的当日总消耗。当天的活动热量要到晚上才完整。</span><span class="en">BMR uses the Mifflin formula. Burn = BMR + watch active kcal × 0.5 + intake × 9% (digestion), or the total you enter by hand. Today's activity isn't complete until evening.</span> <span class="zh">热量缺口 = 估算总消耗 − 摄入，约 7700 kcal 折合 1 kg 脂肪。统计的天数里只要有一天没记账或缺消耗数据，就显示 –。</span><span class="en">Gap = estimated burn − intake; about 7700 kcal makes 1 kg of fat. If any day in the period has no log or no burn data, it shows –.</span></div>
       </div>
 
       <div id="dietDays" aria-label="每日饮食记录"></div>

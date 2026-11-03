@@ -19,6 +19,8 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
   Shorter, link-free prompts: both are a few lines of fixed text, and what you see is what you copy; nothing from the link box appears in them. They assume you have no sheet yet: on first use the AI creates 饮食记录 with the column names, shares it view-only by link and sends the link back. The AI only records what you ate, with no extra totals. The setup is down to three steps.
 - ⓘ 按钮改成椭圆：左边 i，右边 + 表示可以展开，展开后变成 − 表示可以收起。
   The ⓘ button is now a pill: i on the left, + on the right to open, − to close.
+- 📉 **饮食页两张图合成一张**：去掉了「热量缺口累计」图，只留「摄入与消耗」。标题下面一个小卡片显示「近 7 天热量缺口 1051 kcal（约 136 g 脂肪）」，点一下依次切换 3 / 7 / 14 / 30 天和有记录以来，会记住上次选的。计算公式收进标题旁的「i｜+」按钮，点开才显示。
+  The diet page's two charts are now one: the cumulative-gap chart is gone and Intake vs burn stays. A tile under its title shows e.g. "Last 7 days calorie deficit 1051 kcal (about 136 g fat)"; tap it to step through 3 / 7 / 14 / 30 days and since your first log, and it remembers your choice. The formulas sit behind the i | + button next to the title.
 
 ---
 

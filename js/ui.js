@@ -250,3 +250,11 @@ function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t
   document.addEventListener("fullscreenchange",paint);document.addEventListener("webkitfullscreenchange",paint);
   document.getElementById("langBtn").addEventListener("click",()=>setTimeout(paint,0));
 })();
+
+/* i pills (i | +): open and close the panel they name; + means it can open, − that it can close */
+document.addEventListener("click", e=>{
+  const b = e.target.closest("[data-itoggle]"); if(!b) return;
+  const p = document.getElementById(b.dataset.itoggle); if(!p) return;
+  p.hidden = !p.hidden; b.setAttribute("aria-expanded", String(!p.hidden));
+  const r = b.querySelector(".dsrc-i-r"); if(r) r.textContent = p.hidden ? "+" : "−";
+});
