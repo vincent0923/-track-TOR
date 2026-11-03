@@ -229,6 +229,7 @@ function renderDietDays(){
 }
 
 function renderDietAll(){
+  renderGoals();                       /* the fat-loss goal follows the diet log */
   renderDietChart();
   renderDietDays();
 }

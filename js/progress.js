@@ -195,6 +195,7 @@ const bmi=w=>w/hM()/hM();
 const IC={
   pullups:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h18"/><path d="M8 4v4l2.5 3M16 4v4l-2.5 3"/><circle cx="12" cy="9.5" r="1.8"/><path d="M12 11.5v5M12 16.5l-2 4M12 16.5l2 4"/></svg>',
   waist:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="12" rx="9" ry="4.5"/><path d="M12 16.5v4M9 16.2v2M15 16.2v2"/></svg>',
+  fat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.2 1-3.8 2.3-5 .2 1.6.9 2.6 2 3-.4-3 .3-5.6.7-8z"/></svg>',
   weight:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 9a5 5 0 0 1 8 0"/><path d="M12 9.5l1.5-2"/></svg>'
 };
 function curWeight(){const a=avg7(wtMerged());return a.length?+a[a.length-1].y.toFixed(1):null}
@@ -215,11 +216,19 @@ function milestone(k,pct,name){
   const delay=msQueue*1400;msQueue++;
   setTimeout(()=>{msQueue=Math.max(0,msQueue-1);fireworks(30,0);toast(name+T(" 进度达到 "," progress reached ")+step+"%")},600+delay);
 }
+const GOAL_KEYS=["pullups","waist","weight","fat"], GOAL_FIELD={pullups:"gP",waist:"gZ",weight:"gW",fat:"gF"};
+function goalShowList(){const s=state.settings.goalShow;return Array.isArray(s)?GOAL_KEYS.filter(k=>s.includes(k)):GOAL_KEYS.slice()}
+/* a goal's icon (or its "Set goal" link) takes you to that goal's box in the Goals panel */
+function openGoalField(k){
+  document.querySelector('[data-tab="data"]').click();setDataSub("charts");
+  const f=document.getElementById("foldGoal");f.open=true;
+  const inp=document.getElementById(GOAL_FIELD[k]);
+  setTimeout(()=>{(inp||f).scrollIntoView({behavior:"smooth",block:"center"});if(inp)setTimeout(()=>{try{inp.focus({preventScroll:true})}catch(e){}},350)},60);
+}
 let PRIV=false;try{PRIV=localStorage.getItem(LS+"-priv")==="1"}catch(e){}
 document.getElementById("goals").addEventListener("click",e=>{
   const sg=e.target.closest("[data-setgoal]");
-  if(sg){document.querySelector('[data-tab="data"]').click();setDataSub("charts");const f=document.getElementById("foldGoal");f.open=true;
-    setTimeout(()=>f.scrollIntoView({behavior:"smooth",block:"center"}),50);return}
+  if(sg){openGoalField(sg.dataset.setgoal);return}
   if(!e.target.closest("[data-priv]"))return;
   PRIV=!PRIV;try{localStorage.setItem(LS+"-priv",PRIV?"1":"0")}catch(err){}
   renderGoals();
@@ -229,12 +238,19 @@ function renderGoals(){
   const GOALS=[
     {k:"pullups",name:T("引体","Pull-ups"),target:+st.p>0?+st.p:null,unit:T("个","reps"),color:"var(--pull)",start:0},
     {k:"waist",name:T("腰围","Waist"),target:+st.z>0?+st.z:null,unit:"cm",color:"var(--ok)"},
-    {k:"weight",name:T("体重","Weight"),target:+st.w>0?+st.w:null,unit:"kg",color:"var(--sleep)"}
+    {k:"weight",name:T("体重","Weight"),target:+st.w>0?+st.w:null,unit:"kg",color:"var(--sleep)"},
+    {k:"fat",name:T("减脂","Fat loss"),target:+st.fat>0?+st.fat:null,unit:"kg",color:"var(--cta)",start:0}
   ];
+  /* the goals the user chose to show at the top (all by default); none = the whole card is hidden */
+  const show=goalShowList();
   let h="";
-  GOALS.forEach(g=>{
+  GOALS.filter(g=>show.includes(g.k)).forEach(g=>{
     let start=null,cur=null,curTxt="—";
-    if(g.k==="weight"){
+    if(g.k==="fat"){
+      /* fat burned so far: the calorie gap of every finished, fully logged day since the first log, at 7700 kcal per kg */
+      const m=gapAllTime(); start=0;
+      if(m){cur=+(m.s/7700).toFixed(2);curTxt=cur.toFixed(2)+" kg"}
+    }else if(g.k==="weight"){
       const all=wtMerged(); if(all.length){start=all[0].y;const a=avg7(all);cur=+a[a.length-1].y.toFixed(1);
         curTxt=PRIV?"<small>BMI</small> "+bmi(cur).toFixed(1):cur.toFixed(1)+" kg <small>"+par("BMI "+bmi(cur).toFixed(1))+"</small>"}
     }else{
@@ -248,7 +264,7 @@ function renderGoals(){
     if(!noT&&start!=null&&cur!=null)milestone(g.k,pct,g.name);
     const startTxt=start==null?"—":(g.k==="weight"?start.toFixed(1):start);
     const pv=g.k!=="pullups";
-    const icon='<span class="gi" aria-hidden="true">'+IC[g.k]+'</span>';
+    const icon='<button type="button" class="gi" data-setgoal="'+g.k+'" aria-label="'+T('设定目标：','Set goal: ')+g.name+'">'+IC[g.k]+'</button>';
     const setBtn='<button type="button" class="gset" data-setgoal="'+g.k+'">'+T('设目标','Set goal')+'</button>';
     const range=noT
       ?(PRIV&&pv?'':T('起点 ','Start ')+startTxt+' → ')+setBtn
@@ -260,8 +276,10 @@ function renderGoals(){
       +'<div class="bar" role="progressbar" aria-label="'+g.name+T('进度',' progress')+'" aria-valuenow="'+pct+'" aria-valuemin="0" aria-valuemax="100"><i style="width:'+pct+'%"></i></div>'
       +'<div class="gr">'+range+'</div></div></div>';
   });
-  h+='<button type="button" class="privbtn'+(PRIV?' on':'')+'" data-priv="1" aria-pressed="'+PRIV+'" aria-label="'+T('隐私模式','Privacy view')+'">'+(PRIV?EYE_OFF:EYE_ON)+'</button>';
-  document.getElementById("goals").innerHTML=h;
+  const box=document.getElementById("goals");
+  box.hidden=!show.length;
+  if(show.some(k=>k==="waist"||k==="weight"))h+='<button type="button" class="privbtn'+(PRIV?' on':'')+'" data-priv="1" aria-pressed="'+PRIV+'" aria-label="'+T('隐私模式','Privacy view')+'">'+(PRIV?EYE_OFF:EYE_ON)+'</button>';
+  box.innerHTML=h;
   renderGoalPanel();
 }
 /* ---------- goal panel ---------- */
@@ -275,10 +293,15 @@ function scaleSvg(min,max,bands,cur,tgt,dec){
   if(tgt!=null){const x=sx(tgt);g+='<path d="M'+(x-6)+' '+(Y+BH+11)+'L'+(x+6)+' '+(Y+BH+11)+'L'+x+' '+(Y+BH+1)+'Z" fill="var(--ok)"/><text class="lab" x="'+lx(x)+'" y="'+(Y+BH+24)+'" text-anchor="middle" style="fill:var(--ok)">'+T('目标 ','Goal ')+tgt.toFixed(dec)+'</text>'}
   return '<svg viewBox="0 0 '+W+' 76" role="img">'+g+'</svg>';
 }
+function paintGoalShow(){
+  const show=goalShowList();
+  document.querySelectorAll("#goalShow [data-gshow]").forEach(b=>{const on=show.includes(b.dataset.gshow);b.setAttribute("aria-pressed",String(on));b.classList.toggle("on",on)});
+}
 function renderGoalPanel(){
+  paintGoalShow();
   const st=state.settings, H=+st.h||H_FALLBACK;
   const lw=lastWeight();
-  [["gS",st.sex],["gB",(st.b||"").slice(0,7)],["gH",st.h],["gCW",lw&&lw.y],["gP",st.p],["gW",st.w],["gZ",st.z]].forEach(([id,v])=>{const el=document.getElementById(id);if(el&&document.activeElement!==el)el.value=v??""});
+  [["gS",st.sex],["gB",(st.b||"").slice(0,7)],["gH",st.h],["gCW",lw&&lw.y],["gP",st.p],["gF",st.fat],["gW",st.w],["gZ",st.z]].forEach(([id,v])=>{const el=document.getElementById(id);if(el&&document.activeElement!==el)el.value=v??""});
   document.getElementById("gCWsrc").textContent=lw?md(lw.date)+(lw.src==="c"?T(' · 高驰',' · COROS'):''):'';
   document.getElementById("gHsrc").innerHTML=st.hSrc==="manual"?T('手动填写','Entered manually')+(st.hC?' · <button type="button" id="gHreset">'+T('改用高驰 ','Use COROS ')+st.hC+'</button>':''):(st.hC&&st.h?T('来自高驰','From COROS'):'');
   const cw=curWeight(), cz=curWaist();
@@ -315,6 +338,13 @@ function onSettingChange(e){
   saveSettings();renderGoals();renderDietAll();
 }
 document.getElementById("foldGoal").addEventListener("change",onSettingChange);
+/* which goals the top card shows: tap a chip to show or hide that goal */
+document.getElementById("goalShow").addEventListener("click",e=>{
+  const b=e.target.closest("[data-gshow]");if(!b)return;
+  const cur=goalShowList(),k=b.dataset.gshow;
+  state.settings.goalShow=cur.includes(k)?cur.filter(x=>x!==k):GOAL_KEYS.filter(x=>x===k||cur.includes(x));
+  saveSettings();renderGoals();
+});
 document.getElementById("foldMe").addEventListener("change",onSettingChange);
 /* profile values stay blurred until the eye is opened or a field is touched; closing the panel blurs them again */
 function meEye(on){

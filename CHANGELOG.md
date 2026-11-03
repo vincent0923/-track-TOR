@@ -27,6 +27,12 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
   Pull and Sync now bring the other along: Pull also fetches activity calories from COROS (only the table if you're not connected), and Sync also pulls your diet table when a link is filled in. Both buttons show a left-to-right fill while they work. It's a feeling of progress, not a measurement, and it fills completely when done.
 - 📆 **热量缺口只统计过完的日子**：今天的饮食和消耗要到午夜才完整，所以「近 N 天」是指到昨天为止的 N 天，「有记录以来」也不含今天。
   The calorie gap only sums finished days: today isn't complete until midnight, so "last N days" ends yesterday and "since first log" excludes today.
+- 🔥 **新目标：减脂**：把“有记录以来”的热量缺口折算成已经消灭的脂肪（7700 kcal = 1 kg），对比你设的目标公斤数，只算过完的日子。
+  New goal, fat loss: the calorie gap since your first log, turned into fat burned (7700 kcal = 1 kg) and compared with your target in kg. Only finished days count.
+- 🎯 **目标卡片的图标可以点了**：点引体、腰围、体重、减脂左边的图标，直接跳到「目标」面板里对应的输入框。
+  Tap a goal's icon to jump straight to that goal's box in the Goals panel.
+- 👁️ **首页显示哪些目标由你选**：「目标」面板顶部有四个开关，可以显示 0 到 4 个，都不选就隐藏首页那一块。
+  Choose which goals the top card shows: four switches at the top of the Goals panel, from none to all four. With none, the card is hidden.
 - 📏 **「同步」和「拉取」按钮大小固定**：按下后文字变成「同步中…」「读取中…」「已同步 21:24」时，按钮不再变长变短。
   The Sync and Pull buttons keep one size: they no longer grow or shrink when the label changes to Syncing…, Reading… or Synced 21:24.
 - 缺口卡片改成两行（上面写时间段，下面写数字和脂肪克数），内容再长也不会把页面撑出屏幕。
