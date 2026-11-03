@@ -1,4 +1,6 @@
-/* ---------- diet data source: a Google Sheets "Publish to web" CSV ----------
+/* ---------- diet data source: a Google Sheet ----------
+   The user pastes the sheet's ordinary share link (shared as "anyone with the link can view");
+   it is turned into Google's CSV query URL. A "Publish to web" CSV link works as is.
    Columns date,item,p,f,c,veg,kcal, one food per row. Pulled only when the user taps Pull.
    Days found in the sheet replace the local diet for those dates; other dates, and every
    non-diet record (weight, waist, heart rate, training), are left alone. */
@@ -31,7 +33,10 @@ function parseCsv(text){
 function sheetDate(s){
   s = String(s||"").trim(); let m;
   if((m = /^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/.exec(s))) return m[1]+"-"+pad(+m[2])+"-"+pad(+m[3]);
-  if((m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(s))) return m[3]+"-"+pad(+m[1])+"-"+pad(+m[2]);   /* US M/D/YYYY */
+  if((m = /^(\d{1,2})[/.](\d{1,2})[/.](\d{4})$/.exec(s))){         /* D/M/YYYY, or M/D/YYYY when the 2nd part can't be a month */
+    const a = +m[1], b = +m[2], [d, mo] = b > 12 ? [b, a] : [a, b];
+    return m[3]+"-"+pad(mo)+"-"+pad(d);
+  }
   return null;
 }
 function sheetNum(s){
@@ -68,12 +73,18 @@ function applySheetDays(days){
   }
 }
 
-function sheetUrlProblem(u){
-  if(!u) return T("先粘贴链接", "Paste the link first");
-  if(!/^https?:\/\//i.test(u)) return T("这不是网址", "That isn't a web address");
-  if(/docs\.google\.com\/spreadsheets\/d\/(?!e\/)[^/]+\/(edit|view)/i.test(u) || /docs\.google\.com\/spreadsheets\/d\/(?!e\/)[^/?#]+\/?([?#]|$)/i.test(u))
-    return T("这是编辑链接，需要用『发布到网络 → CSV』得到的链接", "This is an edit link. Use the link from “Publish to web → CSV”.");
-  return null;
+/* share/edit link → CSV query URL (keeps the tab given by gid); a published CSV link is used as is */
+function sheetCsvUrl(u){
+  u = String(u||"").trim();
+  if(!u) return { err: T("先粘贴表格链接", "Paste the sheet link first") };
+  if(!/^https?:\/\//i.test(u)) u = "https://" + u;
+  const m = /docs\.google\.com\/spreadsheets\/d\/([A-Za-z0-9_-]{20,})/i.exec(u);
+  if(m && m[1] !== "e"){
+    const g = /[#&?]gid=(\d+)/.exec(u);
+    return { url: "https://docs.google.com/spreadsheets/d/" + m[1] + "/gviz/tq?tqx=out:csv&headers=1" + (g ? "&gid=" + g[1] : "") };
+  }
+  if(/docs\.google\.com\/spreadsheets\/d\/e\//i.test(u) || /output=csv|\.csv(\?|$)/i.test(u)) return { url: u };
+  return { err: T("这不是 Google 表格的链接，请在表格里点「共享 → 复制链接」", "That isn't a Google Sheets link; in the sheet tap Share → Copy link") };
 }
 
 function paintSheetStatus(){
@@ -95,17 +106,21 @@ async function pullSheet(){
   const inp = document.getElementById("dsrcUrl"), btn = document.getElementById("dsrcPull");
   const url = inp.value.trim();
   try{ if(url) localStorage.setItem(SHEET_URL_K, url); else localStorage.removeItem(SHEET_URL_K); }catch(e){}
-  const bad = sheetUrlProblem(url);
-  if(bad){ setSheetStatus({ ok:false, msg:bad }); return; }
+  const src = sheetCsvUrl(url);
+  if(src.err){ setSheetStatus({ ok:false, msg:src.err }); return; }
+  const NOT_SHARED = T("读不到表格：在 Google 表格里点「共享」，把一般访问权限改成「知道链接的任何人」", "Can't read the sheet: in Google Sheets tap Share and set General access to “Anyone with the link”");
   btn.disabled = true;
   const fail = msg => setSheetStatus({ ok:false, msg });
   try{
     let r;
-    try{ r = await fetch(url, { cache: "no-store" }); }
-    catch(e){ return fail(T("请求失败，检查网络或链接", "Request failed; check the connection or the link")); }
-    if(!r.ok) return fail(T("链接返回 " + r.status + "，检查是否已发布到网络", "The link returned " + r.status + "; check it is published to the web"));
+    /* a sheet that isn't shared answers with a sign-in page, which the browser reports as a failed request */
+    try{ r = await fetch(src.url, { cache: "no-store" }); }
+    catch(e){ return fail(navigator.onLine === false ? T("没有网络，连上后再拉取", "You're offline; pull again once connected") : NOT_SHARED); }
+    if(r.status === 401 || r.status === 403) return fail(NOT_SHARED);
+    if(r.status === 404) return fail(T("找不到这张表格，检查链接是否完整", "Sheet not found; check the link is complete"));
+    if(!r.ok) return fail(T("Google 返回 " + r.status + "，稍后再试", "Google returned " + r.status + "; try again later"));
     const text = await r.text(), ct = r.headers.get("content-type") || "";
-    if(/text\/html/i.test(ct) || /^\s*</.test(text)) return fail(T("返回的是网页不是 CSV，发布时格式要选「逗号分隔值 (.csv)」", "Got a web page, not CSV; publish as “Comma-separated values (.csv)”"));
+    if(/text\/html/i.test(ct) || /^\s*</.test(text)) return fail(NOT_SHARED);
     const { days, rows } = sheetDays(parseCsv(text));
     const nDays = Object.keys(days).length;
     if(!rows) return fail(T("没有读到有效记录，检查表头是否为 date,item,p,f,c,veg,kcal，日期是否为 YYYY-MM-DD", "No valid rows; check the header is date,item,p,f,c,veg,kcal and dates are YYYY-MM-DD"));
@@ -142,7 +157,7 @@ function copyText(t){
 })();
 /* placeholder and status follow the language switch */
 function paintSheetLang(){
-  const inp = document.getElementById("dsrcUrl"); if(inp) inp.placeholder = T("粘贴 Google Sheets CSV 发布链接", "Paste the Google Sheets CSV publish link");
+  const inp = document.getElementById("dsrcUrl"); if(inp) inp.placeholder = T("粘贴 Google 表格的分享链接", "Paste your Google Sheet's share link");
   paintSheetStatus();
 }
 paintSheetLang();

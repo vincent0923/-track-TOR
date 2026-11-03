@@ -6,6 +6,16 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 
 ---
 
+## [v1.16a] — 2026-11-03
+
+### 变更 / Changed
+- 🔗 **数据源直接用分享链接**：在 Google 表格里点「共享」，把一般访问权限改成「知道链接的任何人」，复制链接粘进来就能拉取，不用再去「发布到网络」。「发布到网络」的 CSV 链接照样能用。读不到时会提示去改共享设置。
+  The data source now takes the sheet's ordinary share link: set General access to "Anyone with the link", copy the link, paste it and pull. No more "Publish to web" step, though a published CSV link still works. If the sheet can't be read, it tells you to change the sharing setting.
+- 日期写成 31/10/2026 这种日/月/年格式也能读。
+  Dates written day-first, like 31/10/2026, are now read correctly.
+
+---
+
 ## [v1.15a] — 2026-11-03
 
 ### 新增 / Added

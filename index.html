@@ -14,7 +14,7 @@
 <div class="wrap">
   <header class="top">
     <div class="trow">
-      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.15a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
+      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.16a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
       <button id="pwaInstallBtn" type="button" style="display:none;background:var(--cta);border:0;color:#fff;font-weight:700;font-size:12px;padding:5px 11px;border-radius:999px;cursor:pointer;margin-right:6px">📲 <span class="zh">安装 App</span><span class="en">Install</span></button><button id="syncBtn" class="syncbtn off"><span class="zh">连接中</span><span class="en">Connecting</span></button>
     </div>
     <div class="hrow"><p class="sub"><span class="zh">下一次</span><span class="en">Next</span> <b id="stNext" class="num" style="font-size:16px;color:var(--ink)">—</b></p><div class="hbtns">
@@ -53,7 +53,7 @@
 
       <section class="dsrc" aria-label="数据源 / Data source">
         <div class="dsrc-h"><h3><span class="zh">数据源</span><span class="en">Data source</span></h3><button type="button" class="dsrc-i" id="dsrcInfoBtn" aria-expanded="false" aria-controls="dsrcInfo" aria-label="说明 / How it works">i</button></div>
-        <div class="dsrc-row"><input id="dsrcUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="粘贴 Google Sheets CSV 发布链接"><button type="button" class="btn" id="dsrcPull"><span class="zh">拉取</span><span class="en">Pull</span></button></div>
+        <div class="dsrc-row"><input id="dsrcUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="粘贴 Google 表格的分享链接"><button type="button" class="btn" id="dsrcPull"><span class="zh">拉取</span><span class="en">Pull</span></button></div>
         <p class="dsrc-hint"><span class="zh">不要告诉别人这个 URL 哦，不然别人会知道你每天吃什么</span><span class="en">Keep this URL to yourself, or others can see what you eat every day</span></p>
         <p class="dsrc-status" id="dsrcStatus" aria-live="polite"></p>
         <div class="dsrc-info" id="dsrcInfo" hidden>
@@ -61,8 +61,8 @@
           <ol>
             <li><span class="zh">新建一张空白表格</span><span class="en">Create a blank spreadsheet</span></li>
             <li><span class="zh">第一行填表头：<code>date, item, p, f, c, veg, kcal</code></span><span class="en">Put the header in row 1: <code>date, item, p, f, c, veg, kcal</code></span></li>
-            <li><span class="zh">文件 → 共享 → 发布到网络 → 选择工作表 → 格式选「逗号分隔值 (.csv)」→ 发布</span><span class="en">File → Share → Publish to web → choose the sheet → format “Comma-separated values (.csv)” → Publish</span></li>
-            <li><span class="zh">复制得到的链接，粘贴到上面的输入框</span><span class="en">Copy the link and paste it into the box above</span></li>
+            <li><span class="zh">点右上角「共享」，把「一般访问权限」改成「知道链接的任何人」（查看者）</span><span class="en">Tap “Share” and set General access to “Anyone with the link” (Viewer)</span></li>
+            <li><span class="zh">点「复制链接」，粘贴到上面的输入框，点「拉取」</span><span class="en">Tap “Copy link”, paste it into the box above and tap Pull</span></li>
           </ol>
           <h4><span class="zh">给 AI 的记账 prompt</span><span class="en">Prompt for your AI</span></h4>
           <div class="dsrc-code"><button type="button" class="dsrc-copy" id="dsrcCopy"><span class="zh">复制</span><span class="en">Copy</span></button><pre id="dsrcPrompt">我在用一个饮食记录表，请帮我按下面的规则记账。
