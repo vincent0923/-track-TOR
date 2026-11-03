@@ -6,6 +6,18 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 
 ---
 
+## [v1.20a] — 2026-11-03
+
+### 变更 / Changed
+- 🧩 **表格怎么写都尽量能读**：列名中文英文都认（「日期｜食物｜蛋白质｜脂肪｜碳水｜蔬菜｜热量」或 date, item…），顺序随意，带单位也行，多余的列忽略，没有列名就按默认顺序读。日期写成 2026/11/3、2026年11月3日、11月3日（没写年份按今年）都行，同一天后面几行日期留空会沿用上一行。数字里带「g」「约」、全角数字、千分位都能读，没填热量会按蛋白质、脂肪、碳水自动算。合计行自动跳过。AI 用竖线排的表格也能读。
+  The table is read as forgivingly as possible. Column names work in Chinese or English, in any order, with units; extra columns are ignored, and without a header the default order is used. Dates like 2026/11/3, 2026年11月3日 or 11月3日 (this year) all work, and a blank date continues the day above. Numbers with units, full-width digits or thousands separators are read, missing calories are worked out from protein, fat and carbs, total rows are skipped, and pipe-separated tables from an AI are read too.
+- 🤖 **记账 prompt 缩短一半**：格式上的规矩交给推拉机兜底，prompt 只讲要记什么。列名改成中文。
+  The bookkeeping prompts are about half as long: formatting is left to track-TOR, so the prompt only says what to record. Column names are now in Chinese.
+- 🔗 粘贴分享按钮复制来的整段文字（比如「【腾讯文档】饮食记录 https://…」）也行，推拉机只取里面的网址。
+  Pasting the whole text a share button copies (like "【腾讯文档】饮食记录 https://…") works too; only the link is kept.
+
+---
+
 ## [v1.19a] — 2026-11-03
 
 ### 变更 / Changed

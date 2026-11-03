@@ -14,7 +14,7 @@
 <div class="wrap">
   <header class="top">
     <div class="trow">
-      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.19a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
+      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.20a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
       <button id="pwaInstallBtn" type="button" style="display:none;background:var(--cta);border:0;color:#fff;font-weight:700;font-size:12px;padding:5px 11px;border-radius:999px;cursor:pointer;margin-right:6px">📲 <span class="zh">安装 App</span><span class="en">Install</span></button><button id="syncBtn" class="syncbtn off"><span class="zh">连接中</span><span class="en">Connecting</span></button>
     </div>
     <div class="hrow"><p class="sub"><span class="zh">下一次</span><span class="en">Next</span> <b id="stNext" class="num" style="font-size:16px;color:var(--ink)">—</b></p><div class="hbtns">
@@ -65,44 +65,28 @@
           <h4><span class="zh">如何准备 Google 表格</span><span class="en">Setting up Google Sheets</span></h4>
           <ol>
             <li><span class="zh">新建一张空白表格</span><span class="en">Create a blank spreadsheet</span></li>
-            <li><span class="zh">第一行填表头：<code>date, item, p, f, c, veg, kcal</code></span><span class="en">Put the header in row 1: <code>date, item, p, f, c, veg, kcal</code></span></li>
+            <li><span class="zh">第一行写上列名：日期、食物、蛋白质、脂肪、碳水、蔬菜、热量</span><span class="en">In row 1, write the column names: Date, Food, Protein, Fat, Carbs, Vegetables, Calories</span></li>
             <li><span class="zh">点右上角「共享」，把「一般访问权限」改成「知道链接的任何人」（查看者）</span><span class="en">Tap “Share” and set General access to “Anyone with the link” (Viewer)</span></li>
             <li><span class="zh">点「复制链接」，粘贴到上面的输入框，点「拉取」</span><span class="en">Tap “Copy link”, paste it into the box above and tap Pull</span></li>
           </ol>
           <h4><span class="zh">给 AI 的记账 prompt</span><span class="en">Prompt for your AI</span></h4>
           <p class="dsrc-tip"><span class="zh">推荐用能连接并编辑 Google 表格的 AI 记账，它会直接把每样食物写进表格，你只要在这里点「拉取」。复制时会自动带上你上面填的表格链接。</span><span class="en">Use an AI that can connect to and edit Google Sheets: it writes each food straight into the sheet, and you just tap Pull here. Copying fills in the sheet link from the box above.</span></p>
-          <div class="dsrc-code"><button type="button" class="dsrc-copy" data-copy="g"><span class="zh">复制</span><span class="en">Copy</span></button><pre id="dsrcPromptG">我在用一个 Google 表格记饮食，请帮我按下面的规则记账。
+          <div class="dsrc-code"><button type="button" class="dsrc-copy" data-copy="g"><span class="zh">复制</span><span class="en">Copy</span></button><pre id="dsrcPromptG">我用一个 Google 表格记饮食，请帮我记账。
 
 表格：（复制时自动填入你在上面粘贴的表格链接）
 
-我每天会告诉你我吃了什么（文字描述、食物照片、或营养成分表照片）。
-你需要估算每样食物的蛋白质、脂肪、碳水、蔬菜重量和热量，
-然后把它们直接写进这张表格的末尾，一样食物占一行。
+我会告诉你每天吃了什么，文字、食物照片或营养成分表照片都行。
+请估算每样食物的蛋白质、脂肪、碳水、蔬菜克数和热量，写进表格末尾，一样食物一行。
 
-表格有 7 列，第一行是表头，从左到右依次是：
-date：日期，写成 2026-11-03 这样
-item：食物和份量，例如「鸡腿 500g（含5%酱料）」
-p：蛋白质，克
-f：脂肪，克
-c：碳水，克
-veg：蔬菜的实际重量，克，没有就填 0
-kcal：热量，千卡
+表格的 7 列：日期｜食物｜蛋白质｜脂肪｜碳水｜蔬菜｜热量
+- 表格还是空的，就先在第一行写上这 7 个列名
+- 食物写上份量，有油或酱料就注明
+- 蛋白质、脂肪、碳水、蔬菜按克，热量按千卡，没有就填 0
+- 写之前看看表格最后几行，别重复记
 
-例如：
-2026-11-03 ｜ 鸡腿 500g（含5%酱料） ｜ 80.0 ｜ 50.0 ｜ 0.0 ｜ 0 ｜ 809
-2026-11-03 ｜ 香蕉 1根 100g ｜ 1.2 ｜ 0.2 ｜ 22.0 ｜ 0 ｜ 89
+写不进表格的话，就按这 7 列列给我，我自己贴进去。
 
-规则：
-- 写之前先看一下表格最后几行，不要重复已经记过的
-- 同一天吃的多样东西，就写多行，日期都填同一天
-- 含油、酱料的，要在食物名里写明
-- 数字保留一位小数，热量取整数
-- 不要写合计行，合计由推拉机自己算
-- 如果你没法直接写进表格，就把新的行按上面 7 列排成一个表格发给我，我复制粘贴进去
-
-另外每次记完，用两个列表告诉我：
-① 已经吃掉的总计
-② 包含计划中但还没吃的总计</pre></div>
+每次记完，告诉我两个总计：已经吃掉的，以及加上计划中还没吃的。</pre></div>
           </div>
           <div data-verpane="t" hidden>
           <h4><span class="zh">用 WorkBuddy 记账</span><span class="en">Bookkeeping with WorkBuddy</span></h4>
@@ -112,48 +96,21 @@ kcal：热量，千卡
             <li><span class="zh">把 WorkBuddy 发来的表格链接粘贴到上面的输入框，点「拉取」</span><span class="en">Paste the sheet link WorkBuddy sends you into the box above and tap Pull</span></li>
             <li><span class="zh">以后每天把吃了什么告诉 WorkBuddy，它会直接写进表格</span><span class="en">Each day, tell WorkBuddy what you ate; it writes it into the sheet</span></li>
           </ol>
-          <div class="dsrc-code"><button type="button" class="dsrc-copy" data-copy="t"><span class="zh">复制</span><span class="en">Copy</span></button><pre id="dsrcPromptT">我想用一个腾讯文档在线表格记饮食，请帮我按下面的规则记账。
+          <div class="dsrc-code"><button type="button" class="dsrc-copy" data-copy="t"><span class="zh">复制</span><span class="en">Copy</span></button><pre id="dsrcPromptT">我用腾讯文档的在线表格记饮食，请帮我记账。
 
-【第一次使用】
-如果我的腾讯文档里还没有名为「饮食记录」的在线表格，请先帮我：
-1. 新建一个在线表格，命名为「饮食记录」
-2. 在第一行从左到右填上表头：date、item、p、f、c、veg、kcal
-3. 把 A 列（date）设成纯文本格式
-4. 把分享权限设成「所有人可查看」
-5. 把这个表格的链接发给我（我要把它粘到推拉机里）
-如果你没法设置分享权限，就告诉我，我自己在腾讯文档里点「分享」改成「所有人可查看」。
-如果这个表格已经有了，就直接用它，不要再新建。
+第一次：如果我的腾讯文档里还没有「饮食记录」这个在线表格，先帮我新建一个，第一行写上 7 个列名（见下面），分享权限设成「所有人可查看」，然后把链接发给我。设不了权限就告诉我，我自己改。已经有这个表格就直接用。
 
-【每天记账】
-我每天会告诉你我吃了什么（文字描述、食物照片、或营养成分表照片）。
-你需要估算每样食物的蛋白质、脂肪、碳水、蔬菜重量和热量，
-然后把它们直接写进「饮食记录」表格的末尾，一样食物占一行。
+我会告诉你每天吃了什么，文字、食物照片或营养成分表照片都行。
+请估算每样食物的蛋白质、脂肪、碳水、蔬菜克数和热量，写进「饮食记录」末尾，一样食物一行。
 
-7 列从左到右依次是：
-date：日期，写成 2026-11-03 这样
-item：食物和份量，例如「鸡腿 500g（含5%酱料）」
-p：蛋白质，克
-f：脂肪，克
-c：碳水，克
-veg：蔬菜的实际重量，克，没有就填 0
-kcal：热量，千卡
+表格的 7 列：日期｜食物｜蛋白质｜脂肪｜碳水｜蔬菜｜热量
+- 食物写上份量，有油或酱料就注明
+- 蛋白质、脂肪、碳水、蔬菜按克，热量按千卡，没有就填 0
+- 写之前看看表格最后几行，别重复记
 
-例如：
-2026-11-03 ｜ 鸡腿 500g（含5%酱料） ｜ 80.0 ｜ 50.0 ｜ 0.0 ｜ 0 ｜ 809
-2026-11-03 ｜ 香蕉 1根 100g ｜ 1.2 ｜ 0.2 ｜ 22.0 ｜ 0 ｜ 89
+写不进表格的话，就按这 7 列列给我，我自己贴进去。
 
-规则：
-- 写之前先看一下表格最后几行，不要重复已经记过的
-- 同一天吃的多样东西，就写多行，日期都填同一天
-- 日期保持 2026-11-03 这种写法，不要被表格自动改成别的格式
-- 含油、酱料的，要在食物名里写明
-- 数字保留一位小数，热量取整数
-- 不要写合计行，合计由推拉机自己算
-- 如果你没法直接写进表格，就把新的行按上面 7 列排成一个表格发给我，我复制粘贴进去
-
-另外每次记完，用两个列表告诉我：
-① 已经吃掉的总计
-② 包含计划中但还没吃的总计</pre></div>
+每次记完，告诉我两个总计：已经吃掉的，以及加上计划中还没吃的。</pre></div>
           </div>
         </div>
       </section>
