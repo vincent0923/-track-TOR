@@ -211,11 +211,13 @@ function renderDietDays(){
   if(!box) return;
   const keys = activeDietDayKeys();
   if(!keys.length){
-    box.innerHTML = `<div class="empty">${T("还没有饮食记录。","No diet logs yet.")}<br>${T("点击上方「+ 记录热量 / 饮食」录入当天吃的内容。","Tap \"+ Log Food/Kcal\" above to log what you ate today.")}</div>`;
+    box.innerHTML = `<div class="empty">${T("还没有饮食记录。","No diet logs yet.")}<br>${T("点「每日记录」旁边的图标，手动添加或从线上表格拉取。","Tap the icon next to Daily logs to add one by hand or pull from an online table.")}</div>`;
+    const acts = document.getElementById("dietBarActs"); if(acts) acts.innerHTML = "";
     return;
   }
     const allOpen = keys.every(k=>dietState.open.has(k));
-  box.innerHTML = `<div class="dbar"><h2>${T("每日记录","Daily logs")}</h2><div class="dbar-actions"><button class="btn ghost" type="button" data-dallopen style="padding:4px 9px;font-size:12px">${allOpen ? T("全部收起","Collapse all") : T("全部展开","Expand all")}</button></div></div>` + keys.map(k=>{
+  document.getElementById("dietBarActs").innerHTML = `<button class="btn ghost" type="button" data-dallopen style="padding:4px 9px;font-size:12px">${allOpen ? T("全部收起","Collapse all") : T("全部展开","Expand all")}</button>`;
+  box.innerHTML = keys.map(k=>{
     const d = state.diet[k] || { items:[] }, t = dietTotals(d), intake = intakeOf(k), b = burnOfDate(k);
     const gap = (b===null || intake===null) ? null : b - intake;
     const rows = (d.items||[]).map(it=>`<tr><td class="f">${escHtml(it.name)}</td><td>${f1Dec(numVal(it.p))}</td><td>${f1Dec(numVal(it.f))}</td><td>${f1Dec(numVal(it.c))}</td><td>${f0Dec(numVal(it.kcal))}</td><td>${numVal(it.veg) ? f0Dec(numVal(it.veg)) : "–"}</td></tr>`).join("");
@@ -247,6 +249,7 @@ function renderDietAll(){
 /* the newest logged day starts expanded */
 function initDiet(){
   dietState.open = latestDietOpenSet(state.diet);
+  if(!activeDietDayKeys().length){ setDietSrc(true); document.getElementById("dsrcOnline").open = true; }
   renderDietAll();
 }
 
@@ -683,5 +686,10 @@ document.addEventListener("click", e=>{
   if(ed){ openDietEntryModal(ed.dataset.dedit); return; }
 });
 
-const addEntryBtn = document.getElementById("addDietEntryBtn");
-if(addEntryBtn) addEntryBtn.addEventListener("click", ()=>openDietEntryModal());
+/* the icon next to "Daily logs" opens the data source panel: online table, or a log by hand */
+function setDietSrc(open){
+  const p = document.getElementById("dietSrc"), b = document.getElementById("dietAddBtn");
+  p.hidden = !open; b.setAttribute("aria-expanded", String(open)); b.classList.toggle("on", open);
+}
+document.getElementById("dietAddBtn").addEventListener("click", ()=>setDietSrc(document.getElementById("dietSrc").hidden));
+document.getElementById("dsrcManual").addEventListener("click", ()=>openDietEntryModal());

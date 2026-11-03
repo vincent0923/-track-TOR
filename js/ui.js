@@ -260,11 +260,12 @@ document.addEventListener("click", e=>{
 });
 
 /* A progress fill on a button while its work runs. It is a feeling of progress, not a measurement:
-   it creeps toward about 90%, and when the work ends (well or badly) it fills to the end. */
+   it starts slowly and speeds up (so it never seems to rush ahead and then stall), stops short of
+   the end, and fills completely when the work ends, well or badly. */
 async function withProgress(btn, work){
-  let p = 0;
+  const t0 = performance.now(), T = 6000;
   btn.dataset.prog = "1"; btn.style.setProperty("--p", "0%");
-  const tick = setInterval(()=>{ p += (92 - p) * 0.06 + 0.2; btn.style.setProperty("--p", p.toFixed(1) + "%"); }, 120);
+  const tick = setInterval(()=>{ const x = Math.min(1, (performance.now() - t0) / T); btn.style.setProperty("--p", (88 * x * x).toFixed(1) + "%"); }, 120);
   try{ return await work(); }
   finally{
     clearInterval(tick); btn.style.setProperty("--p", "100%");

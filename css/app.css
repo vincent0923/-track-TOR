@@ -448,3 +448,22 @@ html[data-lang="en"] .dsrc-row .btn{min-width:106px}
 .mask #recVal.bad,.mask #recVal.bad:focus{border-color:var(--bad)!important;outline-color:var(--bad)}
 .mask .sheet p.recerr{margin:6px 0 0;font-size:13px;color:var(--bad)}
 .btn.recsave:disabled{opacity:.35;cursor:not-allowed}
+
+/* "Daily logs" header: the add icon and the data source panel under it */
+#dietBar h2{display:flex;align-items:center;gap:8px}
+.dadd{width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--burn);padding:0;cursor:pointer}
+.dadd svg{width:21px;height:21px}
+.dadd.on{background:var(--burn);color:#fff;border-color:var(--burn)}
+.dsrc{display:grid;gap:8px}
+.dsub{border:1px solid var(--line);border-radius:10px;background:var(--sunk)}
+.dsub>summary,.dsub-btn{display:flex;align-items:center;gap:8px;padding:10px 12px;font:inherit;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer;list-style:none}
+.dsub>summary::-webkit-details-marker{display:none}
+.dsub>summary svg,.dsub-btn svg{width:18px;height:18px;color:var(--burn);flex:none}
+.dsub>summary::after{content:"";margin-left:auto;width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .15s}
+.dsub[open]>summary::after{transform:rotate(-135deg)}
+.dsub[open]>summary{border-bottom:1px solid var(--line)}
+.dsub>.dsrc-row,.dsub>p,.dsub>.dinfo-row,.dsub>.dsrc-info{margin-left:12px;margin-right:12px}
+.dsub>.dsrc-info{margin-bottom:12px}
+.dsub-btn{width:100%;text-align:left}
+.dsub-go{margin-left:auto;color:var(--muted);font-size:18px;line-height:1}
+.dsrc .dinfo-row{display:flex;margin-top:8px;margin-bottom:10px}

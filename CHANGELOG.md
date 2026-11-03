@@ -35,6 +35,12 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
   The chart's i | + button moved to the bottom left, right above the notes it opens: it's rarely needed, so it's out of the right thumb's way.
 - ✍️ **记录框里有测量提示**：图表上点笔图标记录时，空的输入框里显示半透明小字，告诉你怎么量：引体是「下巴过杠的标准引体向上」，体重是「清晨空腹体重」，腰围是「量三次肚脐眼位置，选最大值或者平均值」。一输入就消失，不会被存进去。腰围图下的说明也改成同样的量法。
   The record boxes now show a faint hint on how to measure: strict pull-ups with the chin over the bar, morning weight before eating, waist measured 3 times at the navel taking the largest or the average. It disappears as you type and is never saved. The waist chart caption uses the same method.
+- 📥 **添加饮食记录的入口挪到「每日记录」旁边**：点那个列表加号图标，打开数据源面板，里面两项：「线上数据」（粘贴表格链接、拉取）和「手动添加饮食记录」。原来的「+ 记录饮食」按钮和页面上方的数据源区块去掉了。还没有任何记录时，面板默认打开。
+  Adding food logs now starts from the icon next to "Daily logs": it opens the data source panel with two parts, "Online table" (paste the link, pull) and "Add a food log by hand". The old "+ Log food" button and the data source block at the top are gone. With no logs yet, the panel starts open.
+- ⏱️ **每两小时自动拉一次饮食**：填了表格链接的话，打开推拉机时如果离上次拉取超过两小时，就在后台自动拉取。
+  With a table link filled in, opening the app pulls your food in the background when the last pull is over two hours old.
+- 「同步」「拉取」按钮的填充动画改成先慢后快，不会一开始冲很快、后面卡住。
+  The Sync and Pull fill now starts slow and speeds up, instead of rushing ahead and then stalling.
 - 🚫 **记录框只收合理的数字**：腰围 30–180 cm、体重 20–300 kg、引体 0–200 个整数。填的不对，输入框和提示变红，保存按钮变暗按不下去，面板也不会关。清空再保存，还是删除当天那条记录。输入框不再有上下箭头。
   The record boxes only accept sensible numbers: waist 30–180 cm, weight 20–300 kg, pull-ups a whole number from 0 to 200. Anything else turns the box and a hint red and the save button can't be pressed, so the panel stays open. Saving an empty box still deletes that day's record. The up/down arrows are gone.
 - 📏 腰围图标换成腰上围一圈软尺，更好认。

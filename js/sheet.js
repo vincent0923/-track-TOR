@@ -307,7 +307,7 @@ async function pullSheet(opts){
     applySheetDays(days);
     lsSave(); dietState.open = latestDietOpenSet(state.diet); renderDietAll();
     const d = new Date();
-    setSheetStatus({ ok:true, msg:"", at: pad(d.getMonth()+1) + "-" + pad(d.getDate()) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes()), rows, days: nDays });
+    setSheetStatus({ ok:true, msg:"", ts: Date.now(), at: pad(d.getMonth()+1) + "-" + pad(d.getDate()) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes()), rows, days: nDays });
     const note = T("已拉取 " + rows + " 条 / " + nDays + " 天", "Pulled " + rows + " rows / " + nDays + " days");
     if(!opts.silent) toast(note);
     return { ok:true, rows, days:nDays, note };
@@ -377,3 +377,20 @@ function paintSheetLang(){
   paintSheetStatus();
 }
 paintSheetLang();
+
+/* opening the app pulls the table in the background when the last pull is over 2 hours old
+   (and tries at most once per 2 hours if it keeps failing) */
+const SHEET_AUTO_MS = 2 * 3600e3, SHEET_TRY_K = LS + "-sheet-try";
+async function autoPullSheet(){
+  let saved = ""; try{ saved = localStorage.getItem(SHEET_URL_K) || ""; }catch(e){}
+  if(!saved || navigator.onLine === false) return;
+  let st = {}, tried = 0;
+  try{ st = JSON.parse(localStorage.getItem(SHEET_STATUS_K) || "{}") || {}; tried = +localStorage.getItem(SHEET_TRY_K) || 0; }catch(e){}
+  const now = Date.now();
+  if(st.ok && st.ts && now - st.ts < SHEET_AUTO_MS) return;
+  if(now - tried < SHEET_AUTO_MS) return;
+  try{ localStorage.setItem(SHEET_TRY_K, String(now)); }catch(e){}
+  const inp = document.getElementById("dsrcUrl"); if(inp && !inp.value.trim()) inp.value = saved;
+  await pullSheet({ silent:true });
+}
+document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState === "visible") autoPullSheet(); });

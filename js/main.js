@@ -5,6 +5,7 @@ syncUI(); connectMcp(); handleCorosCallback();
 /* first visit gets the welcome sheet; otherwise the 5-day backup reminder (not on the way back from COROS) */
 if(FRESH && !/[?&]code=/.test(location.search)) showWelcome(); else maybeRemindBackup();
 initDiet();
+autoPullSheet();
 /* reopen the tab the user was on (needs every pane's render functions, so it runs last) */
 try{let t=localStorage.getItem(LS+"-tab");if(t==="diet")t="data";if(t){const b=document.querySelector('[data-tab="'+t+'"]');if(b)b.click()}}catch(e){}
 
