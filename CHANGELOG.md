@@ -15,6 +15,8 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
   The bookkeeping prompts are about half as long: formatting is left to track-TOR, so the prompt only says what to record. Column names are now in Chinese.
 - 🔗 粘贴分享按钮复制来的整段文字（比如「【腾讯文档】饮食记录 https://…」）也行，推拉机只取里面的网址。
   Pasting the whole text a share button copies (like "【腾讯文档】饮食记录 https://…") works too; only the link is kept.
+- 📋 **复制的 prompt 就是屏幕上显示的内容**：上面输入框里的表格链接会实时显示在 prompt 里，改了输入框 prompt 跟着变，清空就显示「把你的表格链接粘在这里」。以前是复制时才把链接塞进去，你看不到，还可能带上之前用过的旧链接，或者把腾讯文档链接放进 Google 版。Google 版开头也改成「我用一个在线表格」，放哪家的链接都不矛盾。
+  The prompt you copy is exactly what's on screen. The sheet link from the box above shows in the prompt live and follows your edits; when the box is empty it says where to paste the link. Before, the link was slipped in only when copying, so an old link could come along unseen, or a Tencent link could land in the Google version. The Google version now starts with "an online table", so any link fits.
 
 ---
 

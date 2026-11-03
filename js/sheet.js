@@ -288,7 +288,7 @@ function extractUrl(text){
 async function pullSheet(){
   const inp = document.getElementById("dsrcUrl"), btn = document.getElementById("dsrcPull");
   let url = extractUrl(inp.value);
-  inp.value = url;
+  inp.value = url; if(window.paintPrompts) window.paintPrompts();
   try{ if(url) localStorage.setItem(SHEET_URL_K, url); else localStorage.removeItem(SHEET_URL_K); }catch(e){}
   const fail = msg => setSheetStatus({ ok:false, msg });
   if(!url) return fail(T("先粘贴表格链接", "Paste the sheet link first"));
@@ -336,14 +336,24 @@ function copyText(t){
   };
   setVer(ver);
   document.getElementById("dsrcVer").addEventListener("click", e=>{ const b = e.target.closest("[data-ver]"); if(b) setVer(b.dataset.ver); });
+  /* what you see is what you copy: the prompts show the link in the box above, live */
+  const pg = document.getElementById("dsrcPromptG"), pt = document.getElementById("dsrcPromptT");
+  const tplG = pg.textContent, tplT = pt.textContent;
+  const paintPrompts = ()=>{
+    const link = extractUrl(inp.value);
+    pg.textContent = tplG.replace("（把你的表格链接粘在这里）", link || "（把你的表格链接粘在这里）");
+    pt.textContent = link
+      ? tplT.replace("已经有这个表格就直接用。", "已经有这个表格就直接用。\n我的表格：" + link).replace("写进「饮食记录」末尾", "写进这个表格末尾")
+      : tplT;
+  };
+  window.paintPrompts = paintPrompts;
+  paintPrompts();
+  inp.addEventListener("input", paintPrompts);
+  inp.addEventListener("change", paintPrompts);
   info.addEventListener("click", e=>{
     const cb = e.target.closest("[data-copy]"); if(!cb) return;
-    /* the prompt carries the user's own sheet link, so the AI knows where to write */
-    const link = extractUrl(document.getElementById("dsrcUrl").value);
-    const txt = cb.dataset.copy === "t"
-      ? document.getElementById("dsrcPromptT").textContent.replace("已经有这个表格就直接用。", "已经有这个表格就直接用。" + (link ? "\n我的表格：" + link : "")).replace("写进「饮食记录」末尾", link ? "写进这个表格末尾" : "写进「饮食记录」末尾")
-      : document.getElementById("dsrcPromptG").textContent.replace("（复制时自动填入你在上面粘贴的表格链接）", link || "（把你的表格链接粘在这里）");
-    copyText(txt)
+    paintPrompts();
+    copyText((cb.dataset.copy === "t" ? pt : pg).textContent)
       .then(()=>{ cb.textContent = T("已复制", "Copied"); setTimeout(()=>{ cb.innerHTML = '<span class="zh">复制</span><span class="en">Copy</span>'; }, 1500); })
       .catch(()=>toast(T("复制失败，请长按选择文字复制", "Couldn't copy; select the text and copy it")));
   });
