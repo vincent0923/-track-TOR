@@ -7,7 +7,7 @@ if(FRESH && !/[?&]code=/.test(location.search)) showWelcome(); else maybeRemindB
 initDiet();
 autoPullSheet();
 /* reopen the tab the user was on (needs every pane's render functions, so it runs last) */
-try{let t=localStorage.getItem(LS+"-tab");if(t==="diet")t="data";if(t){const b=document.querySelector('[data-tab="'+t+'"]');if(b)b.click()}}catch(e){}
+try{let t=localStorage.getItem(LS+"-tab");if(t==="diet")t="data";if(["train","data","me"].includes(t))setTab(t)}catch(e){}
 
 
 let deferredPrompt = null;

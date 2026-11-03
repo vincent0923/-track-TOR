@@ -241,7 +241,7 @@ document.addEventListener("click",e=>{
 /* collapse every training day (except one being edited) and every folding panel on the data page */
 function collapseAll(){
   const bs=[...document.querySelectorAll("#pane-train .sbody")].filter(b=>!unlocked.has(b.closest(".card").id.slice(2)));
-  const dataVisible=!document.getElementById("pane-data").hidden;
+  const dataVisible=!document.getElementById("pane-me").hidden;
   const ds=[...document.querySelectorAll("details.fold[open]")];
   ds.forEach(d=>{if(d.classList.contains("savefold"))commitFold(d,true)});
   if(!dataVisible)ds.forEach(d=>d.open=false);

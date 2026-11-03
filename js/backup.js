@@ -60,13 +60,6 @@ document.getElementById("bkSave").addEventListener("click",async()=>{
   markBackedUp();
   toast(T("已保存 "+name+"，在手机的「下载」文件夹","Saved "+name+" to your Downloads folder"));
 });
-document.getElementById("wxBtn").addEventListener("click",()=>{
-  /* 跳转到数据页并展开「备份进度」面板 */
-  document.querySelector('[data-tab="data"]').click();
-  setDataSub("charts");
-  const foldBk=document.getElementById("foldBk");
-  if(foldBk){ foldBk.open=true; setTimeout(()=>{ try{foldBk.scrollIntoView({behavior:"smooth",block:"start"})}catch(e){} },80); }
-});
 let pendingImport=null;
 async function stageImport(text){
   let j; try{j=await decodeBackup(text)}catch(e){toast(T("这不是有效的进度文件","Not a valid progress file"));return}
@@ -127,8 +120,8 @@ function maybeRemindBackup(){
           <button type="button" data-close class="iconbtn" aria-label="${T("关闭","Close")}">${CLOSE_ICON}</button>
         </div>
         <p class="sub" style="margin:0 0 12px">${T(
-          "浏览器偶尔会清空本地数据。建议每 5 天备份一次，点顶部的备份图标保存进度文件，需要时选这个文件恢复。",
-          "Browsers occasionally clear local data. Every 5 days or so, tap the backup icon at the top and save a progress file. Pick that file to restore."
+          "浏览器偶尔会清空本地数据。建议每 5 天备份一次：在「资料」里打开「备份进度」，保存进度文件，需要时选这个文件恢复。",
+          "Browsers occasionally clear local data. Every 5 days or so, open Back up progress under Profile and save a progress file. Pick that file to restore."
         )}</p>
         <button id="bkRemindOk" type="button" class="btn" style="width:100%;background:var(--cta);font-size:15px;padding:12px">${T("确定","OK")}</button>
       </div>`;

@@ -55,7 +55,7 @@ function openRecord(key){
   check();
   valEl.focus();
 }
-document.getElementById("pane-charts").addEventListener("click",e=>{const b=e.target.closest("[data-rec]");if(b)openRecord(b.dataset.rec)});
+document.getElementById("pane-data").addEventListener("click",e=>{const b=e.target.closest("[data-rec]");if(b)openRecord(b.dataset.rec)});
 /* per-day numbers shown in the records table and charts; active/steps belong to the diet page */
 const BODY_KEYS=["pullups","weight","weightC","waist","sleep","sleepH","hrv","rhr"];
 let pendingDel=null;
@@ -174,7 +174,21 @@ document.addEventListener("click",e=>{
   saveCH();renderData();
 });
 document.getElementById("chReset").addEventListener("click",()=>{CH_KEYS.forEach(k=>CH[k]=Object.assign({},CH_DEF));saveCH();renderData();toast(T("图表已重置为 30 天 + MA7","Charts reset to 30 days + MA7"))});
+/* which COROS data to sync; what is off isn't pulled and its chart is hidden (saved data stays) */
+const SYNC_KEYS=["sleep","hrv","rhr","weight"], SYNC_CHART={sleep:"cbSleep",hrv:"cbHrv",rhr:"cbRhr",weight:"cbWt"};
+function syncOn(k){const s=state.settings.sync;return !s||s[k]!==false}
+function paintSync(){
+  SYNC_KEYS.forEach(k=>{const on=syncOn(k);
+    const b=document.querySelector('#syncShow [data-sync="'+k+'"]');if(b){b.setAttribute("aria-pressed",String(on));b.classList.toggle("on",on)}
+    const c=document.getElementById(SYNC_CHART[k]);if(c)c.hidden=!on});
+}
+document.getElementById("syncShow").addEventListener("click",e=>{
+  const b=e.target.closest("[data-sync]");if(!b)return;
+  const s=Object.assign({},state.settings.sync||{});s[b.dataset.sync]=!syncOn(b.dataset.sync);
+  state.settings.sync=s;saveSettings();paintSync();
+});
 function renderData(){
+  paintSync();
   const L=k=>T(CH[k].ma+"日均",CH[k].ma+"-day avg"), tag=k=>T("（MA"+CH[k].ma+"）"," (MA"+CH[k].ma+")");
   const pu=pullSeries();
   chart(document.getElementById("chPull"),pu,{color:"var(--pull)",range:CH.pull.rg,zero:true,dec:0,unit:T(" 个"," reps"),label:T("标准引体趋势","Pull-up trend")});
@@ -239,7 +253,7 @@ const GOAL_KEYS=["pullups","waist","weight","fat"], GOAL_FIELD={pullups:"gP",wai
 function goalShowList(){const s=state.settings.goalShow;return Array.isArray(s)?GOAL_KEYS.filter(k=>s.includes(k)):GOAL_KEYS.slice()}
 /* a goal's icon (or its "Set goal" link) takes you to that goal's box in the Goals panel */
 function openGoalField(k){
-  document.querySelector('[data-tab="data"]').click();setDataSub("charts");
+  setTab("me");
   const f=document.getElementById("foldGoal");f.open=true;
   const inp=document.getElementById(GOAL_FIELD[k]);
   setTimeout(()=>{(inp||f).scrollIntoView({behavior:"smooth",block:"center"});if(inp)setTimeout(()=>{try{inp.focus({preventScroll:true})}catch(e){}},350)},60);
@@ -282,11 +296,12 @@ function renderGoals(){
     GP[g.k]={name:g.name,pct,ok:!noT&&start!=null&&cur!=null};
     if(!noT&&start!=null&&cur!=null)milestone(g.k,pct,g.name);
     const startTxt=start==null?"—":(g.k==="weight"?start.toFixed(1):start);
-    const pv=g.k!=="pullups";
+    const pv=g.k==="waist"||g.k==="weight";      /* privacy view only rewrites body measures */
     const icon='<button type="button" class="gi" data-setgoal="'+g.k+'" aria-label="'+T('设定目标：','Set goal: ')+g.name+'">'+IC[g.k]+'</button>';
     const setBtn='<button type="button" class="gset" data-setgoal="'+g.k+'">'+T('设目标','Set goal')+'</button>';
     const range=noT
       ?(PRIV&&pv?'':T('起点 ','Start ')+startTxt+' → ')+setBtn
+      :PRIV&&g.k==="fat"?''                        /* nothing to rewrite for fat loss: the line is left out */
       :PRIV&&pv
       ?(g.k==="weight"?(start==null?"—":"BMI "+bmi(start).toFixed(1))+' → BMI '+bmi(g.target).toFixed(1):(start==null?"—":WL+" "+wr(start))+' → '+WL+' '+wr(g.target))
       :T('起点 ','Start ')+startTxt+T(' → 目标 ',' → Goal ')+g.target+' '+g.unit+(g.k==="weight"?par('BMI '+bmi(g.target).toFixed(1)):g.k==="waist"?par(WL+' '+wr(g.target)):'');

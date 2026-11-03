@@ -189,7 +189,7 @@ function renderGapTile(){
   const n = dietState.gw;
   /* only finished days are summed: the window ends yesterday, because today's food and burn aren't complete until midnight */
   const m = n ? dietMovingSum(ymdAdd(today(), -1), n) : gapAllTime();
-  const label = n ? T("近 " + n + " 天", "Last " + n + " days") : T("有记录以来", "Since first log");
+  const label = n ? T("近 " + n + " 天", "Last " + n + " days") : (m ? T("有记录以来（" + m.c + " 天）", "Since first log (" + m.c + " days) ") : T("有记录以来", "Since first log "));
   const head = `<span class="gl">${label}${m ? (m.s >= 0 ? T("热量缺口","calorie deficit") : T("热量盈余","calorie surplus")) : T("热量缺口","calorie gap")}</span><span class="gn">›</span>`;
   if(!m){ el.innerHTML = head + `<span class="gv"><b>–</b><span class="gf">${T("记账天数不够","not enough logged days")}</span></span>`; return; }
   const s = Math.round(m.s), g = Math.round(Math.abs(m.s) / 7.7);

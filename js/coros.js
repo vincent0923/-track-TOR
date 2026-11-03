@@ -149,10 +149,11 @@ document.getElementById("syncBtn").addEventListener("click",()=>{
 async function doSync(){
   syncing=true;syncUI();
   try{
+    let msg="";
+    if(syncOn("sleep")){
     const r=await mcp.callTool("COROS","querySleepOverview",{startDate:ymdOffset(-59),endDate:ymdOffset(0)});
     const text=toText(r);
     const rows=parseSleep(text);
-    let msg="";
     if(!rows.length){msg=T("COROS 返回了数据，但没有读到睡眠评分（开头：","COROS replied but no sleep scores were found (starts: ")+text.slice(0,120)+T("）。",").");}
     else{
       for(const x of rows){await saveMetric(x.date,{sleep:x.sleep,sleepH:x.sleepH})}
@@ -160,8 +161,10 @@ async function doSync(){
       msg=T("已同步 "+rows.length+" 晚睡眠，最近一晚 "+md(rows[rows.length-1].date)+"："+rows[rows.length-1].sleep+" 分","Synced "+rows.length+" nights; latest "+md(rows[rows.length-1].date)+": "+rows[rows.length-1].sleep)
         +(sbf?T("，回填 "+sbf.added+" 晚（最早 "+sbf.earliest+"）",", backfilled "+sbf.added+" nights (earliest "+sbf.earliest+")"):"");
     }
-    msg+=await syncHrv();
-    msg+=await syncRhr();
+    }
+    if(syncOn("hrv"))msg+=await syncHrv();
+    if(syncOn("rhr"))msg+=await syncRhr();
+    msg=msg.replace(/^[；;]\s*/,"");
     msg+=await syncCalories();
     try{
       const u=await mcp.callTool("COROS","queryUserInfo",{});
@@ -174,7 +177,8 @@ async function doSync(){
       if(gm&&!state.settings.sex)state.settings.sex=gm[1].toLowerCase()==="female"?"f":"m";
       if(bm||gm){saveSettings();renderDietAll()}
       const wm=/Weight:\s*([\d.]+)\s*kg/i.exec(ut);
-      if(wm){
+      if(!syncOn("weight")){}
+      else if(wm){
         const w=+(+wm[1]).toFixed(1), td=today();
         const prev=Object.values(state.metrics).filter(m=>m.weightC!=null&&m.date<td).sort((a,b)=>a.date<b.date?1:-1)[0];
         if(prev&&prev.weightC===w&&!(state.metrics[td]&&state.metrics[td].weightC!=null)){msg+=T("；COROS 体重仍是 "+w+" kg，和 "+md(prev.date)+" 相同，未重复记录","; COROS weight still "+w+" kg, same as "+md(prev.date)+", not logged again")}

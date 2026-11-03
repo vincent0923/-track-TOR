@@ -1,27 +1,28 @@
 /* ---------- screen-level UI: tabs, theme, language, effects (flame, fireworks), sound, fullscreen ---------- */
-/* ---------- tabs ---------- */
-/* the data tab holds two views; older installs that saved the diet tab open on the diet view */
+/* ---------- tabs ----------
+   Level 1: Train / Charts / Profile. Charts has three views: Diet, Health (weight, waist, sleep, HRV,
+   resting HR) and Strength (pull-ups). Older installs saved "charts" for the old single chart view. */
+const SUBS=["diet","health","strength"];
 let dataSub="diet";
-try{const t=localStorage.getItem(LS+"-sub");if(t==="diet"||t==="charts")dataSub=t}catch(e){}
+try{let t=localStorage.getItem(LS+"-sub");if(t==="charts")t="health";if(SUBS.includes(t))dataSub=t}catch(e){}
 function setDataSub(sub){
   dataSub=sub;
   document.querySelectorAll(".subtabs button").forEach(x=>x.setAttribute("aria-selected",x.dataset.sub===sub));
-  document.getElementById("pane-diet").hidden=sub!=="diet";
-  document.getElementById("pane-charts").hidden=sub!=="charts";
-  if(sub==="diet")renderDietAll();
-  if(sub==="charts")renderData();
+  SUBS.forEach(k=>{document.getElementById("pane-"+k).hidden=k!==sub});
+  if(sub==="diet")renderDietAll();else renderData();
   try{localStorage.setItem(LS+"-sub",sub)}catch(e){}
 }
+function setTab(tab){
+  document.body.dataset.tab=tab;
+  document.querySelectorAll("nav.tabs button").forEach(x=>x.setAttribute("aria-selected",String(x.dataset.tab===tab)));
+  ["train","data","me"].forEach(k=>{document.getElementById("pane-"+k).hidden=k!==tab});
+  if(tab==="data")setDataSub(dataSub);
+  if(tab==="train")renderTrain();
+  if(tab==="me")renderData();
+  try{localStorage.setItem(LS+"-tab",tab)}catch(err){}
+}
 document.querySelector(".subtabs").addEventListener("click",e=>{const b=e.target.closest("[data-sub]");if(b)setDataSub(b.dataset.sub)});
-document.querySelector("nav.tabs").addEventListener("click",e=>{
-  const b=e.target.closest("[data-tab]"); if(!b) return;
-  document.body.dataset.tab=b.dataset.tab;
-  document.querySelectorAll("nav.tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
-  ["train","data"].forEach(k=>{document.getElementById("pane-"+k).hidden=k!==b.dataset.tab});
-  if(b.dataset.tab==="data")setDataSub(dataSub);
-  if(b.dataset.tab==="train") renderTrain();
-  try{localStorage.setItem(LS+"-tab",b.dataset.tab)}catch(err){}
-});
+document.querySelector("nav.tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b)setTab(b.dataset.tab)});
 
 /* ---------- theme (manual, does not follow the phone) ---------- */
 const MOON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>';

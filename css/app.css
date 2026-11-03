@@ -467,3 +467,12 @@ html[data-lang="en"] .dsrc-row .btn{min-width:106px}
 .dsub-btn{width:100%;text-align:left}
 .dsub-go{margin-left:auto;color:var(--muted);font-size:18px;line-height:1}
 .dsrc .dinfo-row{display:flex;margin-top:8px;margin-bottom:10px}
+
+/* level 1 Profile tab and level 2 icon tabs */
+nav.tabs .t-me{flex:1;display:flex;align-items:center;justify-content:center;padding:9px 0;color:var(--cta)}
+nav.tabs .t-me svg{width:26px;height:26px}
+nav.tabs .t-me[aria-selected="true"]{color:var(--bg)}
+.subtabs button{display:flex;align-items:center;justify-content:center;color:var(--ink)}
+.subtabs button svg{width:22px;height:22px}
+#pane-me{display:grid;gap:12px;padding-top:8px}
+#pane-health,#pane-strength{display:grid;gap:12px;padding-top:8px}

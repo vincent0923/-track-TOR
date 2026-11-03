@@ -6,6 +6,22 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 
 ---
 
+## [v1.21a] — 2026-11-03
+
+### 变更 / Changed
+- 🧭 **页面结构重排**：一级标签改成「训练 / 图表 / 资料」。「图表」下分三页：饮食、健康（体重、腰围、睡眠、HRV、静息心率）、力量（引体）。「资料」（人头加奖杯图标）里是个人资料、目标、备份进度、全部记录、要点，以及新的「图表和同步设定」。原来顶部的备份快捷按钮由「资料」标签取代。上次停在旧图表页的，会打开「健康」。
+  The app is reorganised. The top tabs are Train / Charts / Profile. Charts has three views: Diet, Health (weight, waist, sleep, HRV, resting HR) and Strength (pull-ups). Profile (a person-and-trophy icon) holds your profile, goals, backup, all records, the guide, and the new Charts & sync settings. The old backup shortcut is replaced by the Profile tab. If you were last on the old charts view, Health opens.
+- 🔌 **自己选同步什么**：「资料 › 图表和同步设定」里可以开关睡眠、HRV、静息心率、体重。关掉的项不再从高驰同步，「健康」里也不显示它的图表；已经存下的数据保留。「重置图表」也挪到了这里。
+  Choose what to sync: under Profile › Charts & sync, switch sleep, HRV, resting HR and weight on or off. What's off isn't synced from COROS and its chart is hidden under Health; data already saved stays. Reset charts moved here too.
+- 缺口卡片的「有记录以来」后面显示统计了几天，比如「有记录以来（10 天）」。
+  "Since first log" on the gap tile now says how many days it covers, e.g. "Since first log (10 days)".
+
+### 修复 / Fixed
+- 隐私模式下，「减脂」目标那一行不再错误地显示成「腰高比 0.000 → …」，直接不显示。
+  In privacy view, the fat-loss goal no longer shows a bogus waist-to-height line; that line is simply left out.
+
+---
+
 ## [v1.20a] — 2026-11-03
 
 ### 变更 / Changed
