@@ -15,8 +15,8 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
   The bookkeeping prompts are about half as long: formatting is left to track-TOR, so the prompt only says what to record. Column names are now in Chinese.
 - 🔗 粘贴分享按钮复制来的整段文字（比如「【腾讯文档】饮食记录 https://…」）也行，推拉机只取里面的网址。
   Pasting the whole text a share button copies (like "【腾讯文档】饮食记录 https://…") works too; only the link is kept.
-- 📋 **复制的 prompt 就是屏幕上显示的内容**：上面输入框里的表格链接会实时显示在 prompt 里，改了输入框 prompt 跟着变，清空就显示「把你的表格链接粘在这里」。以前是复制时才把链接塞进去，你看不到，还可能带上之前用过的旧链接，或者把腾讯文档链接放进 Google 版。Google 版开头也改成「我用一个在线表格」，放哪家的链接都不矛盾。
-  The prompt you copy is exactly what's on screen. The sheet link from the box above shows in the prompt live and follows your edits; when the box is empty it says where to paste the link. Before, the link was slipped in only when copying, so an old link could come along unseen, or a Tencent link could land in the Google version. The Google version now starts with "an online table", so any link fits.
+- 📋 **prompt 不再带任何链接，默认你还没有表格**：两个版本都是固定文字，屏幕上看到的就是复制出来的内容。第一次发给 AI 时，它会先建好「饮食记录」表格、写上列名、设成知道链接的人可查看，再把链接发给你；已经有这个表格就直接用。以前复制时会悄悄带上输入框里的链接，可能是之前用过的旧链接，还可能把腾讯文档链接放进 Google 版。Google 版的准备步骤也改成由 AI 建表。
+  The prompts no longer carry any link and assume you don't have a sheet yet. Both are fixed text, so what you see is what you copy. On first use the AI creates a 饮食记录 sheet with the column names, shares it as view-only by link and sends you the link; if the sheet exists it just uses it. Before, copying quietly added the link from the box, which could be an old one or a Tencent link in the Google version. The Google instructions now also let the AI set up the sheet.
 
 ---
 

@@ -62,24 +62,21 @@
             <button type="button" role="tab" data-ver="t">🇨🇳 <span class="zh">腾讯文档</span><span class="en">Tencent Docs</span></button>
           </div>
           <div data-verpane="g">
-          <h4><span class="zh">如何准备 Google 表格</span><span class="en">Setting up Google Sheets</span></h4>
+          <h4><span class="zh">用 AI 记账</span><span class="en">Bookkeeping with an AI</span></h4>
           <ol>
-            <li><span class="zh">新建一张空白表格</span><span class="en">Create a blank spreadsheet</span></li>
-            <li><span class="zh">第一行写上列名：日期、食物、蛋白质、脂肪、碳水、蔬菜、热量</span><span class="en">In row 1, write the column names: Date, Food, Protein, Fat, Carbs, Vegetables, Calories</span></li>
-            <li><span class="zh">点右上角「共享」，把「一般访问权限」改成「知道链接的任何人」（查看者）</span><span class="en">Tap “Share” and set General access to “Anyone with the link” (Viewer)</span></li>
-            <li><span class="zh">点「复制链接」，粘贴到上面的输入框，点「拉取」</span><span class="en">Tap “Copy link”, paste it into the box above and tap Pull</span></li>
+            <li><span class="zh">找一个能连接 Google 表格的 AI，在它的设置里连上你的 Google 账号</span><span class="en">Pick an AI that can connect to Google Sheets and link your Google account in its settings</span></li>
+            <li><span class="zh">复制下面的 prompt 发给它，它会建好「饮食记录」表格并把链接发给你</span><span class="en">Copy the prompt below and send it; it sets up a sheet called 饮食记录 and sends you the link</span></li>
+            <li><span class="zh">把链接粘贴到上面的输入框，点「拉取」</span><span class="en">Paste the link into the box above and tap Pull</span></li>
+            <li><span class="zh">以后每天把吃了什么告诉它，它会直接写进表格</span><span class="en">Each day, tell it what you ate; it writes it into the sheet</span></li>
           </ol>
-          <h4><span class="zh">给 AI 的记账 prompt</span><span class="en">Prompt for your AI</span></h4>
-          <p class="dsrc-tip"><span class="zh">推荐用能连接并编辑 Google 表格的 AI 记账，它会直接把每样食物写进表格，你只要在这里点「拉取」。上面填了表格链接的话，下面的 prompt 会自动带上，复制的就是你看到的内容。</span><span class="en">Use an AI that can connect to and edit Google Sheets: it writes each food straight into the sheet, and you just tap Pull here. If the box above has your sheet link, the prompt below includes it; you copy exactly what you see.</span></p>
-          <div class="dsrc-code"><button type="button" class="dsrc-copy" data-copy="g"><span class="zh">复制</span><span class="en">Copy</span></button><pre id="dsrcPromptG">我用一个在线表格记饮食，请帮我记账。
+          <div class="dsrc-code"><button type="button" class="dsrc-copy" data-copy="g"><span class="zh">复制</span><span class="en">Copy</span></button><pre id="dsrcPromptG">我用 Google 表格记饮食，请帮我记账。
 
-表格：（把你的表格链接粘在这里）
+第一次：如果我的 Google 云端硬盘里还没有「饮食记录」这个表格，先帮我新建一个，第一行写上 7 个列名（见下面），共享设成「知道链接的任何人」可查看，然后把链接发给我。设不了共享就告诉我，我自己改。已经有这个表格就直接用。
 
 我会告诉你每天吃了什么，文字、食物照片或营养成分表照片都行。
-请估算每样食物的蛋白质、脂肪、碳水、蔬菜克数和热量，写进表格末尾，一样食物一行。
+请估算每样食物的蛋白质、脂肪、碳水、蔬菜克数和热量，写进「饮食记录」末尾，一样食物一行。
 
 表格的 7 列：日期｜食物｜蛋白质｜脂肪｜碳水｜蔬菜｜热量
-- 表格还是空的，就先在第一行写上这 7 个列名
 - 食物写上份量，有油或酱料就注明
 - 蛋白质、脂肪、碳水、蔬菜按克，热量按千卡，没有就填 0
 - 写之前看看表格最后几行，别重复记
