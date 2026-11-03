@@ -14,7 +14,7 @@
 <div class="wrap">
   <header class="top">
     <div class="trow">
-      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.16a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
+      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.17a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
       <button id="pwaInstallBtn" type="button" style="display:none;background:var(--cta);border:0;color:#fff;font-weight:700;font-size:12px;padding:5px 11px;border-radius:999px;cursor:pointer;margin-right:6px">📲 <span class="zh">安装 App</span><span class="en">Install</span></button><button id="syncBtn" class="syncbtn off"><span class="zh">连接中</span><span class="en">Connecting</span></button>
     </div>
     <div class="hrow"><p class="sub"><span class="zh">下一次</span><span class="en">Next</span> <b id="stNext" class="num" style="font-size:16px;color:var(--ink)">—</b></p><div class="hbtns">
@@ -65,24 +65,28 @@
             <li><span class="zh">点「复制链接」，粘贴到上面的输入框，点「拉取」</span><span class="en">Tap “Copy link”, paste it into the box above and tap Pull</span></li>
           </ol>
           <h4><span class="zh">给 AI 的记账 prompt</span><span class="en">Prompt for your AI</span></h4>
-          <div class="dsrc-code"><button type="button" class="dsrc-copy" id="dsrcCopy"><span class="zh">复制</span><span class="en">Copy</span></button><pre id="dsrcPrompt">我在用一个饮食记录表，请帮我按下面的规则记账。
+          <p class="dsrc-tip"><span class="zh">推荐用能连接并编辑 Google 表格的 AI 记账，它会直接把每样食物写进表格，你只要在这里点「拉取」。复制时会自动带上你上面填的表格链接。</span><span class="en">Use an AI that can connect to and edit Google Sheets: it writes each food straight into the sheet, and you just tap Pull here. Copying fills in the sheet link from the box above.</span></p>
+          <div class="dsrc-code"><button type="button" class="dsrc-copy" id="dsrcCopy"><span class="zh">复制</span><span class="en">Copy</span></button><pre id="dsrcPrompt">我在用一个 Google 表格记饮食，请帮我按下面的规则记账。
+
+表格：{表格链接}
+第一行是表头：date,item,p,f,c,veg,kcal
 
 我每天会告诉你我吃了什么（文字描述、食物照片、或营养成分表照片）。
 你需要估算每样食物的蛋白质、脂肪、碳水、蔬菜重量和热量，
-然后输出一段可以直接粘进表格的 CSV，格式如下：
+然后把新的行直接追加到这张表格的末尾，一样食物一行，例如：
 
 date,item,p,f,c,veg,kcal
 2026-11-03,鸡腿 500g（含5%酱料）,80.0,50.0,0.0,0,809
 2026-11-03,香蕉 1根 100g,1.2,0.2,22.0,0,89
 
 规则：
+- 写之前先看一下表格最后几行，不要重复已经记过的
 - date 用 YYYY-MM-DD，一行一样食物，同一天写多行
 - item 写清楚份量，含油、酱料的要在名字里标注
 - veg 填蔬菜的实际克重，没有就填 0
 - 数字保留一位小数，kcal 取整
-- 不要输出合计行，合计由表格自己算
-- item 里如果有逗号，整个字段用英文双引号包起来
-- 每次只输出新增的行，不要重复已经记过的
+- 不要写合计行，合计由推拉机自己算
+- 如果你连不上这张表格，就输出同样格式的 CSV，我自己粘进去；item 里有逗号时整个字段用英文双引号包起来
 
 另外每次记完，用两个列表告诉我：
 ① 已经吃掉的总计

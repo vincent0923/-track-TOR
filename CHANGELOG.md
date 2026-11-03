@@ -6,6 +6,14 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 
 ---
 
+## [v1.17a] — 2026-11-03
+
+### 变更 / Changed
+- 🤖 **记账 prompt 改成让 AI 直接写表格**：推荐用能连接并编辑 Google 表格的 AI 记账，它把每样食物直接追加到表格里，你只要在推拉机点「拉取」；AI 连不上表格时才输出 CSV 让你自己粘。复制 prompt 时自动带上你填的表格链接。
+  The bookkeeping prompt now has the AI write rows straight into your Google Sheet (it falls back to CSV only if it can't reach the sheet). Copying the prompt fills in your sheet link.
+
+---
+
 ## [v1.16a] — 2026-11-03
 
 ### 变更 / Changed

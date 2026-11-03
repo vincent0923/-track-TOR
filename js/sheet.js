@@ -149,7 +149,9 @@ function copyText(t){
   inp.addEventListener("keydown", e=>{ if(e.key === "Enter") pullSheet(); });
   const cb = document.getElementById("dsrcCopy");
   cb.addEventListener("click", ()=>{
-    copyText(document.getElementById("dsrcPrompt").textContent)
+    /* the prompt carries the user's own sheet link, so the AI knows where to write */
+    const link = document.getElementById("dsrcUrl").value.trim() || T("（把你的表格链接粘在这里）", "(paste your sheet link here)");
+    copyText(document.getElementById("dsrcPrompt").textContent.replace("{表格链接}", link))
       .then(()=>{ cb.textContent = T("已复制", "Copied"); setTimeout(()=>{ cb.innerHTML = '<span class="zh">复制</span><span class="en">Copy</span>'; }, 1500); })
       .catch(()=>toast(T("复制失败，请长按选择文字复制", "Couldn't copy; select the text and copy it")));
   });
