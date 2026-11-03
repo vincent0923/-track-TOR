@@ -107,7 +107,6 @@
 .dsrc-info li{margin:2px 0}
 .dsrc-info code{font-size:12px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:0 4px}
 .dsrc-ver{margin-bottom:10px}
-.dsrc-soon{color:var(--warn)}
 .dsrc-tip{margin:0 0 8px;color:var(--muted)}
 .dsrc-code{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:8px}
 .dsrc-code pre{margin:0;padding:10px 12px;padding-top:34px;font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;max-height:300px;overflow:auto}

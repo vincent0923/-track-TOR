@@ -6,6 +6,16 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 
 ---
 
+## [v1.19a] — 2026-11-03
+
+### 变更 / Changed
+- 🌐 **任何网址都能当数据源**：推拉机不再看表格放在谁家。Google 表格、腾讯文档、自己的电脑或服务器都行，只要能读到表头为 date,item,p,f,c,veg,kcal 的数据。逗号、制表符、分号分隔的文本，网页里的表格，JSON 都能读，常见云表格会自动换成它们的数据出口再读。表头上方有标题行也没关系。读不到时，状态区写明每种读取方式失败在哪一步。
+  Any URL works as the data source. track-TOR no longer cares where the table is hosted (Google Sheets, Tencent Docs, your own computer or server), as long as it can read rows under the header date,item,p,f,c,veg,kcal: comma, tab or semicolon separated text, an HTML table, or JSON. Common cloud sheets are read through their data exports automatically, and title rows above the header are skipped. If nothing can be read, the status line says how each attempt failed.
+- 腾讯文档版的说明里加上了「把链接粘贴到上面，点拉取」这一步。
+  The Tencent Docs instructions now include pasting the link and tapping Pull.
+
+---
+
 ## [v1.18a] — 2026-11-03
 
 ### 新增 / Added

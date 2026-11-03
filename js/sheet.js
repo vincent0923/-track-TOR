@@ -1,6 +1,5 @@
-/* ---------- diet data source: a Google Sheet ----------
-   The user pastes the sheet's ordinary share link (shared as "anyone with the link can view");
-   it is turned into Google's CSV query URL. A "Publish to web" CSV link works as is.
+/* ---------- diet data source: an online table ----------
+   The user pastes the table's ordinary share link (shared so anyone with the link can view).
    Columns date,item,p,f,c,veg,kcal, one food per row. Pulled only when the user taps Pull.
    Days found in the sheet replace the local diet for those dates; other dates, and every
    non-diet record (weight, waist, heart rate, training), are left alone. */
@@ -8,10 +7,13 @@ const SHEET_URL_K = "dietSheetUrl", SHEET_STATUS_K = LS + "-sheet-status";
 const SHEET_COLS = ["date","item","p","f","c","veg","kcal"];
 const PROMPT_VER_K = LS + "-prompt-ver";
 
-/* RFC 4180: quoted fields may hold commas, line breaks and doubled quotes ("") */
+/* RFC 4180: quoted fields may hold the delimiter, line breaks and doubled quotes ("").
+   The delimiter is guessed from the first line: comma, tab or semicolon. */
 function parseCsv(text){
   const rows = []; let row = [], field = "", q = false, i = 0;
-  text = String(text).replace(/^﻿/, "");
+  text = String(text).replace(/^\uFEFF/, "");
+  const first = text.split(/\r?\n/, 1)[0];
+  const D = first.includes("\t") ? "\t" : (first.split(";").length > first.split(",").length ? ";" : ",");
   while(i < text.length){
     const ch = text[i];
     if(q){
@@ -19,7 +21,7 @@ function parseCsv(text){
       field += ch; i++; continue;
     }
     if(ch === '"' && field === ""){ q = true; i++; continue; }
-    if(ch === ","){ row.push(field); field = ""; i++; continue; }
+    if(ch === D){ row.push(field); field = ""; i++; continue; }
     if(ch === "\r" || ch === "\n"){
       row.push(field); rows.push(row); row = []; field = "";
       i += (ch === "\r" && text[i+1] === "\n") ? 2 : 1; continue;
@@ -74,19 +76,142 @@ function applySheetDays(days){
   }
 }
 
-/* share/edit link → CSV query URL (keeps the tab given by gid); a published CSV link is used as is */
-function sheetCsvUrl(u){
-  u = String(u||"").trim();
-  if(!u) return { err: T("先粘贴表格链接", "Paste the sheet link first") };
-  if(!/^https?:\/\//i.test(u)) u = "https://" + u;
-  const m = /docs\.google\.com\/spreadsheets\/d\/([A-Za-z0-9_-]{20,})/i.exec(u);
-  if(m && m[1] !== "e"){
+/* ---------- reading any table, wherever it is hosted ----------
+   The app doesn't care whose cloud the table lives in. It tries the link as given, plus the data
+   exports that common services offer for the same table, and takes the first reply in which it
+   finds the header date,item,p,f,c,veg,kcal followed by rows: delimited text, an HTML table,
+   JSON, JSONP, or compressed blobs inside JSON. */
+function sheetCandidates(u){
+  const out = [];
+  let m;
+  if((m = /docs\.google\.com\/spreadsheets\/d\/([A-Za-z0-9_-]{20,})/i.exec(u)) && m[1] !== "e"){
     const g = /[#&?]gid=(\d+)/.exec(u);
-    return { url: "https://docs.google.com/spreadsheets/d/" + m[1] + "/gviz/tq?tqx=out:csv&headers=1" + (g ? "&gid=" + g[1] : "") };
+    out.push({ how:"gviz", url:"https://docs.google.com/spreadsheets/d/" + m[1] + "/gviz/tq?tqx=out:csv&headers=1" + (g ? "&gid=" + g[1] : "") });
   }
-  if(/docs\.qq\.com\//i.test(u)) return { err: T("腾讯文档读取还在接入中，暂时只能拉取 Google 表格", "Reading Tencent Docs is still being added; only Google Sheets can be pulled for now") };
-  if(/docs\.google\.com\/spreadsheets\/d\/e\//i.test(u) || /output=csv|\.csv(\?|$)/i.test(u)) return { url: u };
-  return { err: T("这不是 Google 表格的链接，请在表格里点「共享 → 复制链接」", "That isn't a Google Sheets link; in the sheet tap Share → Copy link") };
+  if((m = /docs\.qq\.com\/sheet\/([A-Za-z0-9_-]+)/i.exec(u))){
+    const tab = /[?&]tab=([A-Za-z0-9_-]+)/.exec(u);
+    const base = "https://docs.qq.com/dop-api/opendoc?id=" + m[1] + "&outformat=1&normal=1&startrow=0&endrow=3000&wb=1&nowb=0" + (tab ? "&tab=" + tab[1] : "");
+    out.push({ how:"opendoc", url: base });
+    out.push({ how:"opendoc-jsonp", url: base, jsonp: true });
+  }
+  out.push({ how:"direct", url: u });
+  return out;
+}
+const HEAD = ["date","item","p","f","c","veg","kcal"];
+/* a flat list of cell texts → rows, starting after the header sequence */
+function tokensToRows(tokens){
+  const t = tokens.map(x=>String(x).trim());
+  for(let k = 0; k + 7 <= t.length; k++){
+    if(t[k].toLowerCase() !== "date") continue;
+    if(!HEAD.every((h,i)=>t[k+i].toLowerCase() === h)) continue;
+    const rows = [HEAD.slice()];
+    for(let r = k + 7; r + 7 <= t.length; r += 7){
+      if(!sheetDate(t[r])) break;
+      rows.push(t.slice(r, r + 7));
+    }
+    if(rows.length > 1) return rows;
+  }
+  return null;
+}
+function jsonStrings(v, out){
+  if(v == null) return out;
+  if(typeof v === "string" || typeof v === "number") out.push(String(v));
+  else if(Array.isArray(v)) v.forEach(x=>jsonStrings(x, out));
+  else if(typeof v === "object") Object.values(v).forEach(x=>jsonStrings(x, out));
+  return out;
+}
+/* arrays of rows ([["date",...],[...]]) or arrays of objects ({date, item, ...}) anywhere in the JSON */
+function jsonTable(v){
+  if(Array.isArray(v)){
+    if(v.length && Array.isArray(v[0]) && v[0].length >= 7 && HEAD.every((h,i)=>String(v[0][i]).trim().toLowerCase() === h)) return v.map(r=>r.map(x=>x==null?"":String(x)));
+    if(v.length && v[0] && typeof v[0] === "object" && !Array.isArray(v[0]) && "date" in v[0] && "kcal" in v[0]) return [HEAD.slice()].concat(v.map(o=>HEAD.map(h=>o[h]==null?"":String(o[h]))));
+    for(const x of v){ const t = jsonTable(x); if(t) return t; }
+  }else if(v && typeof v === "object"){ for(const x of Object.values(v)){ const t = jsonTable(x); if(t) return t; } }
+  return null;
+}
+async function inflateB64(b64){
+  let bytes; try{ bytes = Uint8Array.from(atob(b64.replace(/-/g,"+").replace(/_/g,"/")), c=>c.charCodeAt(0)); }catch(e){ return []; }
+  const outs = [];
+  if(typeof DecompressionStream === "function"){
+    for(const fmt of ["deflate","deflate-raw","gzip"]){
+      try{ outs.push(new TextDecoder().decode(await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream(fmt))).arrayBuffer())); break; }catch(e){}
+    }
+  }
+  outs.push(new TextDecoder().decode(bytes));
+  return outs;
+}
+/* any reply text → rows (with header) or null */
+async function rowsFromText(text, depth){
+  depth = depth || 0;
+  text = String(text||"");
+  const trimmed = text.trim();
+  /* 1. delimited text: needs the header row (title rows above it are skipped) */
+  if(!/^[<{\[]/.test(trimmed) && !/^[\w$.]+\s*\(/.test(trimmed)){
+    const rows = parseCsv(text);
+    const h = rows.findIndex(r=>{ const c = r.map(x=>String(x).trim().toLowerCase()); return c.includes("date") && c.includes("kcal"); });
+    if(h >= 0 && sheetDays(rows.slice(h)).rows) return rows.slice(h);
+  }
+  /* 2. JSON or JSONP */
+  let js = null;
+  const jp = /^[\w$.]+\s*\(([\s\S]*)\)\s*;?\s*$/.exec(trimmed);
+  try{ js = JSON.parse(jp ? jp[1] : trimmed); }catch(e){}
+  if(js != null){
+    const tbl = jsonTable(js); if(tbl && sheetDays(tbl).rows) return tbl;
+    const strs = jsonStrings(js, []);
+    let t = tokensToRows(strs); if(t) return t;
+    /* compressed blobs: inflate, then read either a nested reply or cell texts between control bytes */
+    if(depth < 2) for(const s of strs.filter(x=>x.length > 80 && /^[A-Za-z0-9+/_=-]+$/.test(x))){
+      for(const dec of await inflateB64(s)){
+        const inner = await rowsFromText(dec, depth + 1).catch(()=>null);
+        if(inner) return inner;
+        t = tokensToRows(dec.split(/[\u0000-\u001f\u007f�]+/)); if(t) return t;
+      }
+    }
+  }
+  /* 3. HTML: a real <table>, or cell texts sitting in the page's script data */
+  if(/<\w+[\s>]/.test(trimmed.slice(0, 2000))){
+    try{
+      const doc = new DOMParser().parseFromString(text, "text/html");
+      for(const tb of doc.querySelectorAll("table")){
+        const rows = [...tb.querySelectorAll("tr")].map(tr=>[...tr.querySelectorAll("td,th")].map(td=>td.textContent.trim()));
+        const t = tokensToRows(rows.flat()); if(t) return t;
+      }
+    }catch(e){}
+    const lits = []; text.replace(/"((?:[^"\\]|\\.){0,400})"/g, (_, x)=>{ try{ lits.push(JSON.parse('"' + x + '"')); }catch(e){ lits.push(x); } return ""; });
+    const t = tokensToRows(lits); if(t) return t;
+  }
+  return null;
+}
+/* JSONP: a script tag, which a site may allow even when it blocks cross-site reads */
+function loadJsonp(url){
+  return new Promise((ok, no)=>{
+    const cb = "__tt_cb" + Date.now() + Math.floor(Math.random()*1e4), sc = document.createElement("script");
+    const done = ()=>{ try{ delete window[cb]; }catch(e){ window[cb] = undefined; } sc.remove(); clearTimeout(tm); };
+    const tm = setTimeout(()=>{ done(); no(new Error("timeout")); }, 15000);
+    window[cb] = data=>{ done(); ok(JSON.stringify(data)); };
+    sc.onerror = ()=>{ done(); no(new Error("script")); };
+    sc.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
+    document.head.appendChild(sc);
+  });
+}
+/* try each way in turn; notes say how each one failed, for the status line */
+async function readSheetRows(u){
+  const notes = [];
+  for(const c of sheetCandidates(u)){
+    let text;
+    try{
+      if(c.jsonp) text = await loadJsonp(c.url);
+      else{
+        const r = await fetch(c.url, { cache: "no-store" });
+        if(!r.ok){ notes.push(c.how + " " + r.status); continue; }
+        text = await r.text();
+      }
+    }catch(e){ notes.push(c.how + " ✕"); continue; }
+    const rows = await rowsFromText(text).catch(()=>null);
+    if(rows) return { rows, how: c.how };
+    notes.push(c.how + " ∅" + text.length);
+  }
+  return { rows: null, notes };
 }
 
 function paintSheetStatus(){
@@ -106,32 +231,26 @@ function setSheetStatus(patch){
 
 async function pullSheet(){
   const inp = document.getElementById("dsrcUrl"), btn = document.getElementById("dsrcPull");
-  const url = inp.value.trim();
+  let url = inp.value.trim();
   try{ if(url) localStorage.setItem(SHEET_URL_K, url); else localStorage.removeItem(SHEET_URL_K); }catch(e){}
-  const src = sheetCsvUrl(url);
-  if(src.err){ setSheetStatus({ ok:false, msg:src.err }); return; }
-  const NOT_SHARED = T("读不到表格：在 Google 表格里点「共享」，把一般访问权限改成「知道链接的任何人」", "Can't read the sheet: in Google Sheets tap Share and set General access to “Anyone with the link”");
-  btn.disabled = true;
   const fail = msg => setSheetStatus({ ok:false, msg });
+  if(!url) return fail(T("先粘贴表格链接", "Paste the sheet link first"));
+  if(!/^https?:\/\//i.test(url)) url = "https://" + url;
+  if(navigator.onLine === false) return fail(T("没有网络，连上后再拉取", "You're offline; pull again once connected"));
+  btn.disabled = true;
+  const old = btn.innerHTML; btn.textContent = T("读取中…", "Reading…");
   try{
-    let r;
-    /* a sheet that isn't shared answers with a sign-in page, which the browser reports as a failed request */
-    try{ r = await fetch(src.url, { cache: "no-store" }); }
-    catch(e){ return fail(navigator.onLine === false ? T("没有网络，连上后再拉取", "You're offline; pull again once connected") : NOT_SHARED); }
-    if(r.status === 401 || r.status === 403) return fail(NOT_SHARED);
-    if(r.status === 404) return fail(T("找不到这张表格，检查链接是否完整", "Sheet not found; check the link is complete"));
-    if(!r.ok) return fail(T("Google 返回 " + r.status + "，稍后再试", "Google returned " + r.status + "; try again later"));
-    const text = await r.text(), ct = r.headers.get("content-type") || "";
-    if(/text\/html/i.test(ct) || /^\s*</.test(text)) return fail(NOT_SHARED);
-    const { days, rows } = sheetDays(parseCsv(text));
+    const res = await readSheetRows(url);
+    /* ✕ = blocked or unreachable, ∅ = reply had no table, a number = HTTP status */
+    if(!res.rows) return fail(T("读不到表格数据。请确认：① 表格设成了所有人（知道链接的任何人）可查看；② 第一行表头是 date,item,p,f,c,veg,kcal。", "Couldn't read table data. Check: ① anyone with the link can view the sheet; ② row 1 is date,item,p,f,c,veg,kcal.") + "（" + res.notes.join(" · ") + "）");
+    const { days, rows } = sheetDays(res.rows);
     const nDays = Object.keys(days).length;
-    if(!rows) return fail(T("没有读到有效记录，检查表头是否为 date,item,p,f,c,veg,kcal，日期是否为 YYYY-MM-DD", "No valid rows; check the header is date,item,p,f,c,veg,kcal and dates are YYYY-MM-DD"));
     applySheetDays(days);
     lsSave(); dietState.open = latestDietOpenSet(state.diet); renderDietAll();
     const d = new Date();
     setSheetStatus({ ok:true, msg:"", at: pad(d.getMonth()+1) + "-" + pad(d.getDate()) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes()), rows, days: nDays });
     toast(T("已拉取 " + rows + " 条 / " + nDays + " 天", "Pulled " + rows + " rows / " + nDays + " days"));
-  }finally{ btn.disabled = false; }
+  }finally{ btn.disabled = false; btn.innerHTML = old; }
 }
 
 function copyText(t){
@@ -174,7 +293,7 @@ function copyText(t){
 })();
 /* placeholder and status follow the language switch */
 function paintSheetLang(){
-  const inp = document.getElementById("dsrcUrl"); if(inp) inp.placeholder = T("粘贴 Google 表格的分享链接", "Paste your Google Sheet's share link");
+  const inp = document.getElementById("dsrcUrl"); if(inp) inp.placeholder = T("粘贴表格的分享链接", "Paste your sheet's share link");
   paintSheetStatus();
 }
 paintSheetLang();

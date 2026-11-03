@@ -14,7 +14,7 @@
 <div class="wrap">
   <header class="top">
     <div class="trow">
-      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.18a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
+      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.19a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
       <button id="pwaInstallBtn" type="button" style="display:none;background:var(--cta);border:0;color:#fff;font-weight:700;font-size:12px;padding:5px 11px;border-radius:999px;cursor:pointer;margin-right:6px">📲 <span class="zh">安装 App</span><span class="en">Install</span></button><button id="syncBtn" class="syncbtn off"><span class="zh">连接中</span><span class="en">Connecting</span></button>
     </div>
     <div class="hrow"><p class="sub"><span class="zh">下一次</span><span class="en">Next</span> <b id="stNext" class="num" style="font-size:16px;color:var(--ink)">—</b></p><div class="hbtns">
@@ -53,7 +53,7 @@
 
       <section class="dsrc" aria-label="数据源 / Data source">
         <div class="dsrc-h"><h3><span class="zh">数据源</span><span class="en">Data source</span></h3><button type="button" class="dsrc-i" id="dsrcInfoBtn" aria-expanded="false" aria-controls="dsrcInfo" aria-label="说明 / How it works">i</button></div>
-        <div class="dsrc-row"><input id="dsrcUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="粘贴 Google 表格的分享链接"><button type="button" class="btn" id="dsrcPull"><span class="zh">拉取</span><span class="en">Pull</span></button></div>
+        <div class="dsrc-row"><input id="dsrcUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="粘贴表格的分享链接"><button type="button" class="btn" id="dsrcPull"><span class="zh">拉取</span><span class="en">Pull</span></button></div>
         <p class="dsrc-hint"><span class="zh">不要告诉别人这个 URL 哦，不然别人会知道你每天吃什么</span><span class="en">Keep this URL to yourself, or others can see what you eat every day</span></p>
         <p class="dsrc-status" id="dsrcStatus" aria-live="polite"></p>
         <div class="dsrc-info" id="dsrcInfo" hidden>
@@ -109,9 +109,9 @@ kcal：热量，千卡
           <ol>
             <li><span class="zh">在腾讯 WorkBuddy 里连接你的腾讯文档</span><span class="en">In Tencent WorkBuddy, connect your Tencent Docs</span></li>
             <li><span class="zh">复制下面的 prompt 发给 WorkBuddy，它会建好「饮食记录」表格并把链接发给你</span><span class="en">Copy the prompt below and send it to WorkBuddy; it sets up a sheet called 饮食记录 and sends you the link</span></li>
+            <li><span class="zh">把 WorkBuddy 发来的表格链接粘贴到上面的输入框，点「拉取」</span><span class="en">Paste the sheet link WorkBuddy sends you into the box above and tap Pull</span></li>
             <li><span class="zh">以后每天把吃了什么告诉 WorkBuddy，它会直接写进表格</span><span class="en">Each day, tell WorkBuddy what you ate; it writes it into the sheet</span></li>
           </ol>
-          <p class="dsrc-tip dsrc-soon"><span class="zh">推拉机读取腾讯文档的功能还在接入中，暂时只能拉取 Google 表格。</span><span class="en">Reading Tencent Docs in track-TOR is still being added; for now only Google Sheets can be pulled.</span></p>
           <div class="dsrc-code"><button type="button" class="dsrc-copy" data-copy="t"><span class="zh">复制</span><span class="en">Copy</span></button><pre id="dsrcPromptT">我想用一个腾讯文档在线表格记饮食，请帮我按下面的规则记账。
 
 【第一次使用】
