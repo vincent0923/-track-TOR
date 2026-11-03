@@ -27,6 +27,8 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
   Pull and Sync now bring the other along: Pull also fetches activity calories from COROS (only the table if you're not connected), and Sync also pulls your diet table when a link is filled in. Both buttons show a left-to-right fill while they work. It's a feeling of progress, not a measurement, and it fills completely when done.
 - 📆 **热量缺口只统计过完的日子**：今天的饮食和消耗要到午夜才完整，所以「近 N 天」是指到昨天为止的 N 天，「有记录以来」也不含今天。
   The calorie gap only sums finished days: today isn't complete until midnight, so "last N days" ends yesterday and "since first log" excludes today.
+- 📏 **「同步」和「拉取」按钮大小固定**：按下后文字变成「同步中…」「读取中…」「已同步 21:24」时，按钮不再变长变短。
+  The Sync and Pull buttons keep one size: they no longer grow or shrink when the label changes to Syncing…, Reading… or Synced 21:24.
 - 缺口卡片改成两行（上面写时间段，下面写数字和脂肪克数），内容再长也不会把页面撑出屏幕。
   The gap tile is now two lines (the period on top, the number and fat below), so it can no longer push the page wider than the screen.
 - 🧱 **更新后不再出现新旧混搭**：手机浏览器会把脚本和样式缓存 10 分钟，更新后可能出现新网页配旧脚本，比如缺口卡片是空的、按钮排版错乱。现在脚本和样式的网址带上内容指纹，文件一变网址就变，旧缓存对不上。
