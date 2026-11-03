@@ -135,6 +135,8 @@
 #pane-diet .flist b{color:var(--ink);font-weight:700}
 #pane-diet .dfoot{font-size:11px;color:var(--muted);margin:4px 2px 0}
 #pane-diet .chead-t{display:flex;align-items:center;gap:8px}
+/* the i pill sits bottom-left under the chart: rarely needed, so out of the right thumb's way */
+#pane-diet .dinfo-row{display:flex;justify-content:flex-start;margin-top:6px}
 #pane-diet .dfoot[hidden]{display:none}
 #pane-diet #dietFormula{font-size:12px;margin-top:8px;padding:8px 10px;background:var(--sunk);border-radius:8px}
 .gtile{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:baseline;gap:2px 8px;box-sizing:border-box;width:100%;max-width:100%;min-width:0;margin:8px 0 6px;padding:8px 12px;font:inherit;text-align:left;color:var(--ink);background:var(--sunk);border:1px solid var(--line);border-radius:10px;cursor:pointer}

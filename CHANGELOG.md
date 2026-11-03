@@ -31,6 +31,8 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
   The burn estimate changed. All watch activity used to count at 0.5, which was too cautious. COROS's daily calories are now split: everyday movement counts in full, logged workouts at 0.7 (watches tend to overestimate them), and rides with a power meter at 0.9 (track-TOR checks the ride details for power data). Days whose workouts can't be read count at 0.7. On the data from 24 Oct to 2 Nov, the total gap goes from 1062 to 2714 kcal (0.14 to 0.35 kg of fat), closer to the weight change in that period.
 - 🎨 **图例和图一致**：摄入、估算总消耗是带圆点的线，基础代谢是虚线，缺口、盈余是半透明柱子，图例照着画。点 ⓘ 展开的说明拆成几条，每条前面放它解释的那个图例。
   The legend now matches the chart: intake and estimated burn are lines with dots, BMR is dashed, deficit and surplus are translucent bars. The ⓘ notes are split into short lines, each led by the mark it explains.
+- 摄入与消耗图的「i｜+」挪到图表下方左侧，紧挨着它展开的说明，不常用，放在右手拇指不容易误碰的地方。
+  The chart's i | + button moved to the bottom left, right above the notes it opens: it's rarely needed, so it's out of the right thumb's way.
 - 📏 腰围图标换成腰上围一圈软尺，更好认。
   The waist icon is now a tape measure around a waist, which is easier to read.
 - 🔥 **新目标：减脂**：把“有记录以来”的热量缺口折算成已经消灭的脂肪（7700 kcal = 1 kg），对比你设的目标公斤数，只算过完的日子。
