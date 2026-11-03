@@ -436,3 +436,8 @@ html[data-lang="en"] .dsrc-row .btn{min-width:106px}
 .gchip2{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;border:1px solid var(--line);border-radius:10px;background:var(--sunk);color:var(--muted);font:inherit;font-size:12px;cursor:pointer;opacity:.55}
 .gchip2 svg{width:20px;height:20px}
 .gchip2.on{opacity:1;color:var(--g);border-color:var(--g);background:color-mix(in srgb,var(--g) 12%,transparent)}
+
+/* how-to-measure hint inside the empty record box: small, faint, not part of the value */
+#recVal::placeholder{font-family:var(--f-body);font-size:13px;font-weight:400;color:var(--muted);opacity:.7}
+#recVal::-webkit-inner-spin-button,#recVal::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+#recVal{-moz-appearance:textfield}

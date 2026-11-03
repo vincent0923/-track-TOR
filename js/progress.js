@@ -6,15 +6,16 @@ function saveMetric(date,patch){
 }
 /* pencil on a chart: enter one number for a chosen date; the disk saves and closes */
 function openRecord(key){
-  const def={pullups:{name:T("标准引体","Strict pull-ups"),unit:T("个","reps"),step:1,mode:"numeric"},
-    weight:{name:T("体重","Weight"),unit:"kg",step:0.1,mode:"decimal"},
-    waist:{name:T("腰围","Waist"),unit:"cm",step:0.1,mode:"decimal"}}[key];
+  /* hint: how to measure, shown faintly inside the empty box */
+  const def={pullups:{name:T("标准引体","Strict pull-ups"),unit:T("个","reps"),step:1,mode:"numeric",hint:T("下巴过杠的标准引体向上","Strict reps, chin over the bar")},
+    weight:{name:T("体重","Weight"),unit:"kg",step:0.1,mode:"decimal",hint:T("清晨空腹体重","Morning weight, before eating")},
+    waist:{name:T("腰围","Waist"),unit:"cm",step:0.1,mode:"decimal",hint:T("量三次肚脐眼位置，选最大值或者平均值","Measure 3 times at the navel; take the largest or the average")}}[key];
   const m=document.createElement("div");
   m.className="mask";
   m.innerHTML='<div class="sheet" role="dialog" aria-modal="true" aria-label="'+esc(def.name)+'" style="max-width:360px">'
     +'<h3><span>'+esc(def.name)+'</span><button class="iconbtn" type="button" data-close aria-label="'+T("取消","Cancel")+'">'+CLOSE_ICON+'</button></h3>'
     +'<div class="form-body"><label class="flabel">'+T("日期","Date")+'<input id="recDate" type="date" value="'+today()+'" max="'+today()+'"></label>'
-    +'<label class="flabel">'+esc(def.name)+'（'+def.unit+'）<input id="recVal" type="number" inputmode="'+def.mode+'" min="0" step="'+def.step+'"></label></div>'
+    +'<label class="flabel">'+esc(def.name)+'（'+def.unit+'）<input id="recVal" type="number" inputmode="'+def.mode+'" min="0" step="'+def.step+'" placeholder="'+esc(def.hint)+'"></label></div>'
     +'<div class="row" style="justify-content:flex-end"><button class="btn recsave" type="button" data-recsave aria-label="'+T("保存并关闭","Save and close")+'" title="'+T("保存并关闭","Save and close")+'">'+SAVE_ICON+'</button></div></div>';
   document.body.appendChild(m);
   const dateEl=m.querySelector("#recDate"), valEl=m.querySelector("#recVal");

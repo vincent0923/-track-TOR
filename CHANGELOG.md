@@ -33,6 +33,8 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
   The legend now matches the chart: intake and estimated burn are lines with dots, BMR is dashed, deficit and surplus are translucent bars. The ⓘ notes are split into short lines, each led by the mark it explains.
 - 摄入与消耗图的「i｜+」挪到图表下方左侧，紧挨着它展开的说明，不常用，放在右手拇指不容易误碰的地方。
   The chart's i | + button moved to the bottom left, right above the notes it opens: it's rarely needed, so it's out of the right thumb's way.
+- ✍️ **记录框里有测量提示**：图表上点笔图标记录时，空的输入框里显示半透明小字，告诉你怎么量：引体是「下巴过杠的标准引体向上」，体重是「清晨空腹体重」，腰围是「量三次肚脐眼位置，选最大值或者平均值」。一输入就消失，不会被存进去。腰围图下的说明也改成同样的量法。
+  The record boxes now show a faint hint on how to measure: strict pull-ups with the chin over the bar, morning weight before eating, waist measured 3 times at the navel taking the largest or the average. It disappears as you type and is never saved. The waist chart caption uses the same method.
 - 📏 腰围图标换成腰上围一圈软尺，更好认。
   The waist icon is now a tape measure around a waist, which is easier to read.
 - 🔥 **新目标：减脂**：把“有记录以来”的热量缺口折算成已经消灭的脂肪（7700 kcal = 1 kg），对比你设的目标公斤数，只算过完的日子。
