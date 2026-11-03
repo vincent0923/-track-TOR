@@ -201,8 +201,6 @@ nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex
 nav.tabs button{flex:1;font:inherit;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:10px;padding:9px 0;cursor:pointer}
 nav.tabs .t-train{flex:2;font-size:17px;padding:11px 0}
 nav.tabs .t-data{flex:1;font-size:20px;padding:9px 0}
-nav.tabs .t-wx{flex:1;font-size:15px;padding:11px 0;display:flex;align-items:center;justify-content:center;gap:5px;color:var(--cta)}
-nav.tabs .t-wx svg{width:22px;height:22px;flex:0 0 auto}
 nav.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 button{font:inherit;color:inherit}
 button:focus-visible,input:focus-visible{outline:2px solid var(--pull);outline-offset:2px}
@@ -469,9 +467,9 @@ html[data-lang="en"] .dsrc-row .btn{min-width:106px}
 .dsrc .dinfo-row{display:flex;margin-top:8px;margin-bottom:10px}
 
 /* level 1 Profile tab and level 2 icon tabs */
-nav.tabs .t-me{flex:1;display:flex;align-items:center;justify-content:center;padding:9px 0;color:var(--cta)}
-nav.tabs .t-me svg{width:26px;height:26px}
-nav.tabs .t-me[aria-selected="true"]{color:var(--bg)}
+nav.tabs button{display:flex;align-items:center;justify-content:center;gap:6px}
+nav.tabs button svg{width:22px;height:22px;flex:0 0 auto}
+nav.tabs .t-me svg{width:24px;height:24px}
 .subtabs button{display:flex;align-items:center;justify-content:center;color:var(--ink)}
 .subtabs button svg{width:22px;height:22px}
 #pane-me{display:grid;gap:12px;padding-top:8px}

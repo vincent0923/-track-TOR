@@ -1,7 +1,7 @@
 /* ---------- screen-level UI: tabs, theme, language, effects (flame, fireworks), sound, fullscreen ---------- */
 /* ---------- tabs ----------
-   Level 1: Train / Charts / Profile. Charts has three views: Diet, Health (weight, waist, sleep, HRV,
-   resting HR) and Strength (pull-ups). Older installs saved "charts" for the old single chart view. */
+   Level 1: Train / Charts / Profile. Charts has three views: Diet, Health (sleep, HRV, resting HR)
+   and Strength (pull-ups, weight, waist: the body numbers you log yourself). Older installs saved "charts" for the old single chart view. */
 const SUBS=["diet","health","strength"];
 let dataSub="diet";
 try{let t=localStorage.getItem(LS+"-sub");if(t==="charts")t="health";if(SUBS.includes(t))dataSub=t}catch(e){}
