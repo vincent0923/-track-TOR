@@ -93,26 +93,6 @@ function dietMovingSum(date, n){
   return c===n ? { s, c } : null;
 }
 
-function renderDietStats(){
-  let sum = 0, n = 0;
-  for(const d of dietRangeDates()){
-    const a = intakeOf(d), b = burnOfDate(d);
-    if(a!==null && b!==null){ sum += b - a; n++; }
-  }
-  const avg = document.getElementById("dAvg"), s = document.getElementById("dSum"), kg = document.getElementById("dKg");
-  if(!avg || !s || !kg) return;
-  if(!n){
-    avg.textContent = s.textContent = kg.textContent = "–";
-    avg.className = s.className = kg.className = "num";
-    return;
-  }
-  const cls = sum >= 0 ? "num g" : "num r";
-  avg.textContent = f0Dec(sum/n);
-  s.textContent = f0Dec(sum);
-  kg.textContent = (Math.round(sum/7700*100)/100).toFixed(2).replace("-","−");
-  avg.className = s.className = kg.className = cls;
-}
-
 function renderDietChart(){
   renderGapTile();
   const dates = dietRangeDates();
@@ -250,7 +230,6 @@ function renderDietDays(){
 }
 
 function renderDietAll(){
-  renderDietStats();
   renderDietChart();
   renderDietDays();
 }
@@ -667,8 +646,7 @@ document.addEventListener("click", e=>{
   if(b){
     dietState.range = +b.dataset.dr;
     document.querySelectorAll("[data-dr]").forEach(x=>x.setAttribute("aria-pressed", String(x===b)));
-    renderDietStats();
-    renderDietChart();
+      renderDietChart();
     return;
   }
   if(e.target.closest("#dietGapTile")){
