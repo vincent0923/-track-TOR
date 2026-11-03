@@ -441,3 +441,10 @@ html[data-lang="en"] .dsrc-row .btn{min-width:106px}
 #recVal::placeholder{font-family:var(--f-body);font-size:13px;font-weight:400;color:var(--muted);opacity:.7}
 #recVal::-webkit-inner-spin-button,#recVal::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 #recVal{-moz-appearance:textfield}
+
+/* record box: out-of-range values can't be saved */
+.mask .sheet{--bad:#C9372C}
+:root[data-theme="dark"] .mask .sheet{--bad:#FF6B5E}
+.mask #recVal.bad,.mask #recVal.bad:focus{border-color:var(--bad)!important;outline-color:var(--bad)}
+.mask .sheet p.recerr{margin:6px 0 0;font-size:13px;color:var(--bad)}
+.btn.recsave:disabled{opacity:.35;cursor:not-allowed}

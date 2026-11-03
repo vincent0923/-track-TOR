@@ -35,6 +35,8 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
   The chart's i | + button moved to the bottom left, right above the notes it opens: it's rarely needed, so it's out of the right thumb's way.
 - ✍️ **记录框里有测量提示**：图表上点笔图标记录时，空的输入框里显示半透明小字，告诉你怎么量：引体是「下巴过杠的标准引体向上」，体重是「清晨空腹体重」，腰围是「量三次肚脐眼位置，选最大值或者平均值」。一输入就消失，不会被存进去。腰围图下的说明也改成同样的量法。
   The record boxes now show a faint hint on how to measure: strict pull-ups with the chin over the bar, morning weight before eating, waist measured 3 times at the navel taking the largest or the average. It disappears as you type and is never saved. The waist chart caption uses the same method.
+- 🚫 **记录框只收合理的数字**：腰围 30–180 cm、体重 20–300 kg、引体 0–200 个整数。填的不对，输入框和提示变红，保存按钮变暗按不下去，面板也不会关。清空再保存，还是删除当天那条记录。输入框不再有上下箭头。
+  The record boxes only accept sensible numbers: waist 30–180 cm, weight 20–300 kg, pull-ups a whole number from 0 to 200. Anything else turns the box and a hint red and the save button can't be pressed, so the panel stays open. Saving an empty box still deletes that day's record. The up/down arrows are gone.
 - 📏 腰围图标换成腰上围一圈软尺，更好认。
   The waist icon is now a tape measure around a waist, which is easier to read.
 - 🔥 **新目标：减脂**：把“有记录以来”的热量缺口折算成已经消灭的脂肪（7700 kcal = 1 kg），对比你设的目标公斤数，只算过完的日子。

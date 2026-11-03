@@ -7,15 +7,15 @@ function saveMetric(date,patch){
 /* pencil on a chart: enter one number for a chosen date; the disk saves and closes */
 function openRecord(key){
   /* hint: how to measure, shown faintly inside the empty box */
-  const def={pullups:{name:T("标准引体","Strict pull-ups"),unit:T("个","reps"),step:1,mode:"numeric",hint:T("下巴过杠的标准引体向上","Strict reps, chin over the bar")},
-    weight:{name:T("体重","Weight"),unit:"kg",step:0.1,mode:"decimal",hint:T("清晨空腹体重","Morning weight, before eating")},
-    waist:{name:T("腰围","Waist"),unit:"cm",step:0.1,mode:"decimal",hint:T("量三次肚脐眼位置，选最大值或者平均值","Measure 3 times at the navel; take the largest or the average")}}[key];
+  const def={pullups:{name:T("标准引体","Strict pull-ups"),unit:T("个","reps"),step:1,mode:"numeric",min:0,max:200,int:true,hint:T("下巴过杠的标准引体向上","Strict reps, chin over the bar")},
+    weight:{name:T("体重","Weight"),unit:"kg",step:0.1,mode:"decimal",min:20,max:300,hint:T("清晨空腹体重","Morning weight, before eating")},
+    waist:{name:T("腰围","Waist"),unit:"cm",step:0.1,mode:"decimal",min:30,max:180,hint:T("量三次肚脐眼位置，选最大值或者平均值","Measure 3 times at the navel; take the largest or the average")}}[key];
   const m=document.createElement("div");
   m.className="mask";
   m.innerHTML='<div class="sheet" role="dialog" aria-modal="true" aria-label="'+esc(def.name)+'" style="max-width:360px">'
     +'<h3><span>'+esc(def.name)+'</span><button class="iconbtn" type="button" data-close aria-label="'+T("取消","Cancel")+'">'+CLOSE_ICON+'</button></h3>'
     +'<div class="form-body"><label class="flabel">'+T("日期","Date")+'<input id="recDate" type="date" value="'+today()+'" max="'+today()+'"></label>'
-    +'<label class="flabel">'+esc(def.name)+'（'+def.unit+'）<input id="recVal" type="number" inputmode="'+def.mode+'" min="0" step="'+def.step+'" placeholder="'+esc(def.hint)+'"></label></div>'
+    +'<label class="flabel">'+esc(def.name)+'（'+def.unit+'）<input id="recVal" type="number" inputmode="'+def.mode+'" min="0" step="'+def.step+'" placeholder="'+esc(def.hint)+'"></label><p class="recerr" id="recErr" role="alert" hidden></p></div>'
     +'<div class="row" style="justify-content:flex-end"><button class="btn recsave" type="button" data-recsave aria-label="'+T("保存并关闭","Save and close")+'" title="'+T("保存并关闭","Save and close")+'">'+SAVE_ICON+'</button></div></div>';
   document.body.appendChild(m);
   const dateEl=m.querySelector("#recDate"), valEl=m.querySelector("#recVal");
@@ -23,7 +23,24 @@ function openRecord(key){
   load();
   dateEl.addEventListener("change",load);
   m.querySelector("[data-close]").addEventListener("click",()=>m.remove());
-  m.querySelector("[data-recsave]").addEventListener("click",()=>{
+  /* empty = clear that day's record; anything else must be a number in range, or Save does nothing */
+  const saveBtn=m.querySelector("[data-recsave]"), errEl=m.querySelector("#recErr");
+  const valid=()=>{
+    const s=valEl.value.trim();
+    if(!s)return !valEl.validity.badInput;
+    const n=Number(s);
+    return isFinite(n)&&n>=def.min&&n<=def.max&&(!def.int||Number.isInteger(n));
+  };
+  const check=()=>{
+    const ok=valid();
+    saveBtn.disabled=!ok;valEl.classList.toggle("bad",!ok);errEl.hidden=ok;
+    if(!ok)errEl.textContent=T("请填 "+def.min+"–"+def.max+" 之间的"+(def.int?"整数":"数字")+"（"+def.unit+"）","Enter a "+(def.int?"whole number":"number")+" from "+def.min+" to "+def.max+" ("+def.unit+")");
+    return ok;
+  };
+  valEl.addEventListener("input",check);
+  dateEl.addEventListener("change",check);
+  saveBtn.addEventListener("click",()=>{
+    if(!check())return;
     const date=dateEl.value||today(), v=numOrNull(valEl.value), r=state.metrics[date];
     if(v!=null)saveMetric(date,{[key]:v});
     else if(r&&r[key]!=null){
@@ -35,6 +52,7 @@ function openRecord(key){
     renderAll();
     toast(md(date)+T(" 的记录已保存"," saved"));
   });
+  check();
   valEl.focus();
 }
 document.getElementById("pane-charts").addEventListener("click",e=>{const b=e.target.closest("[data-rec]");if(b)openRecord(b.dataset.rec)});
