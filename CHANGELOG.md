@@ -6,6 +6,14 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 
 ---
 
+## [v1.18a] — 2026-11-03
+
+### 新增 / Added
+- 🇨🇳 **记账 prompt 可选腾讯文档版**：说明面板顶部可以切换「Google 表格」和「腾讯文档」，国内时区默认选腾讯文档。腾讯文档版给腾讯 WorkBuddy 用：第一次会让它建好「饮食记录」表格、填表头、设成所有人可查看并把链接发给你，之后每天直接写进表格。复制时如果上面填了腾讯文档链接，会一起带上。推拉机读取腾讯文档的功能还在接入中，粘贴腾讯文档链接会如实提示。
+  The bookkeeping prompt now comes in a Tencent Docs version for Tencent WorkBuddy, alongside Google Sheets; the info panel lets you switch, defaulting by time zone. The Tencent version has WorkBuddy set up a 饮食记录 sheet the first time. Reading Tencent Docs in track-TOR isn't connected yet, and pasting a Tencent Docs link says so.
+
+---
+
 ## [v1.17a] — 2026-11-03
 
 ### 变更 / Changed

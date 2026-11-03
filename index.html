@@ -14,7 +14,7 @@
 <div class="wrap">
   <header class="top">
     <div class="trow">
-      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.17a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
+      <h1><span class="zh">推拉机<span class="flipx">🚜</span></span><span class="en">track-TOR<span class="flipx">🚜</span></span><span class="ver">(v1.18a)</span><small class="h1s"><span class="zh">track-TOR · 躯干优化记录</span><span class="en">Torso Optimisation Record</span></small></h1>
       <button id="pwaInstallBtn" type="button" style="display:none;background:var(--cta);border:0;color:#fff;font-weight:700;font-size:12px;padding:5px 11px;border-radius:999px;cursor:pointer;margin-right:6px">📲 <span class="zh">安装 App</span><span class="en">Install</span></button><button id="syncBtn" class="syncbtn off"><span class="zh">连接中</span><span class="en">Connecting</span></button>
     </div>
     <div class="hrow"><p class="sub"><span class="zh">下一次</span><span class="en">Next</span> <b id="stNext" class="num" style="font-size:16px;color:var(--ink)">—</b></p><div class="hbtns">
@@ -57,7 +57,12 @@
         <p class="dsrc-hint"><span class="zh">不要告诉别人这个 URL 哦，不然别人会知道你每天吃什么</span><span class="en">Keep this URL to yourself, or others can see what you eat every day</span></p>
         <p class="dsrc-status" id="dsrcStatus" aria-live="polite"></p>
         <div class="dsrc-info" id="dsrcInfo" hidden>
-          <h4><span class="zh">如何准备 Google Sheets</span><span class="en">Setting up Google Sheets</span></h4>
+          <div class="mode-tabs dsrc-ver" id="dsrcVer" role="tablist">
+            <button type="button" role="tab" data-ver="g">🌏 <span class="zh">Google 表格</span><span class="en">Google Sheets</span></button>
+            <button type="button" role="tab" data-ver="t">🇨🇳 <span class="zh">腾讯文档</span><span class="en">Tencent Docs</span></button>
+          </div>
+          <div data-verpane="g">
+          <h4><span class="zh">如何准备 Google 表格</span><span class="en">Setting up Google Sheets</span></h4>
           <ol>
             <li><span class="zh">新建一张空白表格</span><span class="en">Create a blank spreadsheet</span></li>
             <li><span class="zh">第一行填表头：<code>date, item, p, f, c, veg, kcal</code></span><span class="en">Put the header in row 1: <code>date, item, p, f, c, veg, kcal</code></span></li>
@@ -66,9 +71,9 @@
           </ol>
           <h4><span class="zh">给 AI 的记账 prompt</span><span class="en">Prompt for your AI</span></h4>
           <p class="dsrc-tip"><span class="zh">推荐用能连接并编辑 Google 表格的 AI 记账，它会直接把每样食物写进表格，你只要在这里点「拉取」。复制时会自动带上你上面填的表格链接。</span><span class="en">Use an AI that can connect to and edit Google Sheets: it writes each food straight into the sheet, and you just tap Pull here. Copying fills in the sheet link from the box above.</span></p>
-          <div class="dsrc-code"><button type="button" class="dsrc-copy" id="dsrcCopy"><span class="zh">复制</span><span class="en">Copy</span></button><pre id="dsrcPrompt">我在用一个 Google 表格记饮食，请帮我按下面的规则记账。
+          <div class="dsrc-code"><button type="button" class="dsrc-copy" data-copy="g"><span class="zh">复制</span><span class="en">Copy</span></button><pre id="dsrcPromptG">我在用一个 Google 表格记饮食，请帮我按下面的规则记账。
 
-表格：{表格链接}
+表格：（复制时自动填入你在上面粘贴的表格链接）
 
 我每天会告诉你我吃了什么（文字描述、食物照片、或营养成分表照片）。
 你需要估算每样食物的蛋白质、脂肪、碳水、蔬菜重量和热量，
@@ -98,6 +103,58 @@ kcal：热量，千卡
 另外每次记完，用两个列表告诉我：
 ① 已经吃掉的总计
 ② 包含计划中但还没吃的总计</pre></div>
+          </div>
+          <div data-verpane="t" hidden>
+          <h4><span class="zh">用 WorkBuddy 记账</span><span class="en">Bookkeeping with WorkBuddy</span></h4>
+          <ol>
+            <li><span class="zh">在腾讯 WorkBuddy 里连接你的腾讯文档</span><span class="en">In Tencent WorkBuddy, connect your Tencent Docs</span></li>
+            <li><span class="zh">复制下面的 prompt 发给 WorkBuddy，它会建好「饮食记录」表格并把链接发给你</span><span class="en">Copy the prompt below and send it to WorkBuddy; it sets up a sheet called 饮食记录 and sends you the link</span></li>
+            <li><span class="zh">以后每天把吃了什么告诉 WorkBuddy，它会直接写进表格</span><span class="en">Each day, tell WorkBuddy what you ate; it writes it into the sheet</span></li>
+          </ol>
+          <p class="dsrc-tip dsrc-soon"><span class="zh">推拉机读取腾讯文档的功能还在接入中，暂时只能拉取 Google 表格。</span><span class="en">Reading Tencent Docs in track-TOR is still being added; for now only Google Sheets can be pulled.</span></p>
+          <div class="dsrc-code"><button type="button" class="dsrc-copy" data-copy="t"><span class="zh">复制</span><span class="en">Copy</span></button><pre id="dsrcPromptT">我想用一个腾讯文档在线表格记饮食，请帮我按下面的规则记账。
+
+【第一次使用】
+如果我的腾讯文档里还没有名为「饮食记录」的在线表格，请先帮我：
+1. 新建一个在线表格，命名为「饮食记录」
+2. 在第一行从左到右填上表头：date、item、p、f、c、veg、kcal
+3. 把 A 列（date）设成纯文本格式
+4. 把分享权限设成「所有人可查看」
+5. 把这个表格的链接发给我（我要把它粘到推拉机里）
+如果你没法设置分享权限，就告诉我，我自己在腾讯文档里点「分享」改成「所有人可查看」。
+如果这个表格已经有了，就直接用它，不要再新建。
+
+【每天记账】
+我每天会告诉你我吃了什么（文字描述、食物照片、或营养成分表照片）。
+你需要估算每样食物的蛋白质、脂肪、碳水、蔬菜重量和热量，
+然后把它们直接写进「饮食记录」表格的末尾，一样食物占一行。
+
+7 列从左到右依次是：
+date：日期，写成 2026-11-03 这样
+item：食物和份量，例如「鸡腿 500g（含5%酱料）」
+p：蛋白质，克
+f：脂肪，克
+c：碳水，克
+veg：蔬菜的实际重量，克，没有就填 0
+kcal：热量，千卡
+
+例如：
+2026-11-03 ｜ 鸡腿 500g（含5%酱料） ｜ 80.0 ｜ 50.0 ｜ 0.0 ｜ 0 ｜ 809
+2026-11-03 ｜ 香蕉 1根 100g ｜ 1.2 ｜ 0.2 ｜ 22.0 ｜ 0 ｜ 89
+
+规则：
+- 写之前先看一下表格最后几行，不要重复已经记过的
+- 同一天吃的多样东西，就写多行，日期都填同一天
+- 日期保持 2026-11-03 这种写法，不要被表格自动改成别的格式
+- 含油、酱料的，要在食物名里写明
+- 数字保留一位小数，热量取整数
+- 不要写合计行，合计由推拉机自己算
+- 如果你没法直接写进表格，就把新的行按上面 7 列排成一个表格发给我，我复制粘贴进去
+
+另外每次记完，用两个列表告诉我：
+① 已经吃掉的总计
+② 包含计划中但还没吃的总计</pre></div>
+          </div>
         </div>
       </section>
 

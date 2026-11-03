@@ -6,6 +6,7 @@
    non-diet record (weight, waist, heart rate, training), are left alone. */
 const SHEET_URL_K = "dietSheetUrl", SHEET_STATUS_K = LS + "-sheet-status";
 const SHEET_COLS = ["date","item","p","f","c","veg","kcal"];
+const PROMPT_VER_K = LS + "-prompt-ver";
 
 /* RFC 4180: quoted fields may hold commas, line breaks and doubled quotes ("") */
 function parseCsv(text){
@@ -83,6 +84,7 @@ function sheetCsvUrl(u){
     const g = /[#&?]gid=(\d+)/.exec(u);
     return { url: "https://docs.google.com/spreadsheets/d/" + m[1] + "/gviz/tq?tqx=out:csv&headers=1" + (g ? "&gid=" + g[1] : "") };
   }
+  if(/docs\.qq\.com\//i.test(u)) return { err: T("腾讯文档读取还在接入中，暂时只能拉取 Google 表格", "Reading Tencent Docs is still being added; only Google Sheets can be pulled for now") };
   if(/docs\.google\.com\/spreadsheets\/d\/e\//i.test(u) || /output=csv|\.csv(\?|$)/i.test(u)) return { url: u };
   return { err: T("这不是 Google 表格的链接，请在表格里点「共享 → 复制链接」", "That isn't a Google Sheets link; in the sheet tap Share → Copy link") };
 }
@@ -147,11 +149,24 @@ function copyText(t){
   ib.addEventListener("click", ()=>{ info.hidden = !info.hidden; ib.setAttribute("aria-expanded", String(!info.hidden)); });
   document.getElementById("dsrcPull").addEventListener("click", pullSheet);
   inp.addEventListener("keydown", e=>{ if(e.key === "Enter") pullSheet(); });
-  const cb = document.getElementById("dsrcCopy");
-  cb.addEventListener("click", ()=>{
+  /* two prompt versions: Google Sheets (global) and Tencent Docs with WorkBuddy (China) */
+  let ver = null; try{ ver = localStorage.getItem(PROMPT_VER_K); }catch(e){}
+  if(ver !== "g" && ver !== "t"){ let tz = ""; try{ tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; }catch(e){} ver = /^Asia\/(Shanghai|Urumqi|Chongqing|Harbin)$/.test(tz) ? "t" : "g"; }
+  const setVer = v=>{
+    ver = v; try{ localStorage.setItem(PROMPT_VER_K, v); }catch(e){}
+    document.querySelectorAll("#dsrcVer [data-ver]").forEach(b=>{ b.classList.toggle("active", b.dataset.ver===v); b.setAttribute("aria-selected", String(b.dataset.ver===v)); });
+    document.querySelectorAll("#dsrcInfo [data-verpane]").forEach(p=>{ p.hidden = p.dataset.verpane !== v; });
+  };
+  setVer(ver);
+  document.getElementById("dsrcVer").addEventListener("click", e=>{ const b = e.target.closest("[data-ver]"); if(b) setVer(b.dataset.ver); });
+  info.addEventListener("click", e=>{
+    const cb = e.target.closest("[data-copy]"); if(!cb) return;
     /* the prompt carries the user's own sheet link, so the AI knows where to write */
-    const link = document.getElementById("dsrcUrl").value.trim() || T("（把你的表格链接粘在这里）", "(paste your sheet link here)");
-    copyText(document.getElementById("dsrcPrompt").textContent.replace("{表格链接}", link))
+    const link = document.getElementById("dsrcUrl").value.trim();
+    const txt = cb.dataset.copy === "t"
+      ? document.getElementById("dsrcPromptT").textContent.replace("不要再新建。", "不要再新建。" + (/docs\.qq\.com/i.test(link) ? "\n我的表格链接：" + link : ""))
+      : document.getElementById("dsrcPromptG").textContent.replace("（复制时自动填入你在上面粘贴的表格链接）", link || "（把你的表格链接粘在这里）");
+    copyText(txt)
       .then(()=>{ cb.textContent = T("已复制", "Copied"); setTimeout(()=>{ cb.innerHTML = '<span class="zh">复制</span><span class="en">Copy</span>'; }, 1500); })
       .catch(()=>toast(T("复制失败，请长按选择文字复制", "Couldn't copy; select the text and copy it")));
   });
