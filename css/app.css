@@ -107,8 +107,13 @@
 .dsrc-code pre{margin:0;padding:10px 12px;padding-top:34px;font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;max-height:300px;overflow:auto}
 .dsrc-copy{position:absolute;top:6px;right:6px;border:1px solid var(--line);background:var(--sunk);color:var(--ink);font-size:12px;font-weight:600;border-radius:6px;padding:3px 10px;cursor:pointer}
 .dsrc-row{display:flex;gap:8px;margin-top:10px}
-.dsrc-row input{flex:1;min-width:0;font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:var(--sunk);color:var(--ink)}
-.dsrc-row .btn{background:var(--burn);color:#fff;white-space:nowrap}
+.dsrc-field{position:relative;flex:1;min-width:0}
+.dsrc-field input{width:100%;box-sizing:border-box;padding-left:38px!important}
+.dsrc-paste{position:absolute;left:4px;top:50%;transform:translateY(-50%);width:30px;height:30px;display:grid;place-items:center;border:0;border-radius:8px;background:none;color:var(--muted);padding:0;cursor:pointer}
+.dsrc-paste svg{width:18px;height:18px}
+.dsrc-paste:active{background:var(--line)}
+.dsrc-row input{min-width:0;font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:var(--sunk);color:var(--ink)}
+.dsrc-row .btn{background:var(--burn);color:#fff;white-space:nowrap;flex:none}
 .dsrc-hint{margin:6px 0 0;font-size:14px;color:var(--muted)}
 .dsrc-status{margin:4px 0 0;font-size:14px;color:var(--ink)}
 .dsrc-status.err{color:var(--push)}
@@ -125,12 +130,13 @@
 #pane-diet .chead-t{display:flex;align-items:center;gap:8px}
 #pane-diet .dfoot[hidden]{display:none}
 #pane-diet #dietFormula{font-size:12px;margin-top:8px;padding:8px 10px;background:var(--sunk);border-radius:8px}
-.gtile{display:flex;align-items:baseline;gap:4px 8px;white-space:nowrap;width:100%;margin:8px 0 6px;padding:8px 12px;font:inherit;text-align:left;color:var(--ink);background:var(--sunk);border:1px solid var(--line);border-radius:10px;cursor:pointer}
-.gtile .gl{font-size:13px;color:var(--muted);flex:none}
-.gtile b{font-family:var(--f-num);font-size:24px;font-weight:600;line-height:1}
+.gtile{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:baseline;gap:2px 8px;box-sizing:border-box;width:100%;max-width:100%;min-width:0;margin:8px 0 6px;padding:8px 12px;font:inherit;text-align:left;color:var(--ink);background:var(--sunk);border:1px solid var(--line);border-radius:10px;cursor:pointer}
+.gtile .gl{grid-column:1;font-size:13px;color:var(--muted)}
+.gtile .gn{grid-column:2;grid-row:1;font-size:16px;line-height:1;color:var(--muted)}
+.gtile .gv{grid-column:1 / -1;display:flex;align-items:baseline;gap:8px;min-width:0}
+.gtile b{font-family:var(--f-num);font-size:26px;font-weight:600;line-height:1.1}
 .gtile b.g{color:var(--gain)}.gtile b.r{color:var(--loss)}
-.gtile .gf{font-size:12px;color:var(--muted);min-width:0;overflow:hidden;text-overflow:ellipsis}
-.gtile .gn{margin-left:auto;font-size:14px;color:var(--muted);flex:none}
+.gtile .gf{font-size:12px;color:var(--muted)}
 #dietDays{display:grid;gap:12px}
 #pane-diet .diet-day{margin:0;border-radius:14px}
 #pane-diet .dbar h2{font-size:15px}

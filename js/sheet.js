@@ -329,6 +329,15 @@ function copyText(t){
   document.getElementById("dsrcPull").addEventListener("click", pullSheet);
   inp.addEventListener("keydown", e=>{ if(e.key === "Enter") pullSheet(); });
   inp.addEventListener("change", ()=>{ inp.value = extractUrl(inp.value); });
+  /* paste button: every tap replaces the box with what's on the clipboard (only the link, if there is more text) */
+  document.getElementById("dsrcPaste").addEventListener("click", async ()=>{
+    let t = "";
+    try{ t = await navigator.clipboard.readText(); }
+    catch(e){ inp.focus(); toast(T("读不到剪贴板，请长按输入框粘贴", "Can't read the clipboard; long-press the box to paste")); return; }
+    if(!String(t).trim()){ toast(T("剪贴板是空的", "The clipboard is empty")); return; }
+    inp.value = extractUrl(t);
+    try{ localStorage.setItem(SHEET_URL_K, inp.value); }catch(e){}
+  });
   /* two prompt versions: Google Sheets (global) and Tencent Docs with WorkBuddy (China) */
   let ver = null; try{ ver = localStorage.getItem(PROMPT_VER_K); }catch(e){}
   if(ver !== "g" && ver !== "t"){ let tz = ""; try{ tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; }catch(e){} ver = /^Asia\/(Shanghai|Urumqi|Chongqing|Harbin)$/.test(tz) ? "t" : "g"; }

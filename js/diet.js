@@ -179,12 +179,10 @@ function renderGapTile(){
   /* today's burn is only complete in the evening, so a window that isn't complete today ends yesterday */
   const m = n ? (dietMovingSum(t, n) || dietMovingSum(ymdAdd(t, -1), n)) : gapAllTime();
   const label = n ? T("近 " + n + " 天", "Last " + n + " days") : T("有记录以来", "Since first log");
-  if(!m){ el.innerHTML = `<span class="gl">${label}${T("热量缺口","calorie gap")}</span><b>–</b><span class="gn">${T("点按切换","tap to change")} ›</span>`; return; }
+  const head = `<span class="gl">${label}${m ? (m.s >= 0 ? T("热量缺口","calorie deficit") : T("热量盈余","calorie surplus")) : T("热量缺口","calorie gap")}</span><span class="gn">›</span>`;
+  if(!m){ el.innerHTML = head + `<span class="gv"><b>–</b><span class="gf">${T("记账天数不够","not enough logged days")}</span></span>`; return; }
   const s = Math.round(m.s), g = Math.round(Math.abs(m.s) / 7.7);
-  el.innerHTML = `<span class="gl">${label}${s >= 0 ? T("热量缺口","calorie deficit") : T("热量盈余","calorie surplus")}</span>`
-    + `<b class="${s >= 0 ? "g" : "r"}">${Math.abs(s)} kcal</b>`
-    + `<span class="gf">${T("（约 " + g + " g 脂肪）", "(about " + g + " g fat)")}</span>`
-    + `<span class="gn">›</span>`;
+  el.innerHTML = head + `<span class="gv"><b class="${s >= 0 ? "g" : "r"}">${Math.abs(s)} kcal</b><span class="gf">${T("（约 " + g + " g 脂肪）", "(about " + g + " g fat)")}</span></span>`;
 }
 
 function activeDietDayKeys(){
