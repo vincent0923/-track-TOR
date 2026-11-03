@@ -408,3 +408,9 @@ h1 .ver{font-family:var(--f-num);font-size:12px;font-weight:400;color:var(--mute
 .hsrc{font-size:11px;color:var(--muted)}
 .hsrc button{border:0;background:none;color:var(--pull);font-size:11px;padding:0;cursor:pointer;text-decoration:underline}
 @media (prefers-reduced-motion:no-preference){.prog i{transition:width .25s}.set{transition:background .15s}}
+
+/* progress fill on the Sync and Pull buttons (see withProgress in ui.js) */
+@property --p{syntax:'<percentage>';inherits:false;initial-value:0%}
+body button[data-prog][data-prog]{background-image:linear-gradient(90deg,rgba(255,255,255,.42) var(--p),transparent var(--p));transition:--p .35s ease-out}
+body button.syncbtn[data-prog][data-prog]{opacity:1}
+@media (prefers-reduced-motion:reduce){body button[data-prog][data-prog]{transition:none}}

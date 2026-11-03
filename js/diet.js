@@ -170,14 +170,15 @@ try{ const w = +localStorage.getItem(GAP_WIN_K); if(GAP_WINS.includes(w) && loca
 function gapAllTime(){
   const ks = Object.keys(state.diet).sort(); if(!ks.length) return null;
   let s = 0, c = 0;
-  for(let d = ks[0]; d <= today(); d = ymdAdd(d, 1)){ const g = dietGapOf(d); if(g !== null){ s += g; c++; } }
+  const last = ymdAdd(today(), -1);                       /* today isn't over yet */
+  for(let d = ks[0]; d <= last; d = ymdAdd(d, 1)){ const g = dietGapOf(d); if(g !== null){ s += g; c++; } }
   return c ? { s, c } : null;
 }
 function renderGapTile(){
   const el = document.getElementById("dietGapTile"); if(!el) return;
-  const n = dietState.gw, t = today();
-  /* today's burn is only complete in the evening, so a window that isn't complete today ends yesterday */
-  const m = n ? (dietMovingSum(t, n) || dietMovingSum(ymdAdd(t, -1), n)) : gapAllTime();
+  const n = dietState.gw;
+  /* only finished days are summed: the window ends yesterday, because today's food and burn aren't complete until midnight */
+  const m = n ? dietMovingSum(ymdAdd(today(), -1), n) : gapAllTime();
   const label = n ? T("近 " + n + " 天", "Last " + n + " days") : T("有记录以来", "Since first log");
   const head = `<span class="gl">${label}${m ? (m.s >= 0 ? T("热量缺口","calorie deficit") : T("热量盈余","calorie surplus")) : T("热量缺口","calorie gap")}</span><span class="gn">›</span>`;
   if(!m){ el.innerHTML = head + `<span class="gv"><b>–</b><span class="gf">${T("记账天数不够","not enough logged days")}</span></span>`; return; }

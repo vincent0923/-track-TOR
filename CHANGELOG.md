@@ -23,6 +23,10 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
   The diet page's two charts are now one, and the three summary cards above are gone because the tile says the same thing: the cumulative-gap chart is gone and Intake vs burn stays. A tile under its title shows e.g. "Last 7 days calorie deficit 1051 kcal (about 136 g fat)"; tap it to step through 3 / 7 / 14 / 30 days and since your first log, and it remembers your choice. The formulas sit behind the i | + button next to the title.
 - 📋 **数据源输入框左边加了粘贴按钮**：每次点都用剪贴板里的内容覆盖输入框，复制来的是整段分享文字也只留网址。
   A paste button sits at the left of the data source box: each tap replaces the box with the clipboard, keeping only the link if more text came with it.
+- 🔄 **拉取和同步互相带上对方**：点数据源的「拉取」会顺便从高驰拉活动热量（没登录高驰就只拉饮食）；点右上角的「同步」会顺便拉饮食数据（只要填了链接）。两个按钮在工作时都有一条从左往右推进的填充，它只是让你感到在进行，不代表真实进度，完成后会填满。
+  Pull and Sync now bring the other along: Pull also fetches activity calories from COROS (only the table if you're not connected), and Sync also pulls your diet table when a link is filled in. Both buttons show a left-to-right fill while they work. It's a feeling of progress, not a measurement, and it fills completely when done.
+- 📆 **热量缺口只统计过完的日子**：今天的饮食和消耗要到午夜才完整，所以「近 N 天」是指到昨天为止的 N 天，「有记录以来」也不含今天。
+  The calorie gap only sums finished days: today isn't complete until midnight, so "last N days" ends yesterday and "since first log" excludes today.
 - 缺口卡片改成两行（上面写时间段，下面写数字和脂肪克数），内容再长也不会把页面撑出屏幕。
   The gap tile is now two lines (the period on top, the number and fat below), so it can no longer push the page wider than the screen.
 - 🧱 **更新后不再出现新旧混搭**：手机浏览器会把脚本和样式缓存 10 分钟，更新后可能出现新网页配旧脚本，比如缺口卡片是空的、按钮排版错乱。现在脚本和样式的网址带上内容指纹，文件一变网址就变，旧缓存对不上。

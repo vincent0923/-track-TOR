@@ -258,3 +258,16 @@ document.addEventListener("click", e=>{
   p.hidden = !p.hidden; b.setAttribute("aria-expanded", String(!p.hidden));
   const r = b.querySelector(".dsrc-i-r"); if(r) r.textContent = p.hidden ? "+" : "−";
 });
+
+/* A progress fill on a button while its work runs. It is a feeling of progress, not a measurement:
+   it creeps toward about 90%, and when the work ends (well or badly) it fills to the end. */
+async function withProgress(btn, work){
+  let p = 0;
+  btn.dataset.prog = "1"; btn.style.setProperty("--p", "0%");
+  const tick = setInterval(()=>{ p += (92 - p) * 0.06 + 0.2; btn.style.setProperty("--p", p.toFixed(1) + "%"); }, 120);
+  try{ return await work(); }
+  finally{
+    clearInterval(tick); btn.style.setProperty("--p", "100%");
+    setTimeout(()=>{ delete btn.dataset.prog; btn.style.removeProperty("--p"); }, 650);
+  }
+}

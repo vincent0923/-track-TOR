@@ -285,12 +285,14 @@ function extractUrl(text){
          || /(?:^|\s)((?:[a-z0-9-]+\.)+[a-z]{2,}(?::\d+)?\/[^\s<>"'，。；、【】「」（）《》]*)/i.exec(t);
   return m ? (m[1] || m[0]).replace(/[.,;:!?)\]]+$/, "") : t;
 }
-async function pullSheet(){
+/* returns { ok, rows, days, note }; opts.silent = the caller shows the message itself */
+async function pullSheet(opts){
+  opts = opts || {};
   const inp = document.getElementById("dsrcUrl"), btn = document.getElementById("dsrcPull");
   let url = extractUrl(inp.value);
   inp.value = url;
   try{ if(url) localStorage.setItem(SHEET_URL_K, url); else localStorage.removeItem(SHEET_URL_K); }catch(e){}
-  const fail = msg => setSheetStatus({ ok:false, msg });
+  const fail = msg => { setSheetStatus({ ok:false, msg }); return { ok:false, note:msg }; };
   if(!url) return fail(T("先粘贴表格链接", "Paste the sheet link first"));
   if(!/^https?:\/\//i.test(url)) url = "https://" + url;
   if(navigator.onLine === false) return fail(T("没有网络，连上后再拉取", "You're offline; pull again once connected"));
@@ -306,7 +308,9 @@ async function pullSheet(){
     lsSave(); dietState.open = latestDietOpenSet(state.diet); renderDietAll();
     const d = new Date();
     setSheetStatus({ ok:true, msg:"", at: pad(d.getMonth()+1) + "-" + pad(d.getDate()) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes()), rows, days: nDays });
-    toast(T("已拉取 " + rows + " 条 / " + nDays + " 天", "Pulled " + rows + " rows / " + nDays + " days"));
+    const note = T("已拉取 " + rows + " 条 / " + nDays + " 天", "Pulled " + rows + " rows / " + nDays + " days");
+    if(!opts.silent) toast(note);
+    return { ok:true, rows, days:nDays, note };
   }finally{ btn.disabled = false; btn.innerHTML = old; }
 }
 
@@ -326,8 +330,17 @@ function copyText(t){
     info.hidden = !info.hidden; ib.setAttribute("aria-expanded", String(!info.hidden));
     ib.querySelector(".dsrc-i-r").textContent = info.hidden ? "+" : "−";     /* + opens, − closes */
   });
-  document.getElementById("dsrcPull").addEventListener("click", pullSheet);
-  inp.addEventListener("keydown", e=>{ if(e.key === "Enter") pullSheet(); });
+  /* Pull: the table, plus the watch calories when COROS is connected */
+  const pullBtn = document.getElementById("dsrcPull");
+  const pullAll = async ()=>{
+    const r = await pullSheet({ silent:true });
+    const cal = mcp ? await syncCalories() : "";
+    if(r.ok) toast(r.note + cal);
+    else if(cal) toast(cal.replace(/^[；;]\s*/, ""));
+  };
+  const pull = ()=>{ if(!pullBtn.disabled) withProgress(pullBtn, pullAll); };
+  pullBtn.addEventListener("click", pull);
+  inp.addEventListener("keydown", e=>{ if(e.key === "Enter") pull(); });
   inp.addEventListener("change", ()=>{ inp.value = extractUrl(inp.value); });
   /* paste button: every tap replaces the box with what's on the clipboard (only the link, if there is more text) */
   document.getElementById("dsrcPaste").addEventListener("click", async ()=>{

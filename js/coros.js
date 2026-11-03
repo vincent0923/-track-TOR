@@ -94,9 +94,22 @@ async function syncHrv(){
     return T("；HRV "+rows.length+" 晚，最近 "+md(l.date)+"："+l.hrv+" ms","; HRV "+rows.length+" nights, latest "+md(l.date)+": "+l.hrv+" ms")+back;
   }catch(e){return T("；HRV 读取失败（"+((e&&e.code)||"未知原因")+"）","; HRV read failed ("+((e&&e.code)||"unknown")+")")}
 }
-document.getElementById("syncBtn").addEventListener("click",async()=>{
+/* the last 60 days of watch calories and steps, which the diet page turns into burn; "" when nothing came */
+async function syncCalories(){
+  try{
+    const rows = parseDailyHealthText(toText(await mcp.callTool("COROS","queryDailyHealthData",{days:60})));
+    let dc = 0;
+    for(const [date, v] of Object.entries(rows)){ saveMetric(date, { active: v.active, steps: v.steps }); dc++; }
+    if(dc>0){ renderDietAll(); return T("；已同步 "+dc+" 天活动热量", "; synced "+dc+" days of activity calories"); }
+  }catch(e){}
+  return "";
+}
+document.getElementById("syncBtn").addEventListener("click",()=>{
   if(syncing)return;
   if(!mcp){promptCorosToken();return}
+  withProgress(document.getElementById("syncBtn"), doSync);
+});
+async function doSync(){
   syncing=true;syncUI();
   try{
     const r=await mcp.callTool("COROS","querySleepOverview",{startDate:ymdOffset(-59),endDate:ymdOffset(0)});
@@ -112,14 +125,7 @@ document.getElementById("syncBtn").addEventListener("click",async()=>{
     }
     msg+=await syncHrv();
     msg+=await syncRhr();
-    try{
-      const dhealth = await mcp.callTool("COROS","queryDailyHealthData",{days:60});
-      const dtext = toText(dhealth);
-      const rows = parseDailyHealthText(dtext);
-      let dc = 0;
-      for(const [date, v] of Object.entries(rows)){ saveMetric(date, { active: v.active, steps: v.steps }); dc++; }
-      if(dc>0){ renderDietAll(); msg += T("；已同步 "+dc+" 天饮食与活动热量", "; synced "+dc+" days of diet & calorie burn"); }
-    }catch(de){}
+    msg+=await syncCalories();
     try{
       const u=await mcp.callTool("COROS","queryUserInfo",{});
       const ut=toText(u);
@@ -138,6 +144,12 @@ document.getElementById("syncBtn").addEventListener("click",async()=>{
         else{await saveMetric(td,{weightC:w});const hasM=state.metrics[td]&&state.metrics[td].weight!=null;msg+=T("；COROS 体重 "+w+" kg 记入 "+md(td)+(hasM?"（当天有手动体重，以手动为准）":""),"; COROS weight "+w+" kg logged for "+md(td)+(hasM?" (manual entry for that day takes priority)":""))}
       }else msg+=T("；没有读到 COROS 体重","; no COROS weight found");
     }catch(e2){msg+=T("；体重读取失败（"+((e2&&e2.code)||"未知原因")+"）","; weight read failed ("+((e2&&e2.code)||"unknown")+")")}
+    /* a diet table link is filled in: pull it too */
+    const sheetUrl = typeof extractUrl === "function" ? extractUrl(document.getElementById("dsrcUrl").value) : "";
+    if(sheetUrl){
+      const r = await pullSheet({ silent:true });
+      msg += r.ok ? T("；饮食 "+r.rows+" 条 / "+r.days+" 天", "; diet "+r.rows+" rows / "+r.days+" days") : T("；饮食表读取失败", "; diet table couldn't be read");
+    }
     lsSave();renderAll();syncMsg(msg);
     try{const d=new Date();localStorage.setItem(SYNC_K,today()+" "+pad(d.getHours())+":"+pad(d.getMinutes()))}catch(e){}
   }catch(e){
@@ -150,7 +162,7 @@ document.getElementById("syncBtn").addEventListener("click",async()=>{
     else if(c==="mcp_error")syncMsg(T("COROS 返回错误：","COROS error: ")+(e.message||T("未知原因","unknown")));
     else syncMsg(T("同步失败（"+(c||"未知原因")+"），稍后再试。","Sync failed ("+(c||"unknown")+"), try again later."));
   }finally{syncing=false;syncUI()}
-});
+}
 /* 有令牌就算已连接，不因断网或令牌到期打扰用户；剩余不足 15 天就提前续期，经常打开就一直不用重新授权 */
 const COROS_RENEW_WITHIN = 15*864e2;
 async function connectMcp(){
