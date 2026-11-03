@@ -1,5 +1,5 @@
 // Service Worker for 推拉机 track-TOR PWA
-const CACHE_NAME = "tracktor-pwa-v4";
+const CACHE_NAME = "tracktor-pwa-v5";
 const ASSETS = [
   "./",
   "./index.html",
@@ -16,6 +16,7 @@ const ASSETS = [
   "./js/coros.js",
   "./js/welcome.js",
   "./js/diet.js",
+  "./js/sheet.js",
   "./js/main.js",
   "./fonts/barlow-condensed-500.woff2",
   "./fonts/barlow-condensed-600.woff2",

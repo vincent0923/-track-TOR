@@ -6,6 +6,18 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 
 ---
 
+## [v1.15a] — 2026-11-03
+
+### 新增 / Added
+- 📊 **饮食数据源：Google Sheets**：饮食页顶部新的「数据源」区块。粘贴 Google Sheets「发布到网络」得到的 CSV 链接，点「拉取」就把表格里的每日饮食读进来。表格里有的日期覆盖本地饮食，其他日期，以及体重、腰围、心率、训练都不动。点 ⓘ 展开说明：怎么准备表格，以及一段可以一键复制给 AI 的记账 prompt。链接只存在你的手机里，不会自动拉取。
+  Diet data source: a new block at the top of the diet page. Paste the CSV link from Google Sheets "Publish to web" and tap Pull to bring in your daily food. Dates in the sheet replace the local diet for those days; other dates and your weight, waist, heart rate and training stay as they are. Tap ⓘ for how to set up the sheet and a prompt you can copy to your AI. The link stays on your phone and nothing is pulled until you tap Pull.
+
+### 移除 / Removed
+- 去掉 v1.14a 的「网上饮食账本」(diet.json) 读取，饮食只保留 Google Sheets 这一个数据源。
+  Removed the v1.14a online diet ledger (diet.json); Google Sheets is now the single diet data source.
+
+---
+
 ## [v1.14a] — 2026-11-03
 
 ### 新增 / Added

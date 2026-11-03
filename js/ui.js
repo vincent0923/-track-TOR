@@ -32,7 +32,7 @@ applyTheme(theme);
 function applyLang(l){LANG=l;document.documentElement.setAttribute("data-lang",l);document.documentElement.lang=l==="en"?"en":"zh-CN";
   document.getElementById("langBtn").textContent=l==="en"?"EN":"CH";try{localStorage.setItem(LS+"-lang",l)}catch(e){}}
 applyLang(LANG);
-document.getElementById("langBtn").addEventListener("click",()=>{applyLang(LANG==="en"?"zh":"en");applyTheme(document.documentElement.getAttribute("data-theme")||"light");renderAll();renderDietAll();syncUI()});
+document.getElementById("langBtn").addEventListener("click",()=>{applyLang(LANG==="en"?"zh":"en");applyTheme(document.documentElement.getAttribute("data-theme")||"light");renderAll();renderDietAll();paintSheetLang();syncUI()});
 document.getElementById("themeBtn").addEventListener("click",()=>applyTheme(document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark"));
 
 (function(){
