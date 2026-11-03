@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
-<link rel="stylesheet" href="css/app.css?v=38a4add9">
+<link rel="stylesheet" href="css/app.css?v=cf4ddd2b">
 <title>推拉机 track-TOR</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#16212B">
@@ -107,15 +107,22 @@
         </div>
         <button type="button" class="gtile" id="dietGapTile" aria-label="切换统计天数 / Change period"></button>
         <div class="dlegend">
-          <span><i style="background:var(--intake)"></i><span class="zh">摄入</span><span class="en">Intake</span></span>
-          <span><i style="background:var(--burn)"></i><span class="zh">估算总消耗</span><span class="en">Est. burn</span></span>
-          <span><i style="background:var(--muted);opacity:.7"></i><span class="zh">基础代谢</span><span class="en">BMR</span></span>
-          <span><i style="background:var(--gain);height:8px;opacity:.5"></i><span class="zh">缺口</span><span class="en">Deficit</span></span>
-          <span><i style="background:var(--loss);height:8px;opacity:.5"></i><span class="zh">盈余</span><span class="en">Surplus</span></span>
+          <span><svg class="lgs" viewBox="0 0 18 10" aria-hidden="true"><path d="M1 5h16" stroke="var(--intake)" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="5" r="2.6" fill="var(--intake)"/></svg><span class="zh">摄入</span><span class="en">Intake</span></span>
+          <span><svg class="lgs" viewBox="0 0 18 10" aria-hidden="true"><path d="M1 5h16" stroke="var(--burn)" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="5" r="2.6" fill="var(--burn)"/></svg><span class="zh">估算总消耗</span><span class="en">Est. burn</span></span>
+          <span><svg class="lgs" viewBox="0 0 18 10" aria-hidden="true"><path d="M1 5h16" stroke="var(--muted)" stroke-width="1.4" stroke-dasharray="4 3" stroke-opacity=".8"/></svg><span class="zh">基础代谢</span><span class="en">BMR</span></span>
+          <span><svg class="lgs lgb" viewBox="0 0 10 12" aria-hidden="true"><rect x="1" y="1" width="8" height="10" rx="1.5" fill="var(--gain)" fill-opacity=".35"/></svg><span class="zh">缺口</span><span class="en">Deficit</span></span>
+          <span><svg class="lgs lgb" viewBox="0 0 10 12" aria-hidden="true"><rect x="1" y="1" width="8" height="10" rx="1.5" fill="var(--loss)" fill-opacity=".35"/></svg><span class="zh">盈余</span><span class="en">Surplus</span></span>
         </div>
         <div id="dietChart"></div>
         <div class="tip" id="dietTip" hidden></div>
-        <div class="dfoot" id="dietFormula" hidden><span class="zh">基础代谢按 Mifflin 公式计算。总消耗 = 基础代谢 + 手表热量 + 摄入 × 9%（消化耗能），或直接采用手动填写的当日总消耗。手表热量里，日常活动全算；运动记录的部分 × 0.7（手表容易高估），有功率计的骑行 × 0.9。当天的活动热量要到晚上才完整。</span><span class="en">BMR uses the Mifflin formula. Burn = BMR + watch calories + intake × 9% (digestion), or the total you enter by hand. Of the watch calories, everyday movement counts in full; logged workouts count at 0.7 (watches tend to overestimate them), rides with a power meter at 0.9. Today's activity isn't complete until evening.</span> <span class="zh">热量缺口 = 估算总消耗 − 摄入，约 7700 kcal 折合 1 kg 脂肪。只统计已经过完的日子，今天不算；统计的天数里只要有一天没记账或缺消耗数据，就显示 –。</span><span class="en">Gap = estimated burn − intake; about 7700 kcal makes 1 kg of fat. Only finished days count, never today; if any day in the period has no log or no burn data, it shows –.</span></div>
+        <div class="dfoot" id="dietFormula" hidden><ul class="flist">
+          <li><span class="lgw"><svg class="lgs" viewBox="0 0 18 10" aria-hidden="true"><path d="M1 5h16" stroke="var(--burn)" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="5" r="2.6" fill="var(--burn)"/></svg></span><span><span class="zh"><b>估算总消耗</b> = 基础代谢 + 手表热量 + 摄入 × 9%（消化耗能）。手填了当日总消耗，就用手填的。</span><span class="en"><b>Est. burn</b> = BMR + watch calories + intake × 9% (digestion). A total you enter by hand replaces it.</span></span></li>
+          <li><span class="lgw"><span class="lgs"></span></span><span><span class="zh"><b>手表热量</b>：日常活动全算；运动记录 × 0.7（手表容易高估）；有功率计的骑行 × 0.9。当天要到晚上才完整。</span><span class="en"><b>Watch calories</b>: everyday movement in full; logged workouts × 0.7 (watches tend to overestimate them); rides with a power meter × 0.9. Today is only complete in the evening.</span></span></li>
+          <li><span class="lgw"><svg class="lgs" viewBox="0 0 18 10" aria-hidden="true"><path d="M1 5h16" stroke="var(--muted)" stroke-width="1.4" stroke-dasharray="4 3" stroke-opacity=".8"/></svg></span><span><span class="zh"><b>基础代谢</b>：按 Mifflin 公式，用你的性别、年龄、身高和体重算。</span><span class="en"><b>BMR</b>: the Mifflin formula, from your sex, age, height and weight.</span></span></li>
+          <li><span class="lgw"><svg class="lgs" viewBox="0 0 18 10" aria-hidden="true"><path d="M1 5h16" stroke="var(--intake)" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="5" r="2.6" fill="var(--intake)"/></svg></span><span><span class="zh"><b>摄入</b>：当天记下的饮食热量合计。</span><span class="en"><b>Intake</b>: the calories you logged that day.</span></span></li>
+          <li><span class="lgw"><svg class="lgs lgb" viewBox="0 0 10 12" aria-hidden="true"><rect x="1" y="1" width="8" height="10" rx="1.5" fill="var(--gain)" fill-opacity=".35"/></svg><svg class="lgs lgb" viewBox="0 0 10 12" aria-hidden="true"><rect x="1" y="1" width="8" height="10" rx="1.5" fill="var(--loss)" fill-opacity=".35"/></svg></span><span><span class="zh"><b>缺口</b> / <b>盈余</b> = 估算总消耗 − 摄入。约 7700 kcal 折合 1 kg 脂肪。</span><span class="en"><b>Deficit</b> / <b>surplus</b> = est. burn − intake. About 7700 kcal makes 1 kg of fat.</span></span></li>
+          <li><span class="lgw"><span class="lgs lgtile" aria-hidden="true"></span></span><span><span class="zh"><b>上方的缺口卡片</b>只算过完的日子，今天不算；期间有一天没记账或缺消耗数据，就显示 –。</span><span class="en"><b>The gap tile above</b> only counts finished days, never today; if any day in the period has no log or no burn data, it shows –.</span></span></li>
+        </ul></div>
       </div>
 
       <div id="dietDays" aria-label="每日饮食记录"></div>
@@ -282,15 +289,15 @@
 <div id="toast" class="toast" hidden></div>
 <button id="toTop" class="totop" type="button" aria-label="返回顶端"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="2.4" rx=".6" fill="currentColor"/><path d="M12 8.2 5.6 14.6h4.1V20h4.6v-5.4h4.1z" fill="currentColor"/></svg></button>
 
-<script src="js/core.js?v=38a4add9"></script>
-<script src="js/ui.js?v=38a4add9"></script>
-<script src="js/train.js?v=38a4add9"></script>
-<script src="js/progress.js?v=38a4add9"></script>
-<script src="js/backup.js?v=38a4add9"></script>
-<script src="js/coros.js?v=38a4add9"></script>
-<script src="js/welcome.js?v=38a4add9"></script>
-<script src="js/diet.js?v=38a4add9"></script>
-<script src="js/sheet.js?v=38a4add9"></script>
-<script src="js/main.js?v=38a4add9"></script>
+<script src="js/core.js?v=cf4ddd2b"></script>
+<script src="js/ui.js?v=cf4ddd2b"></script>
+<script src="js/train.js?v=cf4ddd2b"></script>
+<script src="js/progress.js?v=cf4ddd2b"></script>
+<script src="js/backup.js?v=cf4ddd2b"></script>
+<script src="js/coros.js?v=cf4ddd2b"></script>
+<script src="js/welcome.js?v=cf4ddd2b"></script>
+<script src="js/diet.js?v=cf4ddd2b"></script>
+<script src="js/sheet.js?v=cf4ddd2b"></script>
+<script src="js/main.js?v=cf4ddd2b"></script>
 
 </body></html>
