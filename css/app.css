@@ -81,8 +81,8 @@
 .xadd input,.xadd select{min-width:0;width:100%;font:inherit;font-size:16px;padding:7px 8px;border:1px solid var(--line);border-radius:9px;background:var(--sunk);color:var(--ink)}
 .xadd .btn{padding:7px 12px}
 .xchips{display:flex;gap:6px;flex-wrap:wrap}
-#pane-diet{--intake:#2C3B44;--burn:#C2662D;--gain:#3E8E63;--loss:#C2453B;--dslate:#2C3B44;--dtotal:#E6E1D6;display:grid;gap:16px;padding-top:8px}
-:root[data-theme="dark"] #pane-diet{--intake:#9DB8C6;--burn:#E58A4F;--gain:#55B884;--loss:#E66A5F;--dslate:#34505E;--dtotal:#2A3234}
+#pane-diet{--protein:#7A5CC8;--intake:#2C3B44;--burn:#C2662D;--gain:#3E8E63;--loss:#C2453B;--dslate:#2C3B44;--dtotal:#E6E1D6;display:grid;gap:16px;padding-top:8px}
+:root[data-theme="dark"] #pane-diet{--protein:#B49CF2;--intake:#9DB8C6;--burn:#E58A4F;--gain:#55B884;--loss:#E66A5F;--dslate:#34505E;--dtotal:#2A3234}
 /* diet data source (Google Sheets CSV) */
 .dsrc{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
 .dsrc-h{display:flex;align-items:center;gap:8px}

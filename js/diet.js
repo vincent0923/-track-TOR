@@ -38,6 +38,15 @@ function dietTotals(day){
   return t;
 }
 
+/* protein: grams eaten that day (null when nothing with protein was logged), and the daily minimum
+   for building muscle, 1.6 g per kg of body weight */
+const PROTEIN_PER_KG = 1.6;
+function proteinOf(date){
+  const d = state.diet[date];
+  if(!d || !d.items || !d.items.length) return null;
+  return d.items.some(it=>numVal(it.p)!==null) ? dietTotals(d).p : null;
+}
+function proteinNeed(date){ return PROTEIN_PER_KG * weightAtDate(date); }
 function intakeOf(date){
   const d = state.diet[date];
   if(!d) return null;
@@ -106,7 +115,7 @@ function dietMovingSum(date, n){
 function renderDietChart(){
   renderGapTile();
   const dates = dietRangeDates();
-  const W=340,H=190,L=34,R=16,TP=10,B=22;
+  const W=340,H=190,L=34,R=30,TP=10,B=22;
   /* 只画有饮食记录的日子，没记账的日子不单独画消耗 */
   const pts = dates.map(d=>{ const a = intakeOf(d); return { d, a, b: a===null ? null : burnOfDate(d) }; });
   const vals = pts.flatMap(p=>[p.a, p.b]).filter(v=>v!==null);
@@ -115,12 +124,16 @@ function renderDietChart(){
     lo = Math.min(lo, Math.floor(Math.min(...vals)/200)*200);
     hi = Math.max(hi, Math.ceil(Math.max(...vals)/200)*200);
   }
+  /* right axis: protein in grams */
+  const pr = dates.map(proteinOf), need = dates.map(proteinNeed);
+  const phi = Math.max(40, Math.ceil(Math.max(...need, ...pr.filter(v=>v!==null)) * 1.1 / 40) * 40);
   const step = (W-L-R) / Math.max(1, dates.length-1);
-  const x = i => L + i*step, y = v => TP + (hi-v)/(hi-lo)*(H-TP-B);
+  const x = i => L + i*step, y = v => TP + (hi-v)/(hi-lo)*(H-TP-B), yp = v => TP + (phi-v)/phi*(H-TP-B);
   let g = "";
   for(let v=lo; v<=hi; v += (hi-lo>1600 ? 400 : 200)){
     g += `<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${L-4}" y="${y(v)+4}" text-anchor="end">${v}</text>`;
   }
+  for(let v=0; v<=phi; v+=phi/4) g += `<text x="${W-R+4}" y="${yp(v)+4}" text-anchor="start" style="fill:var(--protein)">${Math.round(v)}</text>`;
   const lab = dates.length<=14 ? 2 : (dates.length<=30 ? 7 : 14);
   dates.forEach((d,i)=>{
     if((dates.length-1-i)%lab===0){
@@ -149,6 +162,13 @@ function renderDietChart(){
   g += `<path d="${line("b")}" fill="none" stroke="var(--burn)" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>`;
   g += `<path d="${line("a")}" fill="none" stroke="var(--intake)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
   g += dotsFor("b", "var(--burn)") + dotsFor("a", "var(--intake)");
+  /* protein: dotted line for the daily minimum, a line with dots for what was eaten; a filled dot means enough that day */
+  g += `<path d="${need.map((v,i)=>(i?"L":"M")+x(i).toFixed(1)+" "+yp(v).toFixed(1)).join("")}" fill="none" stroke="var(--protein)" stroke-width="1.3" stroke-dasharray="1.5 3" stroke-linecap="round"/>`;
+  { let pd="", pen=false; pr.forEach((v,i)=>{ if(v===null){ pen=false; return; } pd += (pen?"L":"M") + x(i).toFixed(1) + " " + yp(v).toFixed(1); pen=true; });
+    g += `<path d="${pd}" fill="none" stroke="var(--protein)" stroke-width="1.4" stroke-opacity=".7" stroke-linejoin="round"/>`; }
+  const pr_r = dates.length>30 ? 2 : 2.9;
+  pr.forEach((v,i)=>{ if(v===null) return; const ok = v >= need[i];
+    g += `<circle cx="${x(i)}" cy="${yp(v)}" r="${pr_r}" fill="${ok ? "var(--protein)" : "var(--surface)"}" stroke="var(--protein)" stroke-width="1.4"/>`; });
   g += `<line id="dxh" x1="0" x2="0" y1="${TP}" y2="${H-B}" stroke="var(--ink)" stroke-opacity=".35" stroke-width="1" visibility="hidden"/>`;
   
   const box = document.getElementById("dietChart");
@@ -162,7 +182,9 @@ function renderDietChart(){
     const p = pts[i];
     xh.setAttribute("x1", x(i)); xh.setAttribute("x2", x(i)); xh.setAttribute("visibility", "visible");
     const gap = (p.a!==null && p.b!==null) ? p.b - p.a : null;
-    tip.innerHTML = `${dotDateStr(p.d).slice(5)}　${T("摄入","In")} <b>${f0Dec(p.a)}</b>　${T("消耗","Burn")} <b>${f0Dec(p.b)}</b>　${T("基代","BMR")} <b>${f0Dec(bmrOfDate(p.d))}</b>` + (gap===null ? "" : `　${gap>=0 ? T("缺口","Deficit") : T("盈余","Surplus")} <b>${f0Dec(Math.abs(gap))}</b>`);
+    const pv = pr[i], pn = need[i];
+    tip.innerHTML = `${dotDateStr(p.d).slice(5)}　${T("摄入","In")} <b>${f0Dec(p.a)}</b>　${T("消耗","Burn")} <b>${f0Dec(p.b)}</b>　${T("基代","BMR")} <b>${f0Dec(bmrOfDate(p.d))}</b>` + (gap===null ? "" : `　${gap>=0 ? T("缺口","Deficit") : T("盈余","Surplus")} <b>${f0Dec(Math.abs(gap))}</b>`)
+      + `<br>${T("蛋白质","Protein")} <b>${pv===null ? "–" : Math.round(pv)}</b> / ${Math.round(pn)} g` + (pv===null ? "" : (pv >= pn ? T("　够了 ✓","　enough ✓") : T("　还差 " + Math.round(pn-pv) + " g","　" + Math.round(pn-pv) + " g short")));
     tip.hidden = false;
     const bbox = box.getBoundingClientRect();
     const px = r.left - bbox.left + x(i)/W * r.width;
