@@ -104,6 +104,8 @@ function parseSportRecords(text){
   return out;
 }
 const BIKE_TYPES = [200,201,202,203,204,205,299], PM_K = LS + "-pm";
+/* low-intensity workouts: walk, yoga, custom leisure / other / common (housework is usually logged as custom) */
+const LOW_TYPES = [900,904,9801,9807,9904,9999];
 /* does this ride have power data (a power meter)? asked once per ride, then remembered */
 async function rideHasPower(r){
   let pm = {}; try{ pm = JSON.parse(localStorage.getItem(PM_K) || "{}") || {}; }catch(e){}
@@ -126,9 +128,10 @@ async function syncCalories(){
       const recs = parseSportRecords(toText(await mcp.callTool("COROS","querySportRecords",{ startDate: ymdOffset(-59), endDate: ymdOffset(0), limit: 500 })));
       split = {};
       for(const r of recs){
-        const s = split[r.date] || (split[r.date] = { ex:0, exP:0 });
+        const s = split[r.date] || (split[r.date] = { ex:0, exP:0, exL:0 });
         s.ex += r.kcal;
         if(BIKE_TYPES.includes(r.sport) && await rideHasPower(r)) s.exP += r.kcal;
+        else if(LOW_TYPES.includes(r.sport)) s.exL += r.kcal;
       }
     }catch(e){}
     for(const date of dates){
@@ -136,9 +139,9 @@ async function syncCalories(){
       /* workouts unreadable this time: an old split no longer matches a changed day total (it would count new
          workouts as everyday movement at full value), so that day falls back to "workouts unknown" (×0.7) */
       const stale = !split && old && old.ex != null && old.active !== v.active;
-      if(split){ const s = split[date] || { ex:0, exP:0 }; patch.ex = s.ex; patch.exP = s.exP; }
+      if(split){ const s = split[date] || { ex:0, exP:0, exL:0 }; patch.ex = s.ex; patch.exP = s.exP; patch.exL = s.exL; }
       saveMetric(date, patch);
-      if(stale){ delete state.metrics[date].ex; delete state.metrics[date].exP; lsSave(); }
+      if(stale){ delete state.metrics[date].ex; delete state.metrics[date].exP; delete state.metrics[date].exL; lsSave(); }
     }
     renderDietAll();
     return T("；已同步 "+dates.length+" 天活动热量", "; synced "+dates.length+" days of activity calories");
@@ -251,7 +254,7 @@ function coOutStep(n){
 function corosLogout(wipe){
   try{ localStorage.removeItem("tracktor-coros-token"); sessionStorage.removeItem("tracktor-coros-pending"); }catch(e){}
   if(wipe){
-    const SYNCED=["weightC","sleep","sleepH","hrv","rhr","active","steps","ex","exP"];
+    const SYNCED=["weightC","sleep","sleepH","hrv","rhr","active","steps","ex","exP","exL"];
     for(const [d,m] of Object.entries(state.metrics)){
       SYNCED.forEach(k=>delete m[k]);
       if(Object.keys(m).every(k=>k==="date"||m[k]==null))delete state.metrics[d];

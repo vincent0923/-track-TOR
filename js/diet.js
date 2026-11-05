@@ -8,15 +8,17 @@ function latestDietOpenSet(days){
 
 /* used only until the user fills in their own profile or weight */
 const AGE_DEFAULT = 30, W_DEFAULT = 65, TEF = 0.09, TEF_DEFAULT = 1850;
-/* watch calories: everyday movement counts in full, logged workouts at 0.7 (watches tend to overestimate them),
-   rides measured by a power meter at 0.9. A day whose workouts are unknown counts at 0.7 throughout. */
-const EX_FACTOR = 0.7, POWER_FACTOR = 0.9;
+/* watch calories (COROS active calories, resting metabolism not included): everyday movement counts in full;
+   logged workouts at 0.7 (heart-rate estimates run high); low-intensity ones (walks, housework and other custom
+   activities, yoga) at 0.5, since a heart rate barely above resting is where the estimate is worst; rides
+   measured by a power meter at 0.9. A day whose workouts are unknown counts at 0.7 throughout. */
+const EX_FACTOR = 0.7, LOW_FACTOR = 0.5, POWER_FACTOR = 0.9;
 function watchBurn(date, act){
   if(act === null) return null;
   const m = state.metrics[date];
   if(!m || m.ex == null) return act * EX_FACTOR;
-  const ex = Math.min(+m.ex || 0, act), exP = Math.min(+m.exP || 0, ex);
-  return (act - ex) + (ex - exP) * EX_FACTOR + exP * POWER_FACTOR;
+  const ex = Math.min(+m.ex || 0, act), exP = Math.min(+m.exP || 0, ex), exL = Math.min(+m.exL || 0, ex - exP);
+  return (act - ex) + (ex - exP - exL) * EX_FACTOR + exL * LOW_FACTOR + exP * POWER_FACTOR;
 }
 
 function numVal(v){ return (v===null||v===undefined||v===""||isNaN(+v)) ? null : +v; }
