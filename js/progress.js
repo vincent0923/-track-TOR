@@ -387,7 +387,7 @@ function meEye(on){
   b.innerHTML=on?EYE_ON:EYE_OFF;b.setAttribute("aria-pressed",on);b.setAttribute("aria-label",on?T("隐藏资料","Hide profile"):T("显示资料","Show profile"));
 }
 meEye(false);
-document.getElementById("meEye").addEventListener("click",()=>meEye(document.getElementById("meFields").classList.contains("hid")));
+document.getElementById("meEye").addEventListener("click",e=>{e.preventDefault();e.stopPropagation();meEye(document.getElementById("meFields").classList.contains("hid"))});
 document.getElementById("meFields").addEventListener("focusin",()=>meEye(true));
 document.getElementById("foldMe").addEventListener("click",e=>{
   if(e.target.id!=="gHreset")return;state.settings.h=state.settings.hC;state.settings.hSrc="coros";saveSettings();renderGoals();

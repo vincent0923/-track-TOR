@@ -370,7 +370,6 @@ table.log td{font-family:var(--f-num);font-size:17px}
 @keyframes chev{from{background-position:0 50%}to{background-position:12px 50%}}
 .fw{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:40}
 .gb .gr{font-size:11px;color:var(--muted);font-family:var(--f-num);letter-spacing:.02em}
-.mehead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
 .mefields.hid input,.mefields.hid select{filter:blur(6px)}
 .mefields.hid .hsrc{visibility:hidden}
 .gset{border:0;background:none;padding:0;font:inherit;font-weight:700;color:var(--g);text-decoration:underline;cursor:pointer}
@@ -494,3 +493,6 @@ button.cap:disabled{opacity:.5}
 #dietBar h2{flex-wrap:wrap}
 .dentry-inline .sheet{max-width:none;max-height:none;border:1px solid var(--line);--bad:#C9372C}
 body .cap>button[data-prog][data-prog]{background-image:linear-gradient(90deg,color-mix(in srgb,var(--burn) 35%,transparent) var(--p),transparent var(--p))}
+#foldMe>summary .meeye{margin-left:auto;margin-right:8px;width:32px;height:32px}
+#foldMe:not([open])>summary .meeye{display:none}
+#foldMe>summary .saveic{margin-left:0}
