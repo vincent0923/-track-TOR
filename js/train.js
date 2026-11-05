@@ -149,22 +149,36 @@ function dayHas(d){
   const dx=state.dayx&&state.dayx[d], x=!!(dx&&((dx.xs&&dx.xs.some(it=>it.sets.some(y=>y.d)))||(dx.note&&dx.note.trim())));
   return {push:kinds.includes("push"),pull:kinds.includes("pull"),x};
 }
+const CAL_FOLD_K=LS+"-calfold";
+try{calState.fold=localStorage.getItem(CAL_FOLD_K)==="1"}catch(e){}
+const CAL_ICON='<svg class="calic" viewBox="0 0 12 12" aria-hidden="true">'+[0,4.2,8.4].map(y=>[0,4.2,8.4].map(x=>'<rect x="'+x+'" y="'+y+'" width="3.4" height="3.4" rx=".6"/>').join("")).join("")+'</svg>';
+/* month calendar: trained days are filled circles (push orange, pull blue, both split, extra only green),
+   today burns green, the chosen day gets a ring; the +/− square folds the grid away */
 function calendarHtml(){
   const td=today(), m=calState.month||td.slice(0,7);
   const [y,mo]=m.split("-").map(Number), first=new Date(y,mo-1,1), days=new Date(y,mo,0).getDate();
   const lead=(first.getDay()+6)%7;                     /* weeks start on Monday */
-  const wk=T("一二三四五六日","MTWTFSS").split("");
-  let h='<section class="cal" aria-label="'+T("训练日历","Training calendar")+'"><div class="calh"><span class="calm-nav">'
+  const prevDays=new Date(y,mo-1,0).getDate(), cells=Math.ceil((lead+days)/7)*7;
+  const wk=T("一二三四五六日","MTWTFSS").split(""), fold=!!calState.fold;
+  const mname=T(mo+"月",new Date(y,mo-1,1).toLocaleString("en",{month:"long"}).toUpperCase());
+  let h='<section class="cal'+(fold?" folded":"")+'" aria-label="'+T("训练日历","Training calendar")+'"><div class="calh">'
+    +'<div class="caltitle">'+CAL_ICON+'<b>'+mname+'</b><small>'+y+'</small></div>'
+    +'<div class="calctl">'
     +'<button type="button" class="calnav" data-cal-nav="-1" aria-label="'+T("上个月","Previous month")+'">‹</button>'
-    +'<b>'+T(y+" 年 "+mo+" 月",new Date(y,mo-1,1).toLocaleString("en",{month:"long"})+" "+y)+'</b>'
-    +'<button type="button" class="calnav" data-cal-nav="1" aria-label="'+T("下个月","Next month")+'"'+(m>=td.slice(0,7)?" disabled":"")+'>›</button></span>'
-    +'<button type="button" class="caltoday" data-cal-today aria-label="'+T("跳到今天","Go to today")+'">'+T("今天","Today")+'</button></div>'
-    +'<div class="calg">'+wk.map(w=>'<span class="calw">'+w+'</span>').join("")+'<span></span>'.repeat(lead);
-  for(let i=1;i<=days;i++){
-    const d=m+"-"+pad(i), f=dayHas(d), fut=d>td;
-    h+='<button type="button" class="cald'+(d===td?" today":"")+(d===calState.sel?" sel":"")+(f.push||f.pull||f.x?" has":"")+'" data-cal="'+d+'"'+(fut?" disabled":"")
+    +'<button type="button" class="calnav" data-cal-nav="1" aria-label="'+T("下个月","Next month")+'"'+(m>=td.slice(0,7)?" disabled":"")+'>›</button>'
+    +'<button type="button" class="caltoday" data-cal-today aria-label="'+T("跳到今天","Go to today")+'">'+T("今天","Today")+'</button>'
+    +'<button type="button" class="calfold" data-cal-fold aria-expanded="'+!fold+'" aria-label="'+(fold?T("展开日历","Show calendar"):T("收起日历","Hide calendar"))+'">'+(fold?"+":"−")+'</button>'
+    +'</div></div>';
+  if(fold)return h+'</section>';
+  h+='<div class="calg">'+wk.map(w=>'<span class="calw">'+w+'</span>').join("");
+  for(let c=0;c<cells;c++){
+    const i=c-lead+1;
+    if(i<1||i>days){h+='<span class="cald out">'+(i<1?prevDays+i:i-days)+'</span>';continue}
+    const d=m+"-"+pad(i), f=dayHas(d), fut=d>td, ses=f.push||f.pull;
+    const fill=f.push&&f.pull?" both":f.push?" push":f.pull?" pull":f.x?" xonly":"";
+    h+='<button type="button" class="cald'+fill+(d===td?" today":"")+(d===calState.sel?" sel":"")+'" data-cal="'+d+'"'+(fut?" disabled":"")
       +' aria-pressed="'+(d===calState.sel)+'" aria-label="'+md(d)+'">'+i
-      +'<span class="calm">'+(f.push?'<i class="push"></i>':'')+(f.pull?'<i class="pull"></i>':'')+(f.x?'<i class="xp"></i>':'')+'</span></button>';
+      +'<span class="calm">'+(f.push?'<i class="push"></i>':'')+(f.pull?'<i class="pull"></i>':'')+(f.x?'<i class="xp'+(ses?' badge':'')+'"></i>':'')+'</span></button>';
   }
   return h+'</div></section>';
 }
@@ -349,9 +363,11 @@ document.getElementById("pane-train").addEventListener("click",e=>{
   const cd=e.target.closest("[data-cal]");
   if(cd){calState.sel=calState.sel===cd.dataset.cal?null:cd.dataset.cal;renderTrain();
     const box=document.querySelector("#pane-train .calday");if(box)foldIn([box],FOLD_MS);return}
-  if(e.target.closest("[data-cal-today]")){calState.month=null;calState.sel=today();renderTrain();
+  if(e.target.closest("[data-cal-today]")){calState.month=null;calState.sel=today();calState.fold=false;try{localStorage.setItem(CAL_FOLD_K,"0")}catch(err){}renderTrain();
     const c=document.querySelector("#pane-train .cal");if(c)c.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});
     const box=document.querySelector("#pane-train .calday");if(box)foldIn([box],FOLD_MS);return}
+  if(e.target.closest("[data-cal-fold]")){calState.fold=!calState.fold;try{localStorage.setItem(CAL_FOLD_K,calState.fold?"1":"0")}catch(err){}
+    renderTrain();if(!calState.fold){const g=document.querySelector("#pane-train .calg");if(g)foldIn([g],FOLD_MS)}return}
   const cn=e.target.closest("[data-cal-nav]");
   if(cn){const m=calState.month||today().slice(0,7);let [y,mo]=m.split("-").map(Number);mo+=+cn.dataset.calNav;if(mo<1){mo=12;y--}if(mo>12){mo=1;y++}
     calState.month=y+"-"+pad(mo);renderTrain();return}

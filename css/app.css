@@ -501,32 +501,44 @@ body .cap>button[data-prog][data-prog]{background-image:linear-gradient(90deg,co
 .chartbox h3:has(.chic)>span:not(.num){white-space:nowrap}
 .chartbox h3:has(.chic) .num{font-size:18px;white-space:nowrap}
 
-/* training calendar: trained days marked with push / pull / extra dots; tap a day to open it */
-.cal{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 10px 12px}
-.calh{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.calh b{font-size:15px}
-.calnav{width:36px;height:32px;border:0;background:none;color:var(--ink);font-size:22px;line-height:1;cursor:pointer;border-radius:8px}
+/* training calendar (layout after a dark circular-day calendar; colours are ours) */
+.cal{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 14px 14px}
+.calh{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.cal:not(.folded) .calh{margin-bottom:12px}
+.caltitle{display:grid;grid-template-columns:auto 1fr;column-gap:8px;align-items:center;color:var(--ok)}
+.caltitle .calic{width:16px;height:16px;fill:currentColor}
+.caltitle b{font-family:var(--f-num);font-size:26px;font-weight:700;letter-spacing:.12em;line-height:1;color:var(--ok)}
+.caltitle small{grid-column:2;font-family:var(--f-num);font-size:12px;letter-spacing:.08em;color:var(--ok);opacity:.8;margin-top:4px}
+.calctl{display:flex;align-items:center;gap:4px}
+.calnav{width:30px;height:34px;border:0;background:none;color:var(--ink);font-size:22px;line-height:1;cursor:pointer;border-radius:8px;padding:0}
 .calnav:disabled{opacity:.25;cursor:default}
-.calg{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
-.calw{text-align:center;font-size:11px;color:var(--muted);padding:2px 0}
-.cald{position:relative;height:42px;border:1px solid transparent;border-radius:10px;background:none;color:var(--ink);font:600 14px/1 var(--f-num);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:0}
-.cald:disabled{color:var(--muted);opacity:.35;cursor:default}
-.cald.has{background:var(--sunk)}
-.cald.sel{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.calm{display:flex;gap:3px;height:6px}
-.calm i{width:6px;height:6px;border-radius:50%}
-.calm i.push{background:var(--push)}
-.calm i.pull{background:var(--pull)}
-.calm i.xp{background:var(--ok)}
+.calfold{width:34px;height:34px;border:0;border-radius:9px;background:var(--sunk);color:var(--ink);font-size:20px;font-weight:600;line-height:1;cursor:pointer;margin-left:2px}
+.calg{display:grid;grid-template-columns:repeat(7,1fr);row-gap:8px}
+.calw{text-align:center;font-size:11px;color:var(--muted);padding:2px 0 4px}
+.cald{position:relative;justify-self:center;width:40px;height:40px;border:0;border-radius:50%;background:none;color:var(--ink);font:600 15px/1 var(--f-num);cursor:pointer;display:grid;place-items:center;padding:0}
+.cald.out{color:var(--muted);opacity:.35;cursor:default}
+.cald:disabled{color:var(--muted);opacity:.45;cursor:default}
+.cald.push{background:color-mix(in srgb,var(--push) 70%,transparent);color:#fff}
+.cald.pull{background:color-mix(in srgb,var(--pull) 70%,transparent);color:#fff}
+.cald.both{background:linear-gradient(135deg,color-mix(in srgb,var(--push) 75%,transparent) 50%,color-mix(in srgb,var(--pull) 75%,transparent) 50%);color:#fff}
+.cald.xonly{background:color-mix(in srgb,var(--ok) 60%,transparent);color:#fff}
+.calm{position:absolute;inset:0;pointer-events:none}
+.calm i{display:none}
+.calm i.xp.badge{display:block;position:absolute;right:1px;top:1px;width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 2px var(--surface)}
+.cald.today{box-shadow:inset 0 0 0 2px var(--ok);color:var(--ok)}
+.cald.today.push,.cald.today.pull,.cald.today.both,.cald.today.xonly{color:#fff}
+.cald.sel{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--ink)}
+.cald.today.sel{box-shadow:inset 0 0 0 2px var(--ok),0 0 0 2px var(--surface),0 0 0 4px var(--ink)}
 .calday .card.dayx .sbody{padding-top:4px}
 .dayx .xblock{margin-top:0;border-top:0}
-.calm-nav{display:flex;align-items:center;gap:4px}
-.caltoday{font:inherit;font-size:13px;font-weight:700;padding:6px 12px;border-radius:999px;border:1px solid var(--ok);background:transparent;color:var(--ok);cursor:pointer}
+.caltoday{font:inherit;font-size:13px;font-weight:700;padding:6px 10px;margin-left:2px;border-radius:999px;border:1px solid var(--ok);background:transparent;color:var(--ok);cursor:pointer}
 .cal{scroll-margin-top:72px}
 /* today burns (green particle flames, see flameOn in ui.js) so it is easy to find */
-.cald.today{border-color:var(--ok);color:var(--ok);box-shadow:0 0 8px color-mix(in srgb,var(--ok) 45%,transparent)}
-.cald.today.sel{color:var(--bg)}
 .savebar{display:flex;justify-content:flex-end;margin-top:12px}
 .finish .savebar{margin-top:0}
 .btn.recedit{display:inline-grid;place-items:center;width:52px;height:44px;padding:0;background:transparent;border:1px solid var(--cta);color:var(--cta)}
 .recedit svg{width:21px;height:21px;display:block}
+.calh{flex-wrap:wrap}
+.calctl{margin-left:auto}
+.caltitle{min-width:0}
+.caltitle b{white-space:nowrap;font-size:clamp(20px,6.6vw,26px)}
