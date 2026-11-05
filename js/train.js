@@ -139,6 +139,8 @@ function extraAct(t){
 
 /* the training tab: a month calendar of trained days on top (tap a day to see it and log extra practice),
    then only the next five unfinished sessions */
+const EDIT_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9a2.1 2.1 0 0 0-3-3L5 17z"/><path d="M14 20h6"/></svg>';
+const editBtn=attrs=>'<button class="btn recedit" '+attrs+' aria-label="'+T('修改记录','Edit record')+'" title="'+T('修改记录','Edit record')+'">'+EDIT_ICON+'</button>';
 const calState={month:null, sel:null};
 const dxUnlocked=new Set();
 function dayLocked(d){return d<today()&&!dxUnlocked.has(d)}
@@ -196,7 +198,7 @@ function renderTrain(){
     html+='<article class="card dayx"><div class="sbody'+(dl?' locked':'')+'">'+extraBlock("d:"+sel,state.dayx[sel],dl)
       +'<div class="field" style="margin-top:14px"><label for="dxn-'+sel+'">'+T('备注','Notes')+'</label><textarea id="dxn-'+sel+'" rows="2" data-dxnote="'+sel+'"'+(dl?' disabled':'')+' placeholder="'+T('比如：酒店健身房，高位下拉 40 kg','e.g. hotel gym, lat pulldown 40 kg')+'">'+esc(dn)+'</textarea></div>'
       +'<div class="savebar">'+(dl
-        ?'<button class="btn ghost" data-act="dxedit" data-day="'+sel+'">'+T('修改记录','Edit record')+'</button>'
+        ?editBtn('data-act="dxedit" data-day="'+sel+'"')
         :'<button class="btn recsave" data-act="dxsave" data-day="'+sel+'" aria-label="'+T('保存','Save')+'" title="'+T('保存','Save')+'">'+SAVE_ICON+'</button>')+'</div>'
       +'</div></article></section>';
   }
@@ -254,7 +256,7 @@ function sessionBody(p){
     h+='<div class="row" style="margin-top:12px"><div class="field" style="flex:1"><label for="ed-'+p.sid+'">'+T('完成日期','Completed on')+'</label><input id="ed-'+p.sid+'" type="date" value="'+(s.date||"")+'" data-act="date" data-sid="'+p.sid+'"></div>'
       +(unlocked.has(p.sid)
         ?'<button class="btn recsave" data-act="save" data-sid="'+p.sid+'" style="align-self:end" aria-label="'+T('保存','Save')+'" title="'+T('保存','Save')+'">'+SAVE_ICON+'</button>'
-        :'<button class="btn ghost" data-act="edit" data-sid="'+p.sid+'" style="align-self:end">'+T('修改记录','Edit record')+'</button>')+'</div>';
+        :editBtn('data-act="edit" data-sid="'+p.sid+'" style="align-self:end"'))+'</div>';
   }
   return h+'</div>';
 }
