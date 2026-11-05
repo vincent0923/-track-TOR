@@ -138,7 +138,7 @@ function extraAct(t){
 const calState={month:null, sel:null};
 function dayHas(d){
   const kinds=PROGRAM.filter(p=>{const s=state.sessions[p.sid];return s&&s.done&&s.date===d}).map(p=>p.kind);
-  const dx=state.dayx&&state.dayx[d], x=!!(dx&&dx.xs&&dx.xs.some(it=>it.sets.some(y=>y.d)));
+  const dx=state.dayx&&state.dayx[d], x=!!(dx&&((dx.xs&&dx.xs.some(it=>it.sets.some(y=>y.d)))||(dx.note&&dx.note.trim())));
   return {push:kinds.includes("push"),pull:kinds.includes("pull"),x};
 }
 function calendarHtml(){
@@ -185,7 +185,10 @@ function renderTrain(){
   if(sel){
     html+='<section class="calday">';
     PROGRAM.filter(p=>{const s=state.sessions[p.sid];return s&&s.done&&(s.date===sel||unlocked.has(p.sid))}).forEach(p=>{html+=cardHtml(p,cur)});
-    html+='<article class="card dayx"><div class="sbody">'+extraBlock("d:"+sel,state.dayx[sel])+'</div></article></section>';
+    const dn=(state.dayx[sel]&&state.dayx[sel].note)||"";
+    html+='<article class="card dayx"><div class="sbody">'+extraBlock("d:"+sel,state.dayx[sel])
+      +'<div class="field" style="margin-top:14px"><label for="dxn-'+sel+'">'+T('备注','Notes')+'</label><textarea id="dxn-'+sel+'" rows="2" data-dxnote="'+sel+'" placeholder="'+T('比如：酒店健身房，高位下拉 40 kg','e.g. hotel gym, lat pulldown 40 kg')+'">'+esc(dn)+'</textarea></div>'
+      +'</div></article></section>';
   }
   /* finished sessions without a date can't sit on the calendar; keep them reachable */
   PROGRAM.filter(p=>{const s=state.sessions[p.sid];return s&&s.done&&!s.date}).forEach(p=>{html+=cardHtml(p,cur)});
@@ -400,6 +403,10 @@ document.getElementById("pane-train").addEventListener("change",e=>{
 document.getElementById("pane-train").addEventListener("input",e=>{
   const t=e.target;
   if(t.dataset.xa==="val"){const x=xEdit(t.dataset.sid)[+t.dataset.k].sets[+t.dataset.i];x.v=Math.max(0,numOrNull(t.value)||0);extraSaved();return}
+  if(t.dataset.dxnote){const doc=xDoc("d:"+t.dataset.dxnote);doc.note=t.value;lsSave();
+    const had=document.querySelector('[data-cal="'+t.dataset.dxnote+'"] .calm i.xp'), f=dayHas(t.dataset.dxnote);
+    if(!!had!==f.x){const m=document.querySelector('[data-cal="'+t.dataset.dxnote+'"] .calm');if(m)m.innerHTML=(f.push?'<i class="push"></i>':'')+(f.pull?'<i class="pull"></i>':'')+(f.x?'<i class="xp"></i>':'')}
+    return}
   const {act,sid,ex}=t.dataset; if(!act) return;
   const s=sessionDoc(sid);
   if(act==="val"&&s.done&&!unlocked.has(sid))return;

@@ -6,6 +6,14 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 
 ---
 
+## [v1.27a] — 2026-11-05
+
+### 新增 / Added
+- 📝 日历里每一天的加练下面多了备注栏，可以写在哪练、用了多重的器械等。只写了备注的日子，日历上也会标出来；备注会存进进度文件。
+  Each day on the calendar now has a notes box under its extra practice, for where you trained, the weight on the machine and so on. A day with only a note is marked on the calendar too, and notes go into the progress file.
+
+---
+
 ## [v1.26a] — 2026-11-05
 
 ### 新增 / Added

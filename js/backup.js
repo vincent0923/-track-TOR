@@ -13,7 +13,10 @@ function pack(){
   let tk = null;
   try{ tk = JSON.parse(localStorage.getItem("tracktor-coros-token") || "null"); }catch(e){}
   /* extra practice on days without a session: {date: [items]} */
-  const DX={};Object.entries(state.dayx||{}).forEach(([d,doc])=>{if(doc&&doc.xs&&doc.xs.some(it=>it.sets.some(x=>x.d)))DX[d]=doc.xs});
+  /* {date: items} or, when the day has a note, {date: [items, note]} */
+  const DX={};Object.entries(state.dayx||{}).forEach(([d,doc])=>{if(!doc)return;
+    const xs=doc.xs&&doc.xs.some(it=>it.sets.some(x=>x.d))?doc.xs:null, n=(doc.note||"").trim()?doc.note:"";
+    if(n)DX[d]=[xs||[],n];else if(xs)DX[d]=xs});
   return {v:4,s:S,m:M,g:state.settings,d:state.diet,tk,dx:DX};
 }
 function unpack(j){
@@ -26,7 +29,9 @@ function unpack(j){
   /* v4 keeps diet days directly; v3 had a separate ledger {days, coros, weights} */
   let diet=null;
   if((j.v||0)>=4)diet=j.d||{};else if(j.d){diet={};mergeLegacyDiet(metrics,diet,j.d)}
-  const dayx=j.dx?Object.fromEntries(Object.entries(j.dx).map(([d,xs])=>[d,{date:d,xs}])):null;
+  const dayx=j.dx?Object.fromEntries(Object.entries(j.dx).map(([d,v])=>{
+    const noted=Array.isArray(v)&&v.length===2&&typeof v[1]==="string"&&Array.isArray(v[0]);
+    const doc={date:d,xs:noted?(v[0].length?v[0]:null):v};if(noted)doc.note=v[1];return [d,doc]})):null;
   return {sessions,metrics,diet,settings:j.g?Object.assign({},GDEF,j.g):null,extras:j.x||null,tk:j.tk||null,dayx};
 }
 const b64e=u=>{let s="";for(let i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(s)};
