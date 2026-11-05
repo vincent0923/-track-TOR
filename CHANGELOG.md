@@ -6,6 +6,14 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 
 ---
 
+## [v1.25a] — 2026-11-05
+
+### 新增 / Added
+- 🔄 **单独同步一张图**：「健康」里的睡眠、HRV、静息心率图，标题右边各有一个同步按钮，只从高驰拉这一项，比整体同步快。标题左边加了和同步设定里一样的图标。
+  Sync one chart: the sleep, HRV and resting HR charts under Health each have a sync button beside the title that pulls only that data from COROS, faster than a full sync. Each title also gets the same icon as in the sync settings.
+
+---
+
 ## [v1.24a] — 2026-11-05
 
 ### 变更 / Changed

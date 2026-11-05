@@ -496,3 +496,7 @@ body .cap>button[data-prog][data-prog]{background-image:linear-gradient(90deg,co
 #foldMe>summary .meeye{margin-left:auto;margin-right:8px;width:32px;height:32px}
 #foldMe:not([open])>summary .meeye{display:none}
 #foldMe>summary .saveic{margin-left:0}
+.chartbox h3 .chic{width:22px;height:22px;flex:none;align-self:center;color:var(--g)}
+.chartbox h3:has(.chic){align-items:center}
+.chartbox h3:has(.chic)>span:not(.num){white-space:nowrap}
+.chartbox h3:has(.chic) .num{font-size:18px;white-space:nowrap}

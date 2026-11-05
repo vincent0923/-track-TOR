@@ -252,7 +252,7 @@ function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t
     if(el.closest(".subtabs"))return "tab2";
     if(el.matches("summary"))return "fold";
     if(el.id==="dietGapTile")return "gap";
-    if(el.matches("#syncBtn,#dsrcPull,#dietSyncBtn"))return "sync";
+    if(el.matches("#syncBtn,#dsrcPull,#dietSyncBtn,[data-csync]"))return "sync";
     if(el.matches("[data-recsave],[data-dsave]"))return "save";
     if(el.matches("[data-close]"))return "close";
     if(el.matches("[data-del],[data-ddel],#ddelDayBtn,[data-act=rm],[data-xa=rmset]"))return "del";

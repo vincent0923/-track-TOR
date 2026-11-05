@@ -146,22 +146,39 @@ document.getElementById("syncBtn").addEventListener("click",()=>{
   if(!mcp){promptCorosToken();return}
   withProgress(document.getElementById("syncBtn"), doSync);
 });
+/* sleep scores for the last 60 nights, plus any older history not yet saved */
+async function syncSleep(){
+  const r=await mcp.callTool("COROS","querySleepOverview",{startDate:ymdOffset(-59),endDate:ymdOffset(0)});
+  const text=toText(r);
+  const rows=parseSleep(text);
+  if(!rows.length)return T("COROS 返回了数据，但没有读到睡眠评分（开头：","COROS replied but no sleep scores were found (starts: ")+text.slice(0,120)+T("）。",").");
+  for(const x of rows){await saveMetric(x.date,{sleep:x.sleep,sleepH:x.sleepH})}
+  const sbf=await backfill("-sleepbf",series("sleep")[0],sleepRange,x=>saveMetric(x.date,{sleep:x.sleep,sleepH:x.sleepH}),x=>state.metrics[x.date]&&state.metrics[x.date].sleep!=null,T("睡眠","sleep"));
+  return T("已同步 "+rows.length+" 晚睡眠，最近一晚 "+md(rows[rows.length-1].date)+"："+rows[rows.length-1].sleep+" 分","Synced "+rows.length+" nights; latest "+md(rows[rows.length-1].date)+": "+rows[rows.length-1].sleep)
+    +(sbf?T("，回填 "+sbf.added+" 晚（最早 "+sbf.earliest+"）",", backfilled "+sbf.added+" nights (earliest "+sbf.earliest+")"):"");
+}
+/* the sync button on a chart pulls only that chart's data */
+const CHART_SYNC={sleep:()=>syncSleep(),hrv:()=>syncHrv(),rhr:()=>syncRhr()};
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-csync]");if(!b||b.dataset.prog||syncing)return;
+  if(!mcp){promptCorosToken();return}
+  withProgress(b,async()=>{
+    syncing=true;syncUI();
+    try{
+      const msg=(await CHART_SYNC[b.dataset.csync]()).replace(/^[；;]\s*/,"");
+      lsSave();renderAll();syncMsg(msg);sfx(/失败|未识别|没有读到|failed|unrecognised|no sleep/i.test(msg)?"syncfail":"syncok");
+    }catch(err){
+      sfx("syncfail");
+      if(err&&err.code==="needs_reauth"){syncMsg(T("高驰授权已失效，请重新授权。","COROS authorization expired — please authorize again."));promptCorosToken()}
+      else syncMsg(T("同步失败（"+((err&&err.code)||"未知原因")+"），稍后再试。","Sync failed ("+((err&&err.code)||"unknown")+"), try again later."));
+    }finally{syncing=false;syncUI()}
+  });
+});
 async function doSync(){
   syncing=true;syncUI();
   try{
     let msg="";
-    if(syncOn("sleep")){
-    const r=await mcp.callTool("COROS","querySleepOverview",{startDate:ymdOffset(-59),endDate:ymdOffset(0)});
-    const text=toText(r);
-    const rows=parseSleep(text);
-    if(!rows.length){msg=T("COROS 返回了数据，但没有读到睡眠评分（开头：","COROS replied but no sleep scores were found (starts: ")+text.slice(0,120)+T("）。",").");}
-    else{
-      for(const x of rows){await saveMetric(x.date,{sleep:x.sleep,sleepH:x.sleepH})}
-      const sbf=await backfill("-sleepbf",series("sleep")[0],sleepRange,x=>saveMetric(x.date,{sleep:x.sleep,sleepH:x.sleepH}),x=>state.metrics[x.date]&&state.metrics[x.date].sleep!=null,T("睡眠","sleep"));
-      msg=T("已同步 "+rows.length+" 晚睡眠，最近一晚 "+md(rows[rows.length-1].date)+"："+rows[rows.length-1].sleep+" 分","Synced "+rows.length+" nights; latest "+md(rows[rows.length-1].date)+": "+rows[rows.length-1].sleep)
-        +(sbf?T("，回填 "+sbf.added+" 晚（最早 "+sbf.earliest+"）",", backfilled "+sbf.added+" nights (earliest "+sbf.earliest+")"):"");
-    }
-    }
+    if(syncOn("sleep"))msg+=await syncSleep();
     if(syncOn("hrv"))msg+=await syncHrv();
     if(syncOn("rhr"))msg+=await syncRhr();
     msg=msg.replace(/^[；;]\s*/,"");
