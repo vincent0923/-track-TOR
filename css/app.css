@@ -527,3 +527,5 @@ body .cap>button[data-prog][data-prog]{background-image:linear-gradient(90deg,co
 /* today breathes so it is easy to find */
 @keyframes calbreathe{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--cta) 55%,transparent)}50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--cta) 0%,transparent),0 0 14px 2px color-mix(in srgb,var(--cta) 35%,transparent)}}
 @media (prefers-reduced-motion:no-preference){.cald.today{animation:calbreathe 2.4s ease-in-out infinite}}
+.savebar{display:flex;justify-content:flex-end;margin-top:12px}
+.finish .savebar{margin-top:0}

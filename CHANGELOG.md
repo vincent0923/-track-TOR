@@ -6,6 +6,16 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 
 ---
 
+## [v1.28a] — 2026-11-05
+
+### 变更 / Changed
+- 💾 **保存都用磁盘图标**：日历里每一天的加练面板加了磁盘图标的保存按钮，按了就收起；训练卡片里的「完成并记录」和修改后的「保存」也换成同一个磁盘图标。
+  Save is a disk icon everywhere: each calendar day's extra-practice panel has a disk save button that closes it, and a session's "Finish & log" and the save after editing use the same icon.
+- 🔒 **今天随便加，过去的要先点「修改记录」**：今天结束（午夜）之前，今天的加练怎么改、保存几次都不算修改记录。过去日子的加练和备注默认只读，点「修改记录」确认后才能改，和已完成的训练一样。今天完成的训练，里面的加练到午夜前也能直接加。
+  Add freely today, edit the past on purpose: until midnight, changing and saving today's extra practice never counts as editing a record. Extra practice and notes on past days are read-only until you tap Edit record and confirm, like finished sessions. Extras inside a session finished today stay open until midnight too.
+
+---
+
 ## [v1.27a] — 2026-11-05
 
 ### 新增 / Added

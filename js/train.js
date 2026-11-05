@@ -68,26 +68,29 @@ function pullSeries(){
   });
   return Object.keys(best).sort().map(d=>({date:d,x:dnum(d),y:best[d]}));
 }
-function extraBlock(sid,s){
-  const list=xList(s), D=' data-sid="'+sid+'"';
+/* locked: a past day's extras are read-only until "Edit record"; today's stay open until midnight */
+function extraBlock(sid,s,locked){
+  const list=xList(s).filter(it=>!locked||it.sets.some(x=>x.d)), D=' data-sid="'+sid+'"', dis=locked?' disabled':'';
   let h='<div class="xblock"><h3>'+T("加练","Extra practice")+'</h3>';
   list.forEach((it,k)=>{
     const done=it.sets.filter(x=>x.d), total=done.reduce((a,x)=>a+(+x.v||0),0), lab=esc(xName(it));
     h+='<div class="ex"><div class="xhead"><h3>'+lab+'</h3><small>'+(done.length?T("共 "+total+" "+it.unit,"Total "+total+" "+U(it.unit)):"")+'</small>'
-      +'<button class="x" data-xa="delex"'+D+' data-k="'+k+'" aria-label="'+T("移除 ","Remove ")+lab+'">×</button></div>';
+      +(locked?'':'<button class="x" data-xa="delex"'+D+' data-k="'+k+'" aria-label="'+T("移除 ","Remove ")+lab+'">×</button>')+'</div>';
     it.sets.forEach((x,i)=>{
       const no=i+1, ds=D+' data-k="'+k+'" data-i="'+i+'"';
       h+='<div class="set'+(x.d?" ticked":"")+'">'
-        +'<button class="chk" data-xa="tick"'+ds+' aria-label="'+T('第 '+no+' 组完成','Set '+no+' done')+'" aria-pressed="'+x.d+'">'+CHECK+'</button>'
-        +'<div class="step"><button data-xa="dec"'+ds+' aria-label="'+T("减少","Decrease")+'">−</button>'
-        +'<input type="number" inputmode="numeric" value="'+x.v+'" data-xa="val"'+ds+' aria-label="'+lab+' '+T('第 '+no+' 组','set '+no)+'">'
-        +'<button data-xa="inc"'+ds+' aria-label="'+T("增加","Increase")+'">+</button></div>'
+        +'<button class="chk" data-xa="tick"'+ds+' aria-label="'+T('第 '+no+' 组完成','Set '+no+' done')+'" aria-pressed="'+x.d+'"'+dis+'>'+CHECK+'</button>'
+        +'<div class="step"><button data-xa="dec"'+ds+' aria-label="'+T("减少","Decrease")+'"'+dis+'>−</button>'
+        +'<input type="number" inputmode="numeric" value="'+x.v+'" data-xa="val"'+ds+' aria-label="'+lab+' '+T('第 '+no+' 组','set '+no)+'"'+dis+'>'
+        +'<button data-xa="inc"'+ds+' aria-label="'+T("增加","Increase")+'"'+dis+'>+</button></div>'
         +'<span class="lab">'+U(it.unit)+'<em>'+T('第 '+no+' 组','set '+no)+'</em></span>'
-        +(it.sets.length>1?'<button class="x" data-xa="rmset"'+ds+' aria-label="'+T("删除这一组","Remove set")+'">×</button>':'')
+        +(it.sets.length>1&&!locked?'<button class="x" data-xa="rmset"'+ds+' aria-label="'+T("删除这一组","Remove set")+'">×</button>':'')
         +'</div>';
     });
-    h+='<button class="addset" data-xa="addset"'+D+' data-k="'+k+'">+ '+T('加一组','Add set')+'</button></div>';
+    if(!locked)h+='<button class="addset" data-xa="addset"'+D+' data-k="'+k+'">+ '+T('加一组','Add set')+'</button>';
+    h+='</div>';
   });
+  if(locked)return h+'</div>';
   const past=new Map();
   if(!list.some(it=>it.id===XPULL))past.set(XPULL,{id:XPULL,name:"引体向上",unit:"个"});
   xDocs().forEach(doc=>((doc&&doc.xs)||[]).forEach(it=>{
@@ -106,6 +109,7 @@ function extraBlock(sid,s){
 function extraSaved(){lsSave();renderGoals()}
 function extraAct(t){
   const a=t.dataset.xa, sid=t.dataset.sid, k=+t.dataset.k, i=+t.dataset.i;
+  if(t.disabled)return;
   if(a==="val")return;
   if(a==="addex"||a==="chip"){
     const inp=document.getElementById("xName-"+sid);
@@ -136,6 +140,8 @@ function extraAct(t){
 /* the training tab: a month calendar of trained days on top (tap a day to see it and log extra practice),
    then only the next five unfinished sessions */
 const calState={month:null, sel:null};
+const dxUnlocked=new Set();
+function dayLocked(d){return d<today()&&!dxUnlocked.has(d)}
 function dayHas(d){
   const kinds=PROGRAM.filter(p=>{const s=state.sessions[p.sid];return s&&s.done&&s.date===d}).map(p=>p.kind);
   const dx=state.dayx&&state.dayx[d], x=!!(dx&&((dx.xs&&dx.xs.some(it=>it.sets.some(y=>y.d)))||(dx.note&&dx.note.trim())));
@@ -186,9 +192,12 @@ function renderTrain(){
   if(sel){
     html+='<section class="calday">';
     PROGRAM.filter(p=>{const s=state.sessions[p.sid];return s&&s.done&&(s.date===sel||unlocked.has(p.sid))}).forEach(p=>{html+=cardHtml(p,cur)});
-    const dn=(state.dayx[sel]&&state.dayx[sel].note)||"";
-    html+='<article class="card dayx"><div class="sbody">'+extraBlock("d:"+sel,state.dayx[sel])
-      +'<div class="field" style="margin-top:14px"><label for="dxn-'+sel+'">'+T('备注','Notes')+'</label><textarea id="dxn-'+sel+'" rows="2" data-dxnote="'+sel+'" placeholder="'+T('比如：酒店健身房，高位下拉 40 kg','e.g. hotel gym, lat pulldown 40 kg')+'">'+esc(dn)+'</textarea></div>'
+    const dn=(state.dayx[sel]&&state.dayx[sel].note)||"", dl=dayLocked(sel);
+    html+='<article class="card dayx"><div class="sbody'+(dl?' locked':'')+'">'+extraBlock("d:"+sel,state.dayx[sel],dl)
+      +'<div class="field" style="margin-top:14px"><label for="dxn-'+sel+'">'+T('备注','Notes')+'</label><textarea id="dxn-'+sel+'" rows="2" data-dxnote="'+sel+'"'+(dl?' disabled':'')+' placeholder="'+T('比如：酒店健身房，高位下拉 40 kg','e.g. hotel gym, lat pulldown 40 kg')+'">'+esc(dn)+'</textarea></div>'
+      +'<div class="savebar">'+(dl
+        ?'<button class="btn ghost" data-act="dxedit" data-day="'+sel+'">'+T('修改记录','Edit record')+'</button>'
+        :'<button class="btn recsave" data-act="dxsave" data-day="'+sel+'" aria-label="'+T('保存','Save')+'" title="'+T('保存','Save')+'">'+SAVE_ICON+'</button>')+'</div>'
       +'</div></article></section>';
   }
   /* finished sessions without a date can't sit on the calendar; keep them reachable */
@@ -231,20 +240,20 @@ function sessionBody(p){
     if(e.id!=="stretch"&&!locked) h+='<button class="addset" data-act="add" data-sid="'+p.sid+'" data-ex="'+e.id+'">+ '+T('加一组','Add set')+'</button>';
     h+='</div>';
   });
-  if(!future)h+=extraBlock(p.sid,s);
+  if(!future)h+=extraBlock(p.sid,s,s.done&&!unlocked.has(p.sid)&&s.date!==today());
   h+='<div class="field" style="margin-top:14px"><label for="n-'+p.sid+'">'+T('备注','Notes')+'</label><textarea id="n-'+p.sid+'" rows="2" data-act="note" data-sid="'+p.sid+'"'+(future?' disabled':'')+' placeholder="'+T('比如：划船每组降低 5cm、三头有点紧','e.g. lowered rows 5 cm each set, triceps a bit tight')+'">'+esc(s.note||"")+'</textarea></div>';
   if(!s.done&&!future){
     const m=state.metrics[today()]||{};
-    h+='<div class="finish"><h4>'+T('完成本次训练','Finish this session')+'</h4><div class="fgrid">'
+    h+='<div class="finish"><div class="fgrid">'
       +'<div class="field"><label for="fd-'+p.sid+'">'+T('日期','Date')+'</label><input id="fd-'+p.sid+'" type="date" value="'+today()+'"></div>'
       +'<div class="field"><label for="fp-'+p.sid+'">'+T('标准引体（个，可空）','Strict pull-ups (optional)')+'</label><input id="fp-'+p.sid+'" type="number" inputmode="numeric" min="0" step="1" value="'+(m.pullups??"")+'" placeholder="—"></div>'
       +'<div class="field"><label for="fw-'+p.sid+'">'+T('体重 kg（可空）','Weight kg (optional)')+'</label><input id="fw-'+p.sid+'" type="number" inputmode="decimal" step="0.1" value="'+(m.weight??"")+'" placeholder="—"></div>'
       +'<div class="field"><label for="fz-'+p.sid+'">'+T('腰围 cm（可空）','Waist cm (optional)')+'</label><input id="fz-'+p.sid+'" type="number" inputmode="decimal" step="0.1" value="'+(m.waist??"")+'" placeholder="—"></div>'
-      +'</div><button class="btn" data-act="finish" data-sid="'+p.sid+'">'+T('完成并记录','Finish & log')+'</button></div>';
+      +'</div><div class="savebar"><button class="btn recsave" data-act="finish" data-sid="'+p.sid+'" aria-label="'+T('完成并记录','Finish & log')+'" title="'+T('完成并记录','Finish & log')+'">'+SAVE_ICON+'</button></div></div>';
   }else if(s.done){
     h+='<div class="row" style="margin-top:12px"><div class="field" style="flex:1"><label for="ed-'+p.sid+'">'+T('完成日期','Completed on')+'</label><input id="ed-'+p.sid+'" type="date" value="'+(s.date||"")+'" data-act="date" data-sid="'+p.sid+'"></div>'
       +(unlocked.has(p.sid)
-        ?'<button class="btn" data-act="save" data-sid="'+p.sid+'" style="align-self:end">'+T('保存','Save')+'</button>'
+        ?'<button class="btn recsave" data-act="save" data-sid="'+p.sid+'" style="align-self:end" aria-label="'+T('保存','Save')+'" title="'+T('保存','Save')+'">'+SAVE_ICON+'</button>'
         :'<button class="btn ghost" data-act="edit" data-sid="'+p.sid+'" style="align-self:end">'+T('修改记录','Edit record')+'</button>')+'</div>';
   }
   return h+'</div>';
@@ -306,9 +315,11 @@ function confirmEdit(sid){
     m.addEventListener("click",e=>{
       if(e.target===m||e.target.closest("[data-edx]")){m.hidden=true;return}
       const ok=e.target.closest("[data-edok]");
-      if(ok){const id=ok.dataset.edok;m.hidden=true;unlocked.add(id);openDays.add(id);renderTrain()}
+      if(ok){const id=ok.dataset.edok;m.hidden=true;
+        if(id.startsWith("d:"))dxUnlocked.add(id.slice(2));else{unlocked.add(id);openDays.add(id)}
+        renderTrain()}
     })}
-  m.innerHTML='<div class="dp" role="alertdialog" aria-modal="true" aria-labelledby="edT"><div class="dp-h"><b id="edT">'+T("修改记录","Edit record")+' · '+LAB(BYID[sid])+'</b></div>'
+  m.innerHTML='<div class="dp" role="alertdialog" aria-modal="true" aria-labelledby="edT"><div class="dp-h"><b id="edT">'+T("修改记录","Edit record")+' · '+(sid.startsWith("d:")?md(sid.slice(2)):LAB(BYID[sid]))+'</b></div>'
     +'<p class="edmsg">'+T("已完成的记录，按实际训练顺序排列。不建议修改过往记录：改动可能打乱训练顺序。","This record is shown in the order you trained. Editing past records is not recommended: changes can alter the training order.")+'</p>'
     +'<div class="dp-f"><button type="button" data-edx="1">'+T("取消","Cancel")+'</button><button type="button" class="dp-today" data-edok="'+sid+'">'+T("仍要修改","Edit anyway")+'</button></div></div>';
   m.hidden=false;
@@ -353,6 +364,10 @@ document.getElementById("pane-train").addEventListener("click",e=>{
     const el=document.getElementById("c-"+cur);if(el){el.scrollIntoView({behavior:"smooth",block:"start"});el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash")}return}
   const {act,sid,ex}=t.dataset; const i=+t.dataset.i;
   if(act==="val"||act==="note"||act==="date") return;
+  if(act==="dxedit"){confirmEdit("d:"+t.dataset.day);return}
+  if(act==="dxsave"){const d=t.dataset.day;dxUnlocked.delete(d);lsSave();renderGoals();toast(T("已保存","Saved"));
+    const box=document.querySelector("#pane-train .calday");
+    foldOut(box?[box]:[],SAVE_FOLD_MS).then(()=>{calState.sel=null;renderTrain()});return}
   if(act==="edit"){confirmEdit(sid);return}
   if(act==="save"){unlocked.delete(sid);lsSave();
     toast(LAB(BYID[sid])+T(" 的修改已保存"," changes saved"));
