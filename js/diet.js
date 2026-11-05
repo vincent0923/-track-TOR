@@ -242,17 +242,22 @@ function activeDietDayKeys(){
   return Array.from(set).sort().reverse();
 }
 
+/* the "Food logs" capsule: + expands every day, − collapses them */
+function paintAllCap(allOpen, empty){
+  const b = document.getElementById("dietAllBtn"); if(!b) return;
+  b.setAttribute("aria-expanded", String(allOpen)); b.disabled = !!empty;
+  b.querySelector(".cap-r").textContent = allOpen ? "−" : "+";
+}
 function renderDietDays(){
   const box = document.getElementById("dietDays");
   if(!box) return;
   const keys = activeDietDayKeys();
   if(!keys.length){
     box.innerHTML = `<div class="empty">${T("还没有饮食记录。","No diet logs yet.")}<br>${T("点「饮食记录」旁边的图标，手动添加或从线上表格同步。","Tap the icons next to Food logs to add one by hand or sync an online table.")}</div>`;
-    const acts = document.getElementById("dietBarActs"); if(acts) acts.innerHTML = "";
+    paintAllCap(false, true);
     return;
   }
-    const allOpen = keys.every(k=>dietState.open.has(k));
-  document.getElementById("dietBarActs").innerHTML = `<button class="btn ghost" type="button" data-dallopen style="padding:4px 9px;font-size:12px">${allOpen ? T("全部收起","Collapse all") : T("全部展开","Expand all")}</button>`;
+  paintAllCap(keys.every(k=>dietState.open.has(k)), false);
   box.innerHTML = keys.map(k=>{
     const d = state.diet[k] || { items:[] }, t = dietTotals(d), intake = intakeOf(k), b = burnOfDate(k);
     const gap = (b===null || intake===null) ? null : b - intake;
@@ -291,9 +296,11 @@ function initDiet(){
 
 
 const CALC_WARN_DIFF = 100;
-function openDietEntryModal(initDate){
+/* the food log form: a pop-up, or (with host) a panel inside the page; onClose runs whenever it closes */
+function openDietEntryModal(initDate, host, onClose){
   const m = document.createElement("div");
-  m.className = "mask";
+  m.className = host ? "dentry-inline" : "mask";
+  const closeIt = ()=>{ m.remove(); if(onClose) onClose(); };
 
   const TOTAL_NAME = () => T("当日合计（手动录入）","Daily total (manual)");
   const emptyTotal = () => ({ kcal:"", p:"", f:"", c:"", veg:"" });
@@ -492,7 +499,7 @@ function openDietEntryModal(initDate){
   }
 
   function bindModalEvents(){
-    m.querySelector("[data-close]").addEventListener("click", ()=>m.remove());
+    m.querySelector("[data-close]").addEventListener("click", closeIt);
     m.querySelector("#fdDate").addEventListener("change", e=>{
       syncFormFromDOM();
       curDate = e.target.value || today();
@@ -565,7 +572,7 @@ function openDietEntryModal(initDate){
         delete state.diet[curDate];
         lsSave();
         renderDietAll();
-        m.remove();
+        closeIt();
       });
     }
     m.querySelector("[data-dsave]").addEventListener("click", ()=>{
@@ -573,12 +580,13 @@ function openDietEntryModal(initDate){
       if(mode === "total" && !applyTotal()) return;
       commitDay();
       toast(T("饮食记录已保存","Diet log saved"));
-      m.remove();
+      closeIt();
     });
   }
 
-  document.body.appendChild(m);
+  (host || document.body).appendChild(m);
   renderModal();
+  return m;
 }
 
 
@@ -711,7 +719,7 @@ document.addEventListener("click", e=>{
     renderDietDays();
     return;
   }
-  if(e.target.closest("[data-dallopen]")){
+  if(e.target.closest("#dietAllBtn")){
     const keys = activeDietDayKeys();
     const allOpen = keys.every(k=>dietState.open.has(k));
     dietState.open = allOpen ? new Set() : new Set(keys);
@@ -722,12 +730,21 @@ document.addEventListener("click", e=>{
   if(ed){ openDietEntryModal(ed.dataset.dedit); return; }
 });
 
-/* next to "Food logs": the add icon logs food by hand; the sync icon pulls the online table and
-   opens its panel (folding the panel closes it again) */
+/* capsules next to "Food logs": the add capsule opens and closes the manual log panel; the sync
+   capsule's left half pulls the online table (greyed out without a valid link), its + opens the link panel */
 function setDietSrc(open){
-  const p = document.getElementById("dietSrc"), b = document.getElementById("dietSyncBtn");
-  p.hidden = !open; b.setAttribute("aria-expanded", String(open)); b.classList.toggle("on", open);
+  const p = document.getElementById("dietSrc"), b = document.getElementById("dietSrcToggle");
+  p.hidden = !open; b.setAttribute("aria-expanded", String(open)); b.textContent = open ? "−" : "+";
   if(open) document.getElementById("dsrcOnline").open = true;
 }
-document.getElementById("dietAddBtn").addEventListener("click", ()=>openDietEntryModal());
+function setDietManual(open){
+  const host = document.getElementById("dietManual"), b = document.getElementById("dietAddBtn");
+  const paint = on=>{ host.hidden = !on; b.setAttribute("aria-expanded", String(on)); b.querySelector(".cap-r").textContent = on ? "−" : "+"; };
+  if(!open){ host.innerHTML = ""; paint(false); return; }
+  if(host.firstChild) return;
+  openDietEntryModal(today(), host, ()=>paint(false));
+  paint(true);
+}
+document.getElementById("dietAddBtn").addEventListener("click", ()=>setDietManual(document.getElementById("dietManual").hidden));
+document.getElementById("dietSrcToggle").addEventListener("click", ()=>setDietSrc(document.getElementById("dietSrc").hidden));
 document.getElementById("dsrcOnline").addEventListener("toggle", e=>{ if(!e.target.open) setDietSrc(false); });

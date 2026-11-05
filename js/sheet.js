@@ -314,6 +314,12 @@ async function pullSheet(opts){
   }finally{ btn.disabled = false; btn.innerHTML = old; }
 }
 
+/* a link counts as valid when it looks like a web address (domain with a dot) */
+function validSheetUrl(v){ return /^(https?:\/\/)?[^\s\/]+\.[^\s\/]+/i.test(extractUrl(v || "")); }
+function paintSyncCap(){
+  const b = document.getElementById("dietSyncBtn"), inp = document.getElementById("dsrcUrl"); if(!b || !inp) return;
+  b.disabled = !validSheetUrl(inp.value);
+}
 function copyText(t){
   if(navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(t);
   return new Promise((ok, no)=>{
@@ -341,15 +347,12 @@ function copyText(t){
   };
   const pull = ()=>{ if(!pullBtn.disabled) withProgress(pullBtn, pullAll); };
   pullBtn.addEventListener("click", pull);
-  /* the sync icon beside "Food logs": open the panel and pull (with no link yet, only open it) */
+  /* the sync half of the capsule beside "Food logs": pulls straight away; greyed out until a valid link is saved */
   const syncBtn = document.getElementById("dietSyncBtn");
-  syncBtn.addEventListener("click", ()=>{
-    setDietSrc(true);
-    if(!inp.value.trim()){ inp.focus(); return; }
-    if(!pullBtn.disabled && !syncBtn.dataset.prog) withProgress(syncBtn, pullAll);
-  });
+  syncBtn.addEventListener("click", ()=>{ if(!syncBtn.disabled && !pullBtn.disabled && !syncBtn.dataset.prog) withProgress(syncBtn, pullAll); });
+  inp.addEventListener("input", paintSyncCap);
   inp.addEventListener("keydown", e=>{ if(e.key === "Enter") pull(); });
-  inp.addEventListener("change", ()=>{ inp.value = extractUrl(inp.value); });
+  inp.addEventListener("change", ()=>{ inp.value = extractUrl(inp.value); paintSyncCap(); });
   /* paste button: every tap replaces the box with what's on the clipboard (only the link, if there is more text) */
   document.getElementById("dsrcPaste").addEventListener("click", async ()=>{
     let t = "";
@@ -358,6 +361,7 @@ function copyText(t){
     if(!String(t).trim()){ toast(T("剪贴板是空的", "The clipboard is empty")); return; }
     inp.value = extractUrl(t);
     try{ localStorage.setItem(SHEET_URL_K, inp.value); }catch(e){}
+    paintSyncCap();
   });
   /* two prompt versions: Google Sheets (global) and Tencent Docs with WorkBuddy (China) */
   let ver = null; try{ ver = localStorage.getItem(PROMPT_VER_K); }catch(e){}
@@ -378,6 +382,7 @@ function copyText(t){
       .catch(()=>toast(T("复制失败，请长按选择文字复制", "Couldn't copy; select the text and copy it")));
   });
   paintSheetStatus();
+  paintSyncCap();
 })();
 /* placeholder and status follow the language switch */
 function paintSheetLang(){
@@ -408,7 +413,7 @@ const SHEET_TAB_MS = 30e3;
 function dietTabPull(){
   let saved = ""; try{ saved = localStorage.getItem(SHEET_URL_K) || ""; }catch(e){}
   saved = extractUrl(saved);
-  if(!/^(https?:\/\/)?[^\s\/]+\.[^\s\/]+/i.test(saved) || navigator.onLine === false) return;
+  if(!validSheetUrl(saved) || navigator.onLine === false) return;
   const tab = document.querySelector('.subtabs [data-sub="diet"]'), pullBtn = document.getElementById("dsrcPull");
   if(!tab || tab.dataset.prog || pullBtn.disabled) return;
   let st = {}; try{ st = JSON.parse(localStorage.getItem(SHEET_STATUS_K) || "{}") || {}; }catch(e){}

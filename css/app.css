@@ -446,9 +446,6 @@ html[data-lang="en"] .dsrc-row .btn{min-width:106px}
 
 /* "Food logs" header: the add icon and the data source panel under it */
 #dietBar h2{display:flex;align-items:center;gap:8px}
-.dadd{width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--burn);padding:0;cursor:pointer}
-.dadd svg{width:21px;height:21px}
-.dadd.on{background:var(--burn);color:#fff;border-color:var(--burn)}
 .dsrc{display:grid;gap:8px}
 .dsub{border:1px solid var(--line);border-radius:10px;background:var(--sunk)}
 .dsub>summary{display:flex;align-items:center;gap:8px;padding:10px 12px;font:inherit;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer;list-style:none}
@@ -482,3 +479,18 @@ body .subtabs button[data-prog][data-prog]{background-image:linear-gradient(90de
 .sfxr select{font:inherit;font-size:14px;padding:5px 6px;border:1px solid var(--line);border-radius:8px;background:var(--sunk);color:var(--ink);max-width:120px}
 .sfxp{width:32px;height:32px;display:grid;place-items:center;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--cta);padding:0;cursor:pointer}
 .sfxp svg{width:13px;height:13px}
+
+/* capsule buttons: an icon or words on the left, + / − on the right */
+.cap{display:inline-flex;align-items:stretch;height:36px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--burn);padding:0;overflow:hidden;font:inherit;cursor:pointer;flex:none}
+button.cap>span,.cap>button{display:grid;place-items:center;padding:0 10px;border:0;background:none;color:inherit;font:inherit;cursor:pointer;margin:0}
+.cap .cap-l svg{width:20px;height:20px}
+.cap .cap-r{min-width:30px;padding:0 9px;font-size:18px;font-weight:600;line-height:1;border-left:1px solid var(--line)}
+.cap-txt{color:var(--ink);font-size:15px;font-weight:700}
+.cap[aria-expanded="true"] .cap-r,.cap .cap-r[aria-expanded="true"]{background:var(--burn);color:#fff;border-left-color:var(--burn)}
+.cap-txt[aria-expanded="true"] .cap-r{background:var(--ink);color:var(--bg);border-left-color:var(--ink)}
+.cap button:disabled,button.cap:disabled{cursor:default}
+.cap>button:disabled{color:var(--muted);opacity:.45}
+button.cap:disabled{opacity:.5}
+#dietBar h2{flex-wrap:wrap}
+.dentry-inline .sheet{max-width:none;max-height:none;border:1px solid var(--line);--bad:#C9372C}
+body .cap>button[data-prog][data-prog]{background-image:linear-gradient(90deg,color-mix(in srgb,var(--burn) 35%,transparent) var(--p),transparent var(--p))}
