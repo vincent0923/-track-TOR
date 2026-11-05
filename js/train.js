@@ -146,10 +146,11 @@ function calendarHtml(){
   const [y,mo]=m.split("-").map(Number), first=new Date(y,mo-1,1), days=new Date(y,mo,0).getDate();
   const lead=(first.getDay()+6)%7;                     /* weeks start on Monday */
   const wk=T("一二三四五六日","MTWTFSS").split("");
-  let h='<section class="cal" aria-label="'+T("训练日历","Training calendar")+'"><div class="calh">'
+  let h='<section class="cal" aria-label="'+T("训练日历","Training calendar")+'"><div class="calh"><span class="calm-nav">'
     +'<button type="button" class="calnav" data-cal-nav="-1" aria-label="'+T("上个月","Previous month")+'">‹</button>'
     +'<b>'+T(y+" 年 "+mo+" 月",new Date(y,mo-1,1).toLocaleString("en",{month:"long"})+" "+y)+'</b>'
-    +'<button type="button" class="calnav" data-cal-nav="1" aria-label="'+T("下个月","Next month")+'"'+(m>=td.slice(0,7)?" disabled":"")+'>›</button></div>'
+    +'<button type="button" class="calnav" data-cal-nav="1" aria-label="'+T("下个月","Next month")+'"'+(m>=td.slice(0,7)?" disabled":"")+'>›</button></span>'
+    +'<button type="button" class="caltoday" data-cal-today aria-label="'+T("跳到今天","Go to today")+'">'+T("今天","Today")+'</button></div>'
     +'<div class="calg">'+wk.map(w=>'<span class="calw">'+w+'</span>').join("")+'<span></span>'.repeat(lead);
   for(let i=1;i<=days;i++){
     const d=m+"-"+pad(i), f=dayHas(d), fut=d>td;
@@ -334,6 +335,9 @@ document.getElementById("pane-train").addEventListener("click",e=>{
   const xt=e.target.closest("[data-xa]"); if(xt){extraAct(xt);return}
   const cd=e.target.closest("[data-cal]");
   if(cd){calState.sel=calState.sel===cd.dataset.cal?null:cd.dataset.cal;renderTrain();
+    const box=document.querySelector("#pane-train .calday");if(box)foldIn([box],FOLD_MS);return}
+  if(e.target.closest("[data-cal-today]")){calState.month=null;calState.sel=today();renderTrain();
+    const c=document.querySelector("#pane-train .cal");if(c)c.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});
     const box=document.querySelector("#pane-train .calday");if(box)foldIn([box],FOLD_MS);return}
   const cn=e.target.closest("[data-cal-nav]");
   if(cn){const m=calState.month||today().slice(0,7);let [y,mo]=m.split("-").map(Number);mo+=+cn.dataset.calNav;if(mo<1){mo=12;y--}if(mo>12){mo=1;y++}
