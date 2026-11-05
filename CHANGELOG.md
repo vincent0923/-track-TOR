@@ -9,8 +9,8 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 ## [v1.23a] — 2026-11-05
 
 ### 新增 / Added
-- 🥩 **蛋白质吃够了没**：「摄入与消耗」图右边加了蛋白质轴（g），画出每天记下的蛋白质和最低需求线（体重 × 1.6 g）。实心点是那天吃够了，空心点是没吃够；点图上某一天会显示吃了多少、还差多少。
-  Did you eat enough protein? The Intake vs burn chart has a protein axis on the right (grams), with each day's logged protein and a minimum line (body weight × 1.6 g). A filled dot means that day was enough, a hollow one means it wasn't; tap a day to see how much you had and how much was missing.
+- 🥩 **蛋白质吃够了没**：「摄入与消耗」图右边加了蛋白质轴（g），画出每天记下的蛋白质和合适区间（体重 × 1.6 到 2.2 g，浅色带）。实心点在区间内，空心点是没吃够，带圈的点是超过上限；点图上某一天会显示吃了多少、还差或超出多少。
+  Did you eat enough protein? The Intake vs burn chart has a protein axis on the right (grams), with each day's logged protein and the useful range (body weight × 1.6 to 2.2 g, a shaded band). A filled dot is inside the range, a hollow one is short, a ringed one is above the top; tap a day to see how much you had and how far off you were.
 
 ---
 

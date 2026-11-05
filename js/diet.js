@@ -38,15 +38,17 @@ function dietTotals(day){
   return t;
 }
 
-/* protein: grams eaten that day (null when nothing with protein was logged), and the daily minimum
-   for building muscle, 1.6 g per kg of body weight */
-const PROTEIN_PER_KG = 1.6;
+/* protein: grams eaten that day (null when nothing with protein was logged), and the useful daily
+   range for building muscle: from 1.6 g per kg of body weight (where the gains level off) to 2.2 g
+   (the top of the range studies still find a benefit; more brings nothing extra) */
+const PROTEIN_PER_KG = 1.6, PROTEIN_MAX_PER_KG = 2.2;
 function proteinOf(date){
   const d = state.diet[date];
   if(!d || !d.items || !d.items.length) return null;
   return d.items.some(it=>numVal(it.p)!==null) ? dietTotals(d).p : null;
 }
 function proteinNeed(date){ return PROTEIN_PER_KG * weightAtDate(date); }
+function proteinCap(date){ return PROTEIN_MAX_PER_KG * weightAtDate(date); }
 function intakeOf(date){
   const d = state.diet[date];
   if(!d) return null;
@@ -125,8 +127,8 @@ function renderDietChart(){
     hi = Math.max(hi, Math.ceil(Math.max(...vals)/200)*200);
   }
   /* right axis: protein in grams */
-  const pr = dates.map(proteinOf), need = dates.map(proteinNeed);
-  const phi = Math.max(40, Math.ceil(Math.max(...need, ...pr.filter(v=>v!==null)) * 1.1 / 40) * 40);
+  const pr = dates.map(proteinOf), need = dates.map(proteinNeed), cap = dates.map(proteinCap);
+  const phi = Math.max(40, Math.ceil(Math.max(...cap, ...pr.filter(v=>v!==null)) * 1.1 / 40) * 40);
   const step = (W-L-R) / Math.max(1, dates.length-1);
   const x = i => L + i*step, y = v => TP + (hi-v)/(hi-lo)*(H-TP-B), yp = v => TP + (phi-v)/phi*(H-TP-B);
   let g = "";
@@ -162,13 +164,18 @@ function renderDietChart(){
   g += `<path d="${line("b")}" fill="none" stroke="var(--burn)" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>`;
   g += `<path d="${line("a")}" fill="none" stroke="var(--intake)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
   g += dotsFor("b", "var(--burn)") + dotsFor("a", "var(--intake)");
-  /* protein: dotted line for the daily minimum, a line with dots for what was eaten; a filled dot means enough that day */
-  g += `<path d="${need.map((v,i)=>(i?"L":"M")+x(i).toFixed(1)+" "+yp(v).toFixed(1)).join("")}" fill="none" stroke="var(--protein)" stroke-width="1.3" stroke-dasharray="1.5 3" stroke-linecap="round"/>`;
+  /* protein: a shaded band from the minimum to the upper limit (dotted edges), a line with dots for what was
+     eaten; filled dot = inside the range, hollow = short, ringed = above the limit */
+  const pl = arr => arr.map((v,i)=>(i?"L":"M")+x(i).toFixed(1)+" "+yp(v).toFixed(1)).join("");
+  g += `<path d="${pl(cap)}${need.map((v,i)=>"L"+x(need.length-1-i).toFixed(1)+" "+yp(need[need.length-1-i]).toFixed(1)).join("")}Z" fill="var(--protein)" fill-opacity=".1"/>`;
+  g += `<path d="${pl(need)}" fill="none" stroke="var(--protein)" stroke-width="1.3" stroke-dasharray="1.5 3" stroke-linecap="round"/>`;
+  g += `<path d="${pl(cap)}" fill="none" stroke="var(--protein)" stroke-width="1.3" stroke-dasharray="1.5 3" stroke-linecap="round"/>`;
   { let pd="", pen=false; pr.forEach((v,i)=>{ if(v===null){ pen=false; return; } pd += (pen?"L":"M") + x(i).toFixed(1) + " " + yp(v).toFixed(1); pen=true; });
     g += `<path d="${pd}" fill="none" stroke="var(--protein)" stroke-width="1.4" stroke-opacity=".7" stroke-linejoin="round"/>`; }
   const pr_r = dates.length>30 ? 2 : 2.9;
-  pr.forEach((v,i)=>{ if(v===null) return; const ok = v >= need[i];
-    g += `<circle cx="${x(i)}" cy="${yp(v)}" r="${pr_r}" fill="${ok ? "var(--protein)" : "var(--surface)"}" stroke="var(--protein)" stroke-width="1.4"/>`; });
+  pr.forEach((v,i)=>{ if(v===null) return; const low = v < need[i], high = v > cap[i];
+    g += `<circle cx="${x(i)}" cy="${yp(v)}" r="${pr_r}" fill="${low ? "var(--surface)" : "var(--protein)"}" stroke="var(--protein)" stroke-width="1.4"/>`;
+    if(high) g += `<circle cx="${x(i)}" cy="${yp(v)}" r="${pr_r+2.2}" fill="none" stroke="var(--protein)" stroke-width="1"/>`; });
   g += `<line id="dxh" x1="0" x2="0" y1="${TP}" y2="${H-B}" stroke="var(--ink)" stroke-opacity=".35" stroke-width="1" visibility="hidden"/>`;
   
   const box = document.getElementById("dietChart");
@@ -182,9 +189,9 @@ function renderDietChart(){
     const p = pts[i];
     xh.setAttribute("x1", x(i)); xh.setAttribute("x2", x(i)); xh.setAttribute("visibility", "visible");
     const gap = (p.a!==null && p.b!==null) ? p.b - p.a : null;
-    const pv = pr[i], pn = need[i];
+    const pv = pr[i], pn = need[i], pc = cap[i];
     tip.innerHTML = `${dotDateStr(p.d).slice(5)}　${T("摄入","In")} <b>${f0Dec(p.a)}</b>　${T("消耗","Burn")} <b>${f0Dec(p.b)}</b>　${T("基代","BMR")} <b>${f0Dec(bmrOfDate(p.d))}</b>` + (gap===null ? "" : `　${gap>=0 ? T("缺口","Deficit") : T("盈余","Surplus")} <b>${f0Dec(Math.abs(gap))}</b>`)
-      + `<br>${T("蛋白质","Protein")} <b>${pv===null ? "–" : Math.round(pv)}</b> / ${Math.round(pn)} g` + (pv===null ? "" : (pv >= pn ? T("　够了 ✓","　enough ✓") : T("　还差 " + Math.round(pn-pv) + " g","　" + Math.round(pn-pv) + " g short")));
+      + `<br>${T("蛋白质","Protein")} <b>${pv===null ? "–" : Math.round(pv)}</b> g（${Math.round(pn)}–${Math.round(pc)}）` + (pv===null ? "" : (pv < pn ? T("　还差 " + Math.round(pn-pv) + " g","　" + Math.round(pn-pv) + " g short") : pv > pc ? T("　超出 " + Math.round(pv-pc) + " g","　" + Math.round(pv-pc) + " g over") : T("　在区间内 ✓","　in range ✓")));
     tip.hidden = false;
     const bbox = box.getBoundingClientRect();
     const px = r.left - bbox.left + x(i)/W * r.width;
