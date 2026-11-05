@@ -500,3 +500,24 @@ body .cap>button[data-prog][data-prog]{background-image:linear-gradient(90deg,co
 .chartbox h3:has(.chic){align-items:center}
 .chartbox h3:has(.chic)>span:not(.num){white-space:nowrap}
 .chartbox h3:has(.chic) .num{font-size:18px;white-space:nowrap}
+
+/* training calendar: trained days marked with push / pull / extra dots; tap a day to open it */
+.cal{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 10px 12px}
+.calh{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.calh b{font-size:15px}
+.calnav{width:36px;height:32px;border:0;background:none;color:var(--ink);font-size:22px;line-height:1;cursor:pointer;border-radius:8px}
+.calnav:disabled{opacity:.25;cursor:default}
+.calg{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.calw{text-align:center;font-size:11px;color:var(--muted);padding:2px 0}
+.cald{position:relative;height:42px;border:1px solid transparent;border-radius:10px;background:none;color:var(--ink);font:600 14px/1 var(--f-num);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:0}
+.cald:disabled{color:var(--muted);opacity:.35;cursor:default}
+.cald.has{background:var(--sunk)}
+.cald.today{border-color:var(--cta);color:var(--cta)}
+.cald.sel{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.calm{display:flex;gap:3px;height:6px}
+.calm i{width:6px;height:6px;border-radius:50%}
+.calm i.push{background:var(--push)}
+.calm i.pull{background:var(--pull)}
+.calm i.xp{background:transparent;border:1.5px solid var(--cta);width:4px;height:4px}
+.calday .card.dayx .sbody{padding-top:4px}
+.dayx .xblock{margin-top:0;border-top:0}

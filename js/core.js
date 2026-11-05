@@ -125,7 +125,7 @@ function today(){const d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+
 /* nothing personal by default: the welcome sheet or a COROS sync fills these in */
 const GDEF={h:null,hC:null,hSrc:"coros",w:null,z:null,p:null,b:null,sex:null};
 const H_FALLBACK=170;
-const state = {sessions:{}, metrics:{}, diet:{}, settings:Object.assign({},GDEF)};
+const state = {sessions:{}, metrics:{}, diet:{}, settings:Object.assign({},GDEF), dayx:{}};
 /* diet page view state only; the diet records themselves are state.diet */
 const dietState = { range:14, gw:7, open:new Set() };
 const openDays = new Set();
@@ -135,7 +135,7 @@ let lsOk = true;
 function lsLoad(){
   let j=null;
   try{j=JSON.parse(localStorage.getItem(DATA_K)||"null")}catch(e){lsOk=false}
-  if(j){state.sessions=j.sessions||{};state.metrics=j.metrics||{};state.diet=j.diet||{};state.settings=Object.assign({},GDEF,j.settings||{});
+  if(j){state.sessions=j.sessions||{};state.metrics=j.metrics||{};state.diet=j.diet||{};state.settings=Object.assign({},GDEF,j.settings||{});state.dayx=j.dayx||{};
     /* a 0 sleep score was saved before the night was scored; drop it so the real score can arrive */
     let z=0;for(const [d,m] of Object.entries(state.metrics)){if(m.sleep===0){delete m.sleep;delete m.sleepH;z++;if(Object.keys(m).every(k=>k==="date"||m[k]==null))delete state.metrics[d]}}
     if(z)lsSave();

@@ -16,8 +16,14 @@ const ICON_COLLAPSE=svgList('<path d="M20 2v4.5M20 22v-4.5"/><path d="M17.6 5.8 
 /* ---------- extra practice: lives inside each session's panel, separate from its program sets ---------- */
 const XPULL="pullup";
 function xName(it){return it.id===XPULL?T("引体向上","Pull-ups"):it.name}
+/* extras live in a session (key = sid) or, on a day without a session, in state.dayx (key = "d:YYYY-MM-DD") */
+function xDoc(key){
+  if(key.startsWith("d:")){const d=key.slice(2);return state.dayx[d]||(state.dayx[d]={date:d,xs:null})}
+  return sessionDoc(key);
+}
+function xDocs(){return Object.values(state.sessions).concat(Object.values(state.dayx||{}))}
 function xLastValue(id){
-  const docs=Object.values(state.sessions).filter(s=>s&&s.xs).sort((a,b)=>(a.date||"9")<(b.date||"9")?1:-1);
+  const docs=xDocs().filter(s=>s&&s.xs).sort((a,b)=>(a.date||"9")<(b.date||"9")?1:-1);
   for(const doc of docs){
     const it=doc.xs.find(y=>y.id===id);
     const sets=it?it.sets.filter(x=>x.d):[];
@@ -28,7 +34,7 @@ function xLastValue(id){
 function xNew(id,name,unit){const v=xLastValue(id);return {id,name,unit,sets:[{v:v!=null?v:(id===XPULL?1:10),d:false}]}}
 /* a session with nothing saved shows pull-ups by default; it is only stored once something changes */
 function xList(s){return (s&&s.xs)||[xNew(XPULL,"引体向上","个")]}
-function xEdit(sid){const s=sessionDoc(sid);if(!s.xs)s.xs=xList(s);return s.xs}
+function xEdit(sid){const s=xDoc(sid);if(!s.xs)s.xs=xList(s);return s.xs}
 function xSummary(list){
   return list.map(it=>{const sets=it.sets.filter(x=>x.d);if(!sets.length)return "";
     const sum=sets.reduce((a,x)=>a+(+x.v||0),0);
@@ -54,7 +60,7 @@ function moveDatedExtras(byDate){
 function pullSeries(){
   const best={};
   Object.values(state.metrics).forEach(m=>{if(m.date&&m.pullups!=null)best[m.date]=+m.pullups});
-  Object.values(state.sessions).forEach(s=>{
+  xDocs().forEach(s=>{
     const it=s&&s.xs&&s.xs.find(y=>y.id===XPULL);
     if(!it)return;
     const d=s.date||today();
@@ -84,7 +90,7 @@ function extraBlock(sid,s){
   });
   const past=new Map();
   if(!list.some(it=>it.id===XPULL))past.set(XPULL,{id:XPULL,name:"引体向上",unit:"个"});
-  Object.values(state.sessions).forEach(doc=>((doc&&doc.xs)||[]).forEach(it=>{
+  xDocs().forEach(doc=>((doc&&doc.xs)||[]).forEach(it=>{
     if(!past.has(it.id)&&!list.some(y=>y.id===it.id))past.set(it.id,it)}));
   h+='<div class="xadd"><div class="xadd-row">'
     +'<input id="xName-'+sid+'" type="text" aria-label="'+T("项目名称","Exercise name")+'" placeholder="'+T("其他项目，如 俯卧撑","Other, e.g. push-ups")+'">'
@@ -127,28 +133,66 @@ function extraAct(t){
   }
 }
 
+/* the training tab: a month calendar of trained days on top (tap a day to see it and log extra practice),
+   then only the next five unfinished sessions */
+const calState={month:null, sel:null};
+function dayHas(d){
+  const kinds=PROGRAM.filter(p=>{const s=state.sessions[p.sid];return s&&s.done&&s.date===d}).map(p=>p.kind);
+  const dx=state.dayx&&state.dayx[d], x=!!(dx&&dx.xs&&dx.xs.some(it=>it.sets.some(y=>y.d)));
+  return {push:kinds.includes("push"),pull:kinds.includes("pull"),x};
+}
+function calendarHtml(){
+  const td=today(), m=calState.month||td.slice(0,7);
+  const [y,mo]=m.split("-").map(Number), first=new Date(y,mo-1,1), days=new Date(y,mo,0).getDate();
+  const lead=(first.getDay()+6)%7;                     /* weeks start on Monday */
+  const wk=T("一二三四五六日","MTWTFSS").split("");
+  let h='<section class="cal" aria-label="'+T("训练日历","Training calendar")+'"><div class="calh">'
+    +'<button type="button" class="calnav" data-cal-nav="-1" aria-label="'+T("上个月","Previous month")+'">‹</button>'
+    +'<b>'+T(y+" 年 "+mo+" 月",new Date(y,mo-1,1).toLocaleString("en",{month:"long"})+" "+y)+'</b>'
+    +'<button type="button" class="calnav" data-cal-nav="1" aria-label="'+T("下个月","Next month")+'"'+(m>=td.slice(0,7)?" disabled":"")+'>›</button></div>'
+    +'<div class="calg">'+wk.map(w=>'<span class="calw">'+w+'</span>').join("")+'<span></span>'.repeat(lead);
+  for(let i=1;i<=days;i++){
+    const d=m+"-"+pad(i), f=dayHas(d), fut=d>td;
+    h+='<button type="button" class="cald'+(d===td?" today":"")+(d===calState.sel?" sel":"")+(f.push||f.pull||f.x?" has":"")+'" data-cal="'+d+'"'+(fut?" disabled":"")
+      +' aria-pressed="'+(d===calState.sel)+'" aria-label="'+md(d)+'">'+i
+      +'<span class="calm">'+(f.push?'<i class="push"></i>':'')+(f.pull?'<i class="pull"></i>':'')+(f.x?'<i class="xp"></i>':'')+'</span></button>';
+  }
+  return h+'</div></section>';
+}
+function cardHtml(p,cur){
+  const s=state.sessions[p.sid];
+  const done=!!(s&&s.done);
+  const isCur=p.sid===cur;
+  const [d,n]=sessionProgress(p.sid);
+  const avail=isAvail(p.sid);
+  const pill = done?'<span class="pill done">✓ '+(s.date?md(s.date):T("已完成","Done"))+'</span>':isCur?'<span class="pill now">'+T("下一次","Next")+'</span>':avail?'<span class="pill now">'+T("可练","Ready")+'</span>':'<span class="pill later">'+LOCK+T("未解锁","Locked")+'</span>';
+  const isOpen=openDays.has(p.sid);
+  let html='<article class="card '+p.kind+(done?" isdone":"")+(avail?"":" future")+'" id="c-'+p.sid+'">'
+    +'<button class="shead" data-toggle="'+p.sid+'" aria-expanded="'+isOpen+'">'
+    +'<span class="tag">'+LAB(p)+'</span>'
+    +'<span class="meta">'+p.ex.filter(e=>e.id!=="stretch").map(NS).join(" · ")
+    +(s&&s.xs&&xSummary(s.xs)?'<span class="xsum">'+T("加练：","Extra: ")+esc(xSummary(s.xs))+'</span>':'')
+    +'<div class="prog"><i style="width:'+(n?Math.round(d/n*100):0)+'%"></i></div></span>'+pill+'</button>';
+  if(isOpen) html+=sessionBody(p);
+  return html+'</article>';
+}
 function renderTrain(){
   const pane=document.getElementById("pane-train");
   const cur=currentSid();
-  /* the page always opens with every day folded; there is only a collapse-all, no expand-all */
-  let html='<div class="tbar"><button class="tbtn" data-act="all" aria-label="'+T("全部收起","Collapse all")+'">'+ICON_COLLAPSE+T("全部收起","Collapse all")+'</button>'
+  let html=calendarHtml();
+  /* the chosen day: sessions finished that day (or being edited), then that day's own extra practice */
+  const sel=calState.sel;
+  if(sel){
+    html+='<section class="calday">';
+    PROGRAM.filter(p=>{const s=state.sessions[p.sid];return s&&s.done&&(s.date===sel||unlocked.has(p.sid))}).forEach(p=>{html+=cardHtml(p,cur)});
+    html+='<article class="card dayx"><div class="sbody">'+extraBlock("d:"+sel,state.dayx[sel])+'</div></article></section>';
+  }
+  /* finished sessions without a date can't sit on the calendar; keep them reachable */
+  PROGRAM.filter(p=>{const s=state.sessions[p.sid];return s&&s.done&&!s.date}).forEach(p=>{html+=cardHtml(p,cur)});
+  html+='<div class="tbar"><button class="tbtn" data-act="all" aria-label="'+T("全部收起","Collapse all")+'">'+ICON_COLLAPSE+T("全部收起","Collapse all")+'</button>'
     +(cur?'<button class="tbtn next" data-act="next" aria-label="'+T("跳到下一次训练","Jump to next session")+'">💪🏼'+T("练","Train")+'</button>':'')+'</div>';
-  PROGRAM.forEach((p,i)=>{
-    const s=state.sessions[p.sid];
-    const done=!!(s&&s.done);
-    const isCur=p.sid===cur;
-    const [d,n]=sessionProgress(p.sid);
-    const avail=isAvail(p.sid);
-    const pill = done?'<span class="pill done">✓ '+(s.date?md(s.date):T("已完成","Done"))+'</span>':isCur?'<span class="pill now">'+T("下一次","Next")+'</span>':avail?'<span class="pill now">'+T("可练","Ready")+'</span>':'<span class="pill later">'+LOCK+T("未解锁","Locked")+'</span>';
-    const isOpen=openDays.has(p.sid);
-    html+='<article class="card '+p.kind+(done?" isdone":"")+(avail?"":" future")+'" id="c-'+p.sid+'">'
-      +'<button class="shead" data-toggle="'+p.sid+'" aria-expanded="'+isOpen+'">'
-      +'<span class="tag">'+LAB(p)+'</span>'
-      +'<span class="meta">'+p.ex.filter(e=>e.id!=="stretch").map(NS).join(" · ")
-      +(s&&s.xs&&xSummary(s.xs)?'<span class="xsum">'+T("加练：","Extra: ")+esc(xSummary(s.xs))+'</span>':'')
-      +'<div class="prog"><i style="width:'+(n?Math.round(d/n*100):0)+'%"></i></div></span>'+pill+'</button>';
-    if(isOpen) html+=sessionBody(p);
-    html+='</article>';
+  PROGRAM.filter(p=>!(state.sessions[p.sid]&&state.sessions[p.sid].done)).slice(0,5).forEach(p=>{
+    html+=cardHtml(p,cur);
     if(p.kind==="pull" && (p.day===10||p.day===20)) html+='<div class="review">D'+p.day+T(' 复盘：对比引体次数、体重周均、腰围，决定下一档是否照常加量。',' review: compare pull-ups, weekly-average weight and waist, then decide whether the next tier goes ahead as planned.')+'</div>';
   });
   pane.innerHTML=html;
@@ -285,6 +329,12 @@ function setRowState(sid,ex,i){
 
 document.getElementById("pane-train").addEventListener("click",e=>{
   const xt=e.target.closest("[data-xa]"); if(xt){extraAct(xt);return}
+  const cd=e.target.closest("[data-cal]");
+  if(cd){calState.sel=calState.sel===cd.dataset.cal?null:cd.dataset.cal;renderTrain();
+    const box=document.querySelector("#pane-train .calday");if(box)foldIn([box],FOLD_MS);return}
+  const cn=e.target.closest("[data-cal-nav]");
+  if(cn){const m=calState.month||today().slice(0,7);let [y,mo]=m.split("-").map(Number);mo+=+cn.dataset.calNav;if(mo<1){mo=12;y--}if(mo>12){mo=1;y++}
+    calState.month=y+"-"+pad(mo);renderTrain();return}
   const t=e.target.closest("[data-toggle],[data-act]"); if(!t) return;
   if(t.dataset.toggle){const sid=t.dataset.toggle;
     if(openDays.has(sid)&&unlocked.has(sid)){toast(T("正在修改这一天，按「保存」后才能收起","You're editing this day; tap Save before closing it"));return}

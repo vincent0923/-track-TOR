@@ -6,6 +6,16 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 
 ---
 
+## [v1.26a] — 2026-11-05
+
+### 新增 / Added
+- 📅 **训练日历**：训练页最上面是月历，练过的日子标上推练（橙）和拉练（蓝）的小圆点，只有加练的日子标一个空心圈。点哪天就在日历下面展开那天：当天完成的训练，加上当天的加练。下面只留接下来 5 次没练的训练，页面短了很多。
+  Training calendar: the Train tab opens with a month calendar. Trained days carry push (orange) and pull (blue) dots, and days with only extra practice a hollow ring. Tap a day to open it below: the sessions finished that day plus that day's extra practice. Only the next five unfinished sessions are listed below, so the page is much shorter.
+- 🏨 **哪天都能加练**：点今天（或之前任何一天），可以直接记加练，不用挂在某次训练下面。比如出差时酒店有高位下拉，就记一个「高位下拉」。引体加练照样算进引体趋势和目标，进度文件也会带上。
+  Extra practice on any day: tap today (or any earlier day) to log extra practice without tying it to a session, say lat pulldowns on a hotel machine. Pull-up extras still count toward the pull-up trend and goal, and the progress file carries them.
+
+---
+
 ## [v1.25a] — 2026-11-05
 
 ### 新增 / Added

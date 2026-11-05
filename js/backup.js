@@ -12,7 +12,9 @@ function pack(){
   /* 带上高驰授权：换手机恢复进度后不用重新授权 */
   let tk = null;
   try{ tk = JSON.parse(localStorage.getItem("tracktor-coros-token") || "null"); }catch(e){}
-  return {v:4,s:S,m:M,g:state.settings,d:state.diet,tk};
+  /* extra practice on days without a session: {date: [items]} */
+  const DX={};Object.entries(state.dayx||{}).forEach(([d,doc])=>{if(doc&&doc.xs&&doc.xs.some(it=>it.sets.some(x=>x.d)))DX[d]=doc.xs});
+  return {v:4,s:S,m:M,g:state.settings,d:state.diet,tk,dx:DX};
 }
 function unpack(j){
   const sessions={},metrics={};const d6=t=>t?"20"+t.slice(0,2)+"-"+t.slice(2,4)+"-"+t.slice(4,6):null;
@@ -24,7 +26,8 @@ function unpack(j){
   /* v4 keeps diet days directly; v3 had a separate ledger {days, coros, weights} */
   let diet=null;
   if((j.v||0)>=4)diet=j.d||{};else if(j.d){diet={};mergeLegacyDiet(metrics,diet,j.d)}
-  return {sessions,metrics,diet,settings:j.g?Object.assign({},GDEF,j.g):null,extras:j.x||null,tk:j.tk||null};
+  const dayx=j.dx?Object.fromEntries(Object.entries(j.dx).map(([d,xs])=>[d,{date:d,xs}])):null;
+  return {sessions,metrics,diet,settings:j.g?Object.assign({},GDEF,j.g):null,extras:j.x||null,tk:j.tk||null,dayx};
 }
 const b64e=u=>{let s="";for(let i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(s)};
 const b64d=t=>Uint8Array.from(atob(t),c=>c.charCodeAt(0));
@@ -85,6 +88,7 @@ document.getElementById("bkYes").addEventListener("click",async()=>{
   if(!pendingImport)return;
   state.sessions=pendingImport.sessions;state.metrics=pendingImport.metrics;if(pendingImport.diet)state.diet=pendingImport.diet;  /* files without diet keep the current diet */
   if(pendingImport.settings)state.settings=pendingImport.settings;
+  if(pendingImport.dayx)state.dayx=pendingImport.dayx;
   if(pendingImport.extras)moveDatedExtras(pendingImport.extras);
   initDiet();
   /* 这台设备已连接时保留现有授权，备份里的可能已经过期 */
