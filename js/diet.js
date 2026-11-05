@@ -265,7 +265,11 @@ function renderDietDays(){
     const cAct = activeOf(k);
     const wKg = weightAtDate(k);
     const metaTags = [];
-    if(cAct!==null) metaTags.push(`${T("手表活动","Watch activity")} ${f0Dec(cAct)} kcal`);
+    if(cAct!==null){ const mm = state.metrics[k] || {}, ex = numVal(mm.ex);
+      /* show the split so the burn can be checked: day total, how much was logged workouts, what counts */
+      metaTags.push(`${T("手表活动","Watch activity")} ${f0Dec(cAct)} kcal`
+        + (ex ? T("（运动 "+f0Dec(ex)+"）"," (workouts "+f0Dec(ex)+")") : (mm.ex == null ? T("（运动未知）"," (workouts unknown)") : ""))
+        + ` → ${T("计入","counted")} ${f0Dec(watchBurn(k, cAct))}`); }
     if(numVal(d.expendOverride)!==null) metaTags.push(`${T("手动总消耗","Manual total burn")} ${f0Dec(d.expendOverride)} kcal`);
     if(wKg!==null) metaTags.push(`${T("体重","Weight")} ${f1Dec(wKg)} kg`);
     const metaLine = metaTags.length ? `<p class="note"${dietState.open.has(k)?"":" hidden"} style="padding-top:6px;padding-bottom:${d.note?2:10}px">${metaTags.join(" · ")}</p>` : "";

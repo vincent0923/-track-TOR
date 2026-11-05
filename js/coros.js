@@ -132,9 +132,13 @@ async function syncCalories(){
       }
     }catch(e){}
     for(const date of dates){
-      const v = rows[date], patch = { active: v.active, steps: v.steps };
+      const v = rows[date], patch = { active: v.active, steps: v.steps }, old = state.metrics[date];
+      /* workouts unreadable this time: an old split no longer matches a changed day total (it would count new
+         workouts as everyday movement at full value), so that day falls back to "workouts unknown" (×0.7) */
+      const stale = !split && old && old.ex != null && old.active !== v.active;
       if(split){ const s = split[date] || { ex:0, exP:0 }; patch.ex = s.ex; patch.exP = s.exP; }
       saveMetric(date, patch);
+      if(stale){ delete state.metrics[date].ex; delete state.metrics[date].exP; lsSave(); }
     }
     renderDietAll();
     return T("；已同步 "+dates.length+" 天活动热量", "; synced "+dates.length+" days of activity calories");
