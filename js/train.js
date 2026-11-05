@@ -366,6 +366,9 @@ document.getElementById("pane-train").addEventListener("click",e=>{
   if(act==="val"||act==="note"||act==="date") return;
   if(act==="dxedit"){confirmEdit("d:"+t.dataset.day);return}
   if(act==="dxsave"){const d=t.dataset.day;dxUnlocked.delete(d);lsSave();renderGoals();toast(T("已保存","Saved"));
+    /* finishing today's extra practice still gets fireworks: one rocket per completed set */
+    const doc=state.dayx[d], sets=doc&&doc.xs?doc.xs.reduce((a,it)=>a+it.sets.filter(x=>x.d).length,0):0;
+    if(d===today()&&sets)fireworks(Math.min(sets,15),sets>=10?1:0);
     const box=document.querySelector("#pane-train .calday");
     foldOut(box?[box]:[],SAVE_FOLD_MS).then(()=>{calState.sel=null;renderTrain()});return}
   if(act==="edit"){confirmEdit(sid);return}

@@ -36,20 +36,28 @@ applyLang(LANG);
 document.getElementById("langBtn").addEventListener("click",()=>{applyLang(LANG==="en"?"zh":"en");applyTheme(document.documentElement.getAttribute("data-theme")||"light");renderAll();renderDietAll();paintSheetLang();syncUI()});
 document.getElementById("themeBtn").addEventListener("click",()=>applyTheme(document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark"));
 
-(function(){
+/* particle flames above an element: the 练 button burns at full size (orange); today's cell on the training
+   calendar burns at half size in green. k scales size, height and density. */
+function flameOn(sel,k,green){
   if(window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
   const cv=document.createElement("canvas");cv.className="flame";cv.setAttribute("aria-hidden","true");document.body.appendChild(cv);
-  const c=cv.getContext("2d"), dpr=Math.min(2,window.devicePixelRatio||1), PADX=22, UP=78, DOWN=10;
+  const c=cv.getContext("2d"), dpr=Math.min(2,window.devicePixelRatio||1), PADX=22*k, UP=78*k, DOWN=10;
   let parts=[], last=performance.now(), cw=0, ch=0;
   function size(w,h){if(w!==cw||h!==ch){cw=w;ch=h;cv.width=w*dpr;cv.height=h*dpr;cv.style.width=w+"px";cv.style.height=h+"px"}}
   function spawn(bw,ember){
     const u=(Math.random()+Math.random())/2;            /* denser toward the middle */
-    const x=PADX+6+u*(bw-12), base=UP+2;
-    if(ember)return parts.push({x,y:base,vx:(Math.random()-.5)*.6,vy:-(0.5+Math.random()*0.425),age:0,life:55+Math.random()*45,r:.6+Math.random()*.5,ember:1,seed:Math.random()*9});
+    const x=PADX+6*k+u*(bw-12*k), base=UP+2;
+    if(ember)return parts.push({x,y:base,vx:(Math.random()-.5)*.6*k,vy:-(0.5+Math.random()*0.425)*k,age:0,life:55+Math.random()*45,r:(.6+Math.random()*.5)*Math.max(k,.7),ember:1,seed:Math.random()*9});
     const mid=1-Math.abs(u-.5)*1.6;                       /* taller flames in the middle */
-    parts.push({x,y:base+Math.random()*4,vx:(Math.random()-.5)*.5,vy:-(0.245+Math.random()*0.315)*(0.7+mid*0.6),age:0,life:26+Math.random()*22*(0.6+mid),r:1.225+Math.random()*1.4*(0.6+mid),seed:Math.random()*9});
+    parts.push({x,y:base+Math.random()*4*k,vx:(Math.random()-.5)*.5*k,vy:-(0.245+Math.random()*0.315)*(0.7+mid*0.6)*k,age:0,life:26+Math.random()*22*(0.6+mid),r:(1.225+Math.random()*1.4*(0.6+mid))*Math.max(k,.7),seed:Math.random()*9});
   }
-  function col(t,a){ /* white-yellow core -> orange -> red -> faint smoke */
+  function col(t,a){ /* white-hot core -> flame colour -> deep edge */
+    if(green){
+      if(t<.12)return "rgba(225,255,215,"+a+")";
+      if(t<.38)return "rgba(130,240,150,"+a+")";
+      if(t<.7)return "rgba(60,200,110,"+a+")";
+      return "rgba(20,120,70,"+a*.8+")";
+    }
     if(t<.12)return "rgba(255,236,150,"+a+")";
     if(t<.38)return "rgba(255,178,40,"+a+")";
     if(t<.7)return "rgba(255,112,24,"+a+")";
@@ -58,21 +66,21 @@ document.getElementById("themeBtn").addEventListener("click",()=>applyTheme(docu
   function frame(now){
     requestAnimationFrame(frame);
     const dt=Math.min(2.5,(now-last)/16.7);last=now;
-    const b=document.querySelector(".tbtn.next");
+    const b=document.querySelector(sel);
     const r=b&&b.getBoundingClientRect();
     const nav=document.querySelector("nav.tabs"), nb=nav?nav.getBoundingClientRect().bottom:0;
     /* hidden, off screen, or slid under the sticky tab bar: no flames */
     if(!r||!r.width||document.hidden||r.top<nb-2||r.top>innerHeight){if(cw){c.clearRect(0,0,cv.width,cv.height)}parts=[];return}
-    const w=Math.round(r.width+PADX*2), h=UP+r.height+DOWN;
+    const w=Math.round(r.width+PADX*2), h=Math.round(UP+r.height+DOWN);
     size(w,h);cv.style.transform="translate("+Math.round(r.left-PADX)+"px,"+Math.round(r.top-UP)+"px)";
-    let n=3.2*dt;while(n>0){if(Math.random()<n)spawn(r.width,false);n--}
-    if(Math.random()<0.07*dt)spawn(r.width,true);
+    let n=3.2*k*dt;while(n>0){if(Math.random()<n)spawn(r.width,false);n--}
+    if(Math.random()<0.07*k*dt)spawn(r.width,true);
     c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,w,h);c.globalCompositeOperation="lighter";
     for(let i=parts.length-1;i>=0;i--){const p=parts[i];
       p.age+=dt;const t=p.age/p.life;if(t>=1){parts.splice(i,1);continue}
-      p.vx+=(Math.random()-.5)*.12*dt+Math.sin(now*.004+p.seed)*.02*dt;p.vx*=Math.pow(.95,dt);
+      p.vx+=(Math.random()-.5)*.12*k*dt+Math.sin(now*.004+p.seed)*.02*k*dt;p.vx*=Math.pow(.95,dt);
       p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy*=Math.pow(p.ember?.995:.985,dt);
-      if(p.ember){const a=(1-t)*.95;c.fillStyle="rgba(255,"+Math.round(200-t*90)+",70,"+a+")";c.beginPath();c.arc(p.x,p.y,p.r,0,7);c.fill();continue}
+      if(p.ember){const a=(1-t)*.95;c.fillStyle=green?"rgba(170,"+Math.round(255-t*60)+",160,"+a+")":"rgba(255,"+Math.round(200-t*90)+",70,"+a+")";c.beginPath();c.arc(p.x,p.y,p.r,0,7);c.fill();continue}
       const rad=p.r*(1-t*.7), a=Math.pow(1-t,1.4)*.4;
       c.save();c.translate(p.x,p.y);c.scale(.75,1.6);
       const g=c.createRadialGradient(0,0,0,0,0,rad);g.addColorStop(0,col(t,a));g.addColorStop(1,col(t,0));
@@ -81,7 +89,9 @@ document.getElementById("themeBtn").addEventListener("click",()=>applyTheme(docu
     c.globalCompositeOperation="source-over";
   }
   requestAnimationFrame(frame);
-})();
+}
+flameOn(".tbtn.next",1,false);
+flameOn("#pane-train .cald.today",.5,true);
 /* fireworks: one shared overlay canvas; fireworks(n, big) queues n normal rockets and then `big` large ones.
    Calls stack (ticking quickly just adds rockets to the same show). The canvas is removed when the sky is empty. */
 const FW=(function(){
