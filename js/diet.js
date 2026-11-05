@@ -38,9 +38,9 @@ function dietTotals(day){
   return t;
 }
 
-/* protein: grams eaten that day (null when nothing with protein was logged), and the useful daily
-   range for building muscle: from 1.6 g per kg of body weight (where the gains level off) to 2.2 g
-   (the top of the range studies still find a benefit; more brings nothing extra) */
+/* protein: grams eaten that day (null when nothing with protein was logged), and the band for building
+   muscle: from 1.6 g per kg of body weight (enough) to 2.2 g (where studies stop finding more muscle).
+   Above it is no problem: while cutting, more protein keeps you full and costs more to digest */
 const PROTEIN_PER_KG = 1.6, PROTEIN_MAX_PER_KG = 2.2;
 function proteinOf(date){
   const d = state.diet[date];
@@ -85,13 +85,21 @@ function bmrOfDate(date){
   return 10 * weightAtDate(date) + 6.25 * h - 5 * ageAtDate(date) + sx;
 }
 
+/* digestion burn: protein about 25% of its calories, carbs 8%, fat 2%; days without macros use 9% of intake */
+const TEF_P = 0.25, TEF_C = 0.08, TEF_F = 0.02;
+function tefFor(items, intake){
+  let p=0, c=0, f=0, any=false;
+  for(const it of (items||[])){ const a=numVal(it.p), b=numVal(it.c), e=numVal(it.f); if(a!==null||b!==null||e!==null) any=true; p+=a||0; c+=b||0; f+=e||0; }
+  if(any && p+c+f > 0) return p*4*TEF_P + c*4*TEF_C + f*9*TEF_F;
+  return TEF * (intake===null || !intake ? TEF_DEFAULT : intake);
+}
 function burnOfDate(date){
   const d = state.diet[date];
   if(d && numVal(d.expendOverride) !== null) return numVal(d.expendOverride);
   const act = activeOf(date);
   if(act === null) return null;
   const intake = intakeOf(date);
-  return bmrOfDate(date) + watchBurn(date, act) + TEF * (intake===null ? TEF_DEFAULT : intake);
+  return bmrOfDate(date) + watchBurn(date, act) + tefFor(intake===null ? null : (d && d.items), intake);
 }
 
 function dietRangeDates(){
@@ -164,8 +172,8 @@ function renderDietChart(){
   g += `<path d="${line("b")}" fill="none" stroke="var(--burn)" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>`;
   g += `<path d="${line("a")}" fill="none" stroke="var(--intake)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
   g += dotsFor("b", "var(--burn)") + dotsFor("a", "var(--intake)");
-  /* protein: a shaded band from the minimum to the upper limit (dotted edges), a line with dots for what was
-     eaten; filled dot = inside the range, hollow = short, ringed = above the limit */
+  /* protein: a shaded band from 1.6 to 2.2 g/kg (dotted edges), a line with dots for what was eaten;
+     filled dot = enough, hollow = short. Above the band is fine, more so while cutting */
   const pl = arr => arr.map((v,i)=>(i?"L":"M")+x(i).toFixed(1)+" "+yp(v).toFixed(1)).join("");
   g += `<path d="${pl(cap)}${need.map((v,i)=>"L"+x(need.length-1-i).toFixed(1)+" "+yp(need[need.length-1-i]).toFixed(1)).join("")}Z" fill="var(--protein)" fill-opacity=".1"/>`;
   g += `<path d="${pl(need)}" fill="none" stroke="var(--protein)" stroke-width="1.3" stroke-dasharray="1.5 3" stroke-linecap="round"/>`;
@@ -173,9 +181,8 @@ function renderDietChart(){
   { let pd="", pen=false; pr.forEach((v,i)=>{ if(v===null){ pen=false; return; } pd += (pen?"L":"M") + x(i).toFixed(1) + " " + yp(v).toFixed(1); pen=true; });
     g += `<path d="${pd}" fill="none" stroke="var(--protein)" stroke-width="1.4" stroke-opacity=".7" stroke-linejoin="round"/>`; }
   const pr_r = dates.length>30 ? 2 : 2.9;
-  pr.forEach((v,i)=>{ if(v===null) return; const low = v < need[i], high = v > cap[i];
-    g += `<circle cx="${x(i)}" cy="${yp(v)}" r="${pr_r}" fill="${low ? "var(--surface)" : "var(--protein)"}" stroke="var(--protein)" stroke-width="1.4"/>`;
-    if(high) g += `<circle cx="${x(i)}" cy="${yp(v)}" r="${pr_r+2.2}" fill="none" stroke="var(--protein)" stroke-width="1"/>`; });
+  pr.forEach((v,i)=>{ if(v===null) return; const low = v < need[i];
+    g += `<circle cx="${x(i)}" cy="${yp(v)}" r="${pr_r}" fill="${low ? "var(--surface)" : "var(--protein)"}" stroke="var(--protein)" stroke-width="1.4"/>`; });
   g += `<line id="dxh" x1="0" x2="0" y1="${TP}" y2="${H-B}" stroke="var(--ink)" stroke-opacity=".35" stroke-width="1" visibility="hidden"/>`;
   
   const box = document.getElementById("dietChart");
@@ -191,7 +198,7 @@ function renderDietChart(){
     const gap = (p.a!==null && p.b!==null) ? p.b - p.a : null;
     const pv = pr[i], pn = need[i], pc = cap[i];
     tip.innerHTML = `${dotDateStr(p.d).slice(5)}　${T("摄入","In")} <b>${f0Dec(p.a)}</b>　${T("消耗","Burn")} <b>${f0Dec(p.b)}</b>　${T("基代","BMR")} <b>${f0Dec(bmrOfDate(p.d))}</b>` + (gap===null ? "" : `　${gap>=0 ? T("缺口","Deficit") : T("盈余","Surplus")} <b>${f0Dec(Math.abs(gap))}</b>`)
-      + `<br>${T("蛋白质","Protein")} <b>${pv===null ? "–" : Math.round(pv)}</b> g（${Math.round(pn)}–${Math.round(pc)}）` + (pv===null ? "" : (pv < pn ? T("　还差 " + Math.round(pn-pv) + " g","　" + Math.round(pn-pv) + " g short") : pv > pc ? T("　超出 " + Math.round(pv-pc) + " g","　" + Math.round(pv-pc) + " g over") : T("　在区间内 ✓","　in range ✓")));
+      + `<br>${T("蛋白质","Protein")} <b>${pv===null ? "–" : Math.round(pv)}</b> g（${Math.round(pn)}–${Math.round(pc)}）` + (pv===null ? "" : (pv < pn ? T("　还差 " + Math.round(pn-pv) + " g","　" + Math.round(pn-pv) + " g short") : T("　够了 ✓","　enough ✓")));
     tip.hidden = false;
     const bbox = box.getBoundingClientRect();
     const px = r.left - bbox.left + x(i)/W * r.width;
@@ -327,7 +334,7 @@ function openDietEntryModal(initDate){
     const intake = mode === "total" ? numVal(total.kcal) : dietTotals({ items: formState.items }).kcal;
     const estBurn = formState.expendOverride !== null
       ? Math.round(formState.expendOverride)
-      : (formState.active !== null ? Math.round(bmr + watchBurn(curDate, formState.active) + TEF*(intake || TEF_DEFAULT)) : null);
+      : (formState.active !== null ? Math.round(bmr + watchBurn(curDate, formState.active) + tefFor(mode === "total" ? [total] : formState.items, intake)) : null);
     return `${T("基代","BMR")} <b>${bmr}</b> kcal · ${T("预计总消耗","Est. total burn")}：<b>${estBurn!==null ? estBurn+" kcal" : T("待输入活动消耗或总消耗","enter activity or total burn")}</b>`;
   }
 

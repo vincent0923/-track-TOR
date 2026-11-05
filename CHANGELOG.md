@@ -6,6 +6,16 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
 
 ---
 
+## [v1.24a] — 2026-11-05
+
+### 变更 / Changed
+- 🔥 **消化耗能按营养素算**：估算总消耗里的消化耗能，从「摄入 × 9%」改成蛋白质热量 × 25%、碳水 × 8%、脂肪 × 2%。蛋白质吃得多的日子，消耗会算得高一些，更接近实际；没记营养素的日子仍按 9%。
+  Digestion burn now follows the nutrients: 25% of protein calories, 8% of carbs and 2% of fat, instead of 9% of all intake. High-protein days count a little more burn, closer to reality; days without nutrients still use 9%.
+- 🥩 蛋白质的浅色带改叫「增肌够用区间」（体重 × 1.6 到 2.2 g）。超过上沿不再标成警告：减脂期间多吃蛋白质更顶饱、消化耗能高、更保肌肉。点只分两种：实心是吃够了，空心是没吃够。
+  The protein band is now the muscle-building band (body weight × 1.6 to 2.2 g). Going above it is no longer flagged: while cutting, more protein keeps you fuller, costs more to digest and protects muscle. Dots are now just filled (enough) or hollow (short).
+
+---
+
 ## [v1.23a] — 2026-11-05
 
 ### 新增 / Added
