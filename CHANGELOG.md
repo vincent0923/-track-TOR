@@ -13,6 +13,8 @@ Everything that changed, version by version. Format based on [Keep a Changelog](
   Low-intensity workouts count for less: walks, housework and other custom activities, and yoga now count at × 0.5 of their watch calories (was × 0.7). COROS estimates these from heart rate, which runs high when heart rate is barely above resting. Strength and cardio stay at × 0.7, power-meter rides at × 0.9, everyday movement in full. COROS active calories already leave out resting metabolism, so nothing more is subtracted. After one sync, the last 60 days are recalculated.
 
 ### 修复 / Fixed
+- 高驰的运动记录在网页里有时是以转义文本传回来的，旧的解析只认出一条，其余日子都当成「没有运动」，运动热量被全额计入（× 0.7、× 0.5 实际没生效）。现在两种格式都能读，同步一次后最近 60 天重算。
+  COROS workout records sometimes reach the browser as escaped text; the old parser then found only one record and treated every other day as having no workouts, so workout calories counted in full (the × 0.7 and × 0.5 never applied). Both forms are read now; one sync recalculates the last 60 days.
 - 同步时如果读不到运动记录，当天全天热量又变了，不再沿用旧的运动拆分（会把新的运动当成日常活动全额计入、消耗偏高），改为按「运动未知」× 0.7 计。饮食记录每天的卡片上显示手表全天热量、其中运动多少、实际计入多少。
   If workouts can't be read during a sync and the day's total has changed, the old workout split is no longer kept (it counted new workouts as everyday movement at full value, inflating the burn); the day counts as "workouts unknown" at × 0.7. Each day card under Food logs shows the watch total, the workout part and what is counted.
 

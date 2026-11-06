@@ -95,12 +95,17 @@ async function syncHrv(){
   }catch(e){return T("；HRV 读取失败（"+((e&&e.code)||"未知原因")+"）","; HRV read failed ("+((e&&e.code)||"unknown")+")")}
 }
 /* workout list → [{date, kcal, sport, id}] */
+/* the reply can arrive JSON-encoded, with literal "\n" instead of line breaks; so records are found by their
+   headers ("12. Walk — 2026-11-05") rather than by splitting on line breaks */
 function parseSportRecords(text){
-  const out = [];
-  for(const blk of String(text).split(/\n(?=\s*\d+\.\s)/)){
-    const d = /—\s*(\d{4}-\d{2}-\d{2})/.exec(blk), k = /Calories:\s*([\d,]+)\s*kcal/i.exec(blk), t = /SportType:\s*(\d+)/i.exec(blk), id = /LabelId:\s*(\d+)/i.exec(blk);
-    if(d && k) out.push({ date: d[1], kcal: +k[1].replace(/,/g,""), sport: t ? +t[1] : 0, id: id ? id[1] : "" });
-  }
+  const t = String(text).replace(/\\n/g, "\n"), out = [], heads = [];
+  const re = /(?:^|\n)\s*\d+\.\s[^\n—]*—\s*(\d{4}-\d{2}-\d{2})/g; let m;
+  while((m = re.exec(t))) heads.push({ i: m.index, date: m[1] });
+  heads.forEach((h, n)=>{
+    const blk = t.slice(h.i, n + 1 < heads.length ? heads[n + 1].i : t.length);
+    const k = /Calories:\s*([\d,]+)\s*kcal/i.exec(blk), s = /SportType:\s*(\d+)/i.exec(blk), id = /LabelId:\s*(\d+)/i.exec(blk);
+    if(k) out.push({ date: h.date, kcal: +k[1].replace(/,/g,""), sport: s ? +s[1] : 0, id: id ? id[1] : "" });
+  });
   return out;
 }
 const BIKE_TYPES = [200,201,202,203,204,205,299], PM_K = LS + "-pm";
