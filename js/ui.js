@@ -254,13 +254,13 @@ function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t
     trash:["揉纸丢掉","Crumple"],poof:["噗","Poof"],sword:["剑气","Sword slash"],unsheathe:["拔剑","Unsheathe"],punch:["重拳","Punch"],charge:["蓄力","Power up"],coin:["金币","Coin"],levelup:["升级","Level up"],fanfare:["号角","Fanfare"],musicbox:["八音盒","Music box"],sparkle:["星光","Sparkle"],sad:["失落","Wah-wah"],none:["无声","Silent"]};
   /* every kind of tap that makes a sound, its default sound, grouped as the settings panel shows them */
   const SFX=[
-    [["训练","Training"],[["set","打勾完成一组","Tick a set","tick"],["exdone","一个动作的组全部完成","Last set of an exercise","exDone"],["untick","取消打勾","Untick a set","untick"],
-      ["inc","次数 +","Reps +","inc"],["dec","次数 −","Reps −","dec"],["xtick","加练打勾","Tick an extra set","tick"],["xuntick","加练取消打勾","Untick an extra set","untick"],
+    [["训练","Training"],[["set","打勾完成一组","Tick a set","coin"],["exdone","一个动作的组全部完成","Last set of an exercise","levelup"],["untick","取消打勾","Untick a set","untick"],
+      ["inc","次数 +","Reps +","inc"],["dec","次数 −","Reps −","dec"],["xtick","加练打勾","Tick an extra set","chime"],["xuntick","加练取消打勾","Untick an extra set","untick"],
       ["finish","完成今天的训练","Finish the day","finish"],["fw","烟花","Firework","boom"],["bigfw","大烟花","Big firework","bigboom"]]],
-    [["切换和展开","Switch and fold"],[["tab1","切换一级标签","Main tabs","tap"],["tab2","切换图表里的页","Chart views","tap"],["fold","展开或折起面板","Fold or unfold","tap"],
-      ["range","切换时间范围","Time range","tap"],["gap","点缺口卡片换天数","Gap tile period","tap"]]],
-    [["记录","Logging"],[["open","打开记录窗口","Open a log window","tap"],["type","打字或输入数字","Typing","key"],["save","保存","Save","tap"],["close","取消或关闭窗口","Close","tap"],["del","删除","Delete","tap"]]],
-    [["同步","Sync"],[["sync","开始同步或拉取","Start sync or pull","tap"],["syncok","同步完成","Sync done","none"],["syncfail","同步失败","Sync failed","none"]]],
+    [["切换和展开","Switch and fold"],[["tab1","切换一级标签","Main tabs","swoosh"],["tab2","切换图表里的页","Chart views","unsheathe"],["fold","展开或折起面板","Fold or unfold","none"],
+      ["range","切换时间范围","Time range","sword"],["gap","点缺口卡片换天数","Gap tile period","sword"]]],
+    [["记录","Logging"],[["open","打开记录窗口","Open a log window","tap"],["type","打字或输入数字","Typing","key"],["save","保存","Save","chime"],["close","取消或关闭窗口","Close","tap"],["del","删除","Delete","jfclick1"]]],
+    [["同步","Sync"],[["sync","开始同步或拉取","Start sync or pull","fanfare"],["syncok","同步完成","Sync done","exDone"],["syncfail","同步失败","Sync failed","zzpowerup4"]]],
     [["其他","Other"],[["sndon","打开声音","Sound on","tick"],["header","顶部小按钮","Top buttons","tap"],["other","其他按钮","Other buttons","tap"]]]
   ];
   /* ZzFX sounds join the list (js/zzfx.js); sparse arrays keep their holes as defaults */
