@@ -187,14 +187,34 @@ function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t
   }
   /* filtered noise burst, shaped like a page being turned */
   let noiseBuf=null;
-  function noiseHit(len,f1,f2,vol,q,type,peak,at){
+  function noiseHit(len,f1,f2,vol,q,type,peak,at,dest){
     const c=ac();if(!c)return;
     if(!noiseBuf){noiseBuf=c.createBuffer(1,c.sampleRate,c.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}
     const t0=c.currentTime+(at||0), src=c.createBufferSource(), bp=c.createBiquadFilter(), g=c.createGain();
     src.buffer=noiseBuf;bp.type=type;bp.Q.value=q;
     bp.frequency.setValueAtTime(f1,t0);bp.frequency.exponentialRampToValueAtTime(f2,t0+len);
     g.gain.setValueAtTime(0.0001,t0);g.gain.exponentialRampToValueAtTime(vol,t0+len*peak);g.gain.exponentialRampToValueAtTime(0.0001,t0+len);
-    src.connect(bp).connect(g).connect(c.destination);src.start(t0,Math.random()*0.5,len+0.02);
+    src.connect(bp).connect(g).connect(dest||c.destination);src.start(t0,Math.random()*0.5,len+0.02);
+  }
+  /* fireworks: a jsfxr noise explosion (the realistic part, at jsfxr's own volume), our low sine thump
+     under it, and a few crackles as the sparks fall; a big one adds a second, deeper blast and more crackle.
+     Several rockets often burst together, so they share a compressor instead of clipping. Three variants of
+     each blast keep a volley from sounding like one sample repeated. */
+  const FW_SMALL=[[3,0,0.28,0.62,0.42,0.11,0,-0.18,0,0,0,0,0,0,0,0,0,0,1],
+                  [3,0,0.24,0.55,0.46,0.14,0,-0.22,0,0.25,0.3,0,0,0,0,0,0.12,-0.08,1],
+                  [3,0,0.3,0.7,0.38,0.09,0,-0.12,0,0,0,0,0,0,0,0,-0.2,0.05,0.9]];
+  const FW_BIG=[[3,0,0.38,0.75,0.6,0.07,0,-0.1,0,0,0,0,0,0,0,0,0,0,0.85],
+                [3,0,0.42,0.8,0.55,0.06,0,-0.08,0,0.2,0.25,0,0,0,0,0,0.15,-0.05,0.8]];
+  let fwBus=null;
+  function fwOut(c){
+    if(!fwBus){const k=c.createDynamicsCompressor();k.threshold.value=-10;k.knee.value=8;k.ratio.value=6;k.attack.value=0.003;k.release.value=0.25;k.connect(c.destination);fwBus=k}
+    return fwBus;
+  }
+  function fwSound(big){
+    const c=ac();if(!c)return;const out=fwOut(c),pick=a=>Math.floor(Math.random()*a.length);
+    if(big){const i=pick(FW_BIG);jfPlay(c,"fwB"+i,FW_BIG[i],0,out);const j=pick(FW_SMALL);jfPlay(c,"fwS"+j,FW_SMALL[j],0.14,out);tone(70,0,0.8,"sine",0.3,28);tone(140,0,0.5,"triangle",0.1,50)}
+    else{const i=pick(FW_SMALL);jfPlay(c,"fwS"+i,FW_SMALL[i],0,out);tone(100,0,0.35,"sine",0.2,40)}
+    const n=big?14:6;for(let k=0;k<n;k++)noiseHit(0.035,3500+Math.random()*3000,6500,0.1+Math.random()*0.08,1.2,"highpass",0.15,(big?0.3:0.22)+Math.random()*(big?0.9:0.5),out);
   }
   const S={
     tap:()=>noiseHit(0.09,2500,4500,0.3,0.7,"highpass",0.2),
@@ -206,8 +226,8 @@ function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t
     exDone:()=>{[523,659,784,1047].forEach((f,i)=>tone(f,i*0.07,0.22,"triangle",0.17))},
     finish:()=>{[523,659,784].forEach((f,i)=>tone(f,i*0.1,0.18,"triangle",0.2));
       [1047,1319,1568].forEach(f=>tone(f,0.32,0.7,"triangle",0.12));tone(262,0.32,0.7,"sine",0.18)},
-    boom:()=>{tone(110,0,0.35,"sine",0.22,40);tone(1600,0.03,0.4,"triangle",0.03,700)},
-    bigboom:()=>{tone(70,0,0.8,"sine",0.32,28);tone(140,0,0.5,"triangle",0.12,50);[0.18,0.3,0.45,0.6].forEach((t,i)=>tone(2200-i*250,t,0.25,"triangle",0.025,900))},
+    boom:()=>fwSound(false),
+    bigboom:()=>fwSound(true),
     swoosh:()=>noiseHit(0.22,600,3200,0.22,1.2,"bandpass",0.5),
     pop:()=>tone(420,0,0.07,"sine",0.25,900),
     click:()=>{tone(2200,0,0.012,"square",0.06);tone(900,0.012,0.02,"triangle",0.08)},

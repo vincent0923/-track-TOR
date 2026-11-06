@@ -114,8 +114,9 @@ const JF_SOUNDS=[
   ["jfclick6","点击 6","Click 6",[3,,0.1832,0.7749,0.2733,0.8638,,0.3372,,,,-0.6075,0.8373,,,,0.46,-0.0723,1,,,0.9915]]
 ];
 const jfCache={};
-function jfPlay(ctx,key,params){
+/* at: start delay in seconds; dest: where to play (default the speakers) */
+function jfPlay(ctx,key,params,at,dest){
   let buf=jfCache[key];
   if(!buf){const b=sfxrRender(params);buf=jfCache[key]=ctx.createBuffer(1,b.length||1,44100);const d=buf.getChannelData(0);for(let i=0;i<b.length;i++)d[i]=b[i]*.35}
-  const src=ctx.createBufferSource();src.buffer=buf;src.connect(ctx.destination);src.start();
+  const src=ctx.createBufferSource();src.buffer=buf;src.connect(dest||ctx.destination);src.start(ctx.currentTime+(at||0));
 }
